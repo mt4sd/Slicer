@@ -1,2 +1,3 @@
 def tr(context, text):
-  return slicer.app.translate(context, text)
+  from slicer import app
+  return app.translate(context, text)
