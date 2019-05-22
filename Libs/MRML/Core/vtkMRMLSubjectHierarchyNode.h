@@ -83,22 +83,22 @@ public:
 public:
   static vtkMRMLSubjectHierarchyNode *New();
   vtkTypeMacro(vtkMRMLSubjectHierarchyNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Read item from XML
   virtual void ReadItemFromXML(const char** atts);
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
   /// Write this node's body to a MRML file in XML format.
-  virtual void WriteNodeBodyXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteNodeBodyXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// Get node XML tag name (like Volume, Contour)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE;
+  const char* GetNodeTagName() override;
 
 // Get/Set methods
 public:
@@ -277,8 +277,8 @@ public:
   /// Re-implemented to handle nested associations \sa GetAssociatedNode
   /// \param itemID Parent item of the branch
   /// \param dataNodeCollection Collection updated with the list of data nodes
-  /// \param childClass Name of the class we are looking for. NULL returns associated data nodes of any kind
-  void GetDataNodesInBranch(vtkIdType itemID, vtkCollection* dataNodeCollection, const char* childClass=NULL);
+  /// \param childClass Name of the class we are looking for. nullptr returns associated data nodes of any kind
+  void GetDataNodesInBranch(vtkIdType itemID, vtkCollection* dataNodeCollection, const char* childClass=nullptr);
 
   /// Get data node associated to the parent of the item associated to a data node.
   /// \param recursive Flag determining whether only the direct parent is considered (false), or
@@ -319,7 +319,7 @@ public:
 
   /// Determine if any of the children of this item is transformed (has a parent transform applied), except for an optionally given node
   /// \param exceptionNode The function still returns true if the only applied transform found is this specified node
-  bool IsAnyNodeInBranchTransformed(vtkIdType itemID, vtkMRMLTransformNode* exceptionNode=NULL);
+  bool IsAnyNodeInBranchTransformed(vtkIdType itemID, vtkMRMLTransformNode* exceptionNode=nullptr);
 
   /// Deserialize a UID list string (stored in the UID map) into a vector of UID strings
   static void DeserializeUIDList(std::string uidListString, std::vector<std::string>& deserializedUIDList);
@@ -361,7 +361,7 @@ protected:
 
 protected:
   vtkMRMLSubjectHierarchyNode();
-  ~vtkMRMLSubjectHierarchyNode();
+  ~vtkMRMLSubjectHierarchyNode() override;
   vtkMRMLSubjectHierarchyNode(const vtkMRMLSubjectHierarchyNode&);
   void operator=(const vtkMRMLSubjectHierarchyNode&);
 

@@ -41,8 +41,8 @@ class QMRML_WIDGETS_EXPORT qMRMLEventBrokerWidget: public QWidget
   Q_OBJECT
 public:
   typedef QWidget Superclass;
-  explicit qMRMLEventBrokerWidget(QWidget *parent = 0);
-  virtual ~qMRMLEventBrokerWidget();
+  explicit qMRMLEventBrokerWidget(QWidget *parent = nullptr);
+  ~qMRMLEventBrokerWidget() override;
 
 public slots:
   void refresh();

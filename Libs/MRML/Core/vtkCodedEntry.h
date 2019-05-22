@@ -29,7 +29,7 @@ public:
 
   static vtkCodedEntry *New();
   vtkTypeMacro(vtkCodedEntry, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Reset state of object
   virtual void Initialize();
@@ -80,7 +80,7 @@ public:
 
 protected:
   vtkCodedEntry();
-  ~vtkCodedEntry();
+  ~vtkCodedEntry() override;
   vtkCodedEntry(const vtkCodedEntry&);
   void operator=(const vtkCodedEntry&);
 

@@ -1,7 +1,12 @@
+from __future__ import print_function
 import os
 import unittest
 import vtk, qt, ctk, slicer
+
 from slicer.ScriptedLoadableModule import *
+
+import EditorLib
+from EditorLib import EditUtil
 
 #
 # sceneImport2428
@@ -59,7 +64,7 @@ class sceneImport2428Widget(ScriptedLoadableModuleWidget):
     self.helloWorldButton = helloWorldButton
 
   def onHelloWorldButtonClicked(self):
-    print "Hello World !"
+    print("Hello World !")
 
 
 class sceneImport2428Test(ScriptedLoadableModuleTest):
@@ -114,10 +119,8 @@ class sceneImport2428Test(ScriptedLoadableModuleTest):
     #
     # got to the editor and do some drawing
     #
-    import EditorLib
     self.delayDisplay("Setting up Editor and drawing")
-    editUtil = EditorLib.EditUtil.EditUtil()
-    parameterNode = editUtil.getParameterNode()
+    parameterNode = EditUtil.getParameterNode()
     lm = slicer.app.layoutManager()
     paintEffectOptions = EditorLib.PaintEffectOptions()
     paintEffectOptions.setMRMLDefaults()
@@ -126,13 +129,13 @@ class sceneImport2428Test(ScriptedLoadableModuleTest):
     self.delayDisplay('Paint radius is %s' % parameterNode.GetParameter('PaintEffect,radius'))
     sliceWidget = lm.sliceWidget('Red')
     size = min(sliceWidget.width,sliceWidget.height)
-    step = size / 12
-    center = size / 2
+    step = int(size / 12)
+    center = int(size / 2)
     parameterNode.SetParameter('PaintEffect,radius', '20')
     paintTool = EditorLib.PaintEffectTool(sliceWidget)
     self.delayDisplay('Paint radius is %s, tool radius is %d' % (parameterNode.GetParameter('PaintEffect,radius'),paintTool.radius))
-    for label in xrange(1,5):
-      editUtil.setLabel(label)
+    for label in range(1,5):
+      EditUtil.setLabel(label)
       pos = center - 2*step + (step * label)
       self.delayDisplay('Painting %d, at  (%d,%d)' % (label,pos,pos),200)
       paintTool.paintAddPoint(pos,pos)
@@ -205,15 +208,15 @@ verifyModels()
     fileNamesInScene = []
     success = True
     numModels = slicer.mrmlScene.GetNumberOfNodesByClass( "vtkMRMLModelNode" )
-    for n in xrange(numModels):
+    for n in range(numModels):
       modelNode = slicer.mrmlScene.GetNthNodeByClass( n, "vtkMRMLModelNode" )
       polyDataInScene.append(modelNode.GetPolyData())
-      for dn in xrange(modelNode.GetNumberOfDisplayNodes()):
+      for dn in range(modelNode.GetNumberOfDisplayNodes()):
         displayNode = modelNode.GetNthDisplayNode(dn)
         if modelNode.GetPolyData() != displayNode.GetInputPolyData():
           self.delayDisplay("Model %d does not match its display node %d! (name: %s, ids: %s and %s)" % (n,dn,modelNode.GetName(), modelNode.GetID(),displayNode.GetID()))
           success = False
-      for sn in xrange(modelNode.GetNumberOfStorageNodes()):
+      for sn in range(modelNode.GetNumberOfStorageNodes()):
         storageNode = modelNode.GetNthStorageNode(sn)
         fileName = storageNode.GetFileName()
         fileNamesInScene.append(fileName)
@@ -225,7 +228,7 @@ verifyModels()
     #
     # now check that each model has a unique polydata
     #
-    for n in xrange(numModels):
+    for n in range(numModels):
       modelNode = slicer.mrmlScene.GetNthNodeByClass( n, "vtkMRMLModelNode" )
       if polyDataInScene.count(modelNode.GetPolyData()) > 1:
         self.delayDisplay("Polydata for Model is duplicated! (id: %s and %s)" % (n,modelNode.GetID()))

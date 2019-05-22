@@ -96,7 +96,7 @@ def warn(msg):
   """Output a warning message (or messages), with exception if present.
 
   :param msg: Message(s) to be output.
-  :type msg: :class:`basestring` or sequence of :class:`basestring`
+  :type msg: :class:`str` or sequence of :class:`str`
 
   This function outputs the specified message(s) using :func:`logging.warning`.
   If ``msg`` is a sequence, each message in the sequence is output, with a call
@@ -115,7 +115,7 @@ def die(msg, exitCode=1):
   """Output an error message (or messages), with exception if present.
 
   :param msg: Message(s) to be output.
-  :type msg: :class:`basestring` or sequence of :class:`basestring`
+  :type msg: :class:`str` or sequence of :class:`str`
   :param exitCode: Value to use as the exit code of the program.
   :type exitCode: :class:`int`
 
@@ -135,7 +135,7 @@ def inquire(msg, choices=_yesno):
   :param msg:
     Text of the prompt which the user will be shown.
   :type msg:
-    :class:`basestring`
+    :class:`str`
   :param choices:
     Map of possible choices to their respective return values.
   :type choices:
@@ -170,7 +170,7 @@ def inquire(msg, choices=_yesno):
 
   while True:
     try:
-      args = parser.parse_args(raw_input(msg))
+      args = parser.parse_args(input(msg))
       if args.choice in choices:
         return choices[args.choice]
 
@@ -243,7 +243,7 @@ def detectEncoding(data):
     return result["encoding"], result["confidence"]
 
   else:
-    chars = ''.join(map(chr, range(7,14) + range(32, 128)))
+    chars = ''.join(map(chr, list(range(7,14)) + list(range(32, 128))))
     if len(data.translate(None, chars)):
       return None, 0.0
 
@@ -254,22 +254,22 @@ def buildProcessArgs(*args, **kwargs):
   """Build |CLI| arguments from Python-like arguments.
 
   :param prefix: Prefix for named options.
-  :type prefix: :class:`basestring`
+  :type prefix: :class:`str`
   :param args: Positional arguments.
   :type args: :class:`~collections.Sequence`
   :param kwargs: Named options.
   :type kwargs: :class:`dict`
 
   :return: Converted argument list.
-  :rtype: :class:`list` of :class:`basestring`
+  :rtype: :class:`list` of :class:`str`
 
   This function converts Python-style arguments, including named arguments, to
   a |CLI|-style argument list:
 
   .. code-block:: python
 
-    >>> buildProcessArgs('p1', u'p2', None, 12, a=5, b=True, long_name=u'hello')
-    ['-a', '5', '--long-name', u'hello', '-b', 'p1', u'p2', '12']
+    >>> buildProcessArgs('p1', 'p2', None, 12, a=5, b=True, long_name='hello')
+    ['-a', '5', '--long-name', 'hello', '-b', 'p1', 'p2', '12']
 
   Named arguments are converted to named options by adding ``'-'`` (if the name
   is one letter) or ``'--'`` (otherwise), and converting any underscores
@@ -301,12 +301,12 @@ def createEmptyRepo(path, tool=None):
   :param path:
     Location which should contain the newly created repository.
   :type path:
-    :class:`basestring`
+    :class:`str`
   :param tool:
     Name of the |VCS| tool to use to create the repository (e.g. ``'git'``). If
     ``None``, a default tool (git) is used.
   :type tool:
-    :class:`basestring` or ``None``
+    :class:`str` or ``None``
 
   :raises:
     :exc:`~exceptions.Exception` if ``location`` exists and is not empty, or if
@@ -349,10 +349,10 @@ class SourceTreeDirectory(object):
   def __init__(self, root, relative_directory):
     """
     :param root: Location of the source tree.
-    :type root: :class:`basestring`
+    :type root: :class:`str`
 
     :param relative_directory: Relative directory.
-    :type relative_directory: :class:`basestring`
+    :type relative_directory: :class:`str`
 
     :raises:
       * :exc:`~exceptions.IOError` if the ``root/relative_directory`` does not exist.
@@ -368,9 +368,9 @@ def getRepo(path, tool=None, create=False):
   """Obtain a git repository for the specified path.
 
   :param path: Path to the repository.
-  :type path: :class:`basestring`
+  :type path: :class:`str`
   :param tool: Name of tool used to manage repository, e.g. ``'git'``.
-  :type tool: :class:`basestring` or ``None``
+  :type tool: :class:`str` or ``None``
   :param create: See description.
   :type create: :class:`callable` or :class:`bool`
 
@@ -445,7 +445,7 @@ def getRemote(repo, urls, create=None):
     :class:`str` or sequence of :class:`str`
   :param create:
     What to name the remote when creating it, if it doesn't exist.
-  :type create: :class:`basestring` or ``None``
+  :type create: :class:`str` or ``None``
 
   :returns:
     A matching or newly created :class:`git.Remote <git:git.remote.Remote>`, or
@@ -490,7 +490,7 @@ def localRoot(repo):
     :class:`.Subversion.Repository`.
 
   :return: Absolute path to the repository local root.
-  :rtype: :class:`basestring`
+  :rtype: :class:`str`
 
   :raises: :exc:`~exceptions.Exception` if the local root cannot be determined.
 
@@ -517,7 +517,7 @@ def vcsPrivateDirectory(repo):
     :class:`.Subversion.Repository`.
 
   :return: Absolute path to the |VCS| private directory.
-  :rtype: :class:`basestring`
+  :rtype: :class:`str`
 
   :raises:
     :exc:`~exceptions.Exception` if the private directory cannot be determined.

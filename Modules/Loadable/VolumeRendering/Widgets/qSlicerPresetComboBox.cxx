@@ -22,9 +22,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QListView>
-#if QT_VERSION < 0x040700
-#include <QPixmapCache>
-#endif
 
 // CTK includes
 #include <ctkVTKWidgetsUtils.h>
@@ -55,7 +52,7 @@
 qSlicerIconComboBox::qSlicerIconComboBox(QWidget* parentWidget)
   :Superclass(parentWidget)
 {
-  QListView* listView = new QListView(0);
+  QListView* listView = new QListView(nullptr);
   listView->setViewMode(QListView::IconMode);
   listView->setUniformItemSizes(true);
   listView->setWrapping(true);
@@ -164,14 +161,13 @@ qSlicerPresetComboBox::qSlicerPresetComboBox(QWidget* parentWidget)
 
 // --------------------------------------------------------------------------
 qSlicerPresetComboBox::~qSlicerPresetComboBox()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qSlicerPresetComboBox::setIconToPreset(vtkMRMLNode* presetNode)
 {
   Q_D(qSlicerPresetComboBox);
-  if (presetNode == NULL)
+  if (presetNode == nullptr)
     {
     return;
     }
@@ -184,7 +180,7 @@ void qSlicerPresetComboBox::setIconToPreset(vtkMRMLNode* presetNode)
     QIcon presetIcon;
     vtkMRMLVolumeNode* iconVolume = vtkMRMLVolumeNode::SafeDownCast(
       presetNode->GetNodeReference(vtkSlicerVolumeRenderingLogic::GetIconVolumeReferenceRole()));
-    if (iconVolume && iconVolume->GetImageData()!=NULL)
+    if (iconVolume && iconVolume->GetImageData()!=nullptr)
       {
       QImage qimage;
       qMRMLUtils::vtkImageDataToQImage(iconVolume->GetImageData(),qimage);
@@ -220,15 +216,10 @@ void qSlicerPresetComboBox::setIconToPreset(vtkMRMLNode* presetNode)
     {
     int previewSize = this->style()->pixelMetric(QStyle::PM_SmallIconSize);
     vtkScalarsToColors* colors =
-      volumePropertyNode->GetVolumeProperty() ? volumePropertyNode->GetVolumeProperty()->GetRGBTransferFunction() : 0;
+      volumePropertyNode->GetVolumeProperty() ? volumePropertyNode->GetVolumeProperty()->GetRGBTransferFunction() : nullptr;
     assert(colors && colors->GetRange()[1] > colors->GetRange()[0]);
     QImage img = ctk::scalarsToColorsImage(colors, QSize(previewSize, previewSize));
-#if QT_VERSION >= 0x040700
     QString imgSrc = ctk::base64HTMLImageTagSrc(img);
-#else
-    QString imgSrc = QString(":%1").arg(presetNode->GetName());
-    QPixmapCache::insert(imgSrc, QPixmap::fromImage(img));
-#endif
     QString toolTip = QString("<img src=\"%1\"> %2").arg(imgSrc).arg(presetNode->GetName());
     sceneModel->setData(sceneModel->indexFromNode(presetNode), toolTip, Qt::ToolTipRole);
     }
@@ -284,8 +275,8 @@ void qSlicerPresetComboBox::setShowIcons(bool show)
 
   // Update from scene
   QString currentNodeID = this->currentNodeID();
-  this->setMRMLScene(NULL);
+  this->setMRMLScene(nullptr);
   this->setMRMLScene(scene);
-  this->updateComboBoxTitleAndIcon(NULL);
+  this->updateComboBoxTitleAndIcon(nullptr);
   this->setCurrentNodeID(currentNodeID);
 }

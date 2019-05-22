@@ -53,11 +53,7 @@ class Token(object):
 
   #---------------------------------------------------------------------------
   def __str__(self):
-    return str(self.indent + self.text)
-
-  #---------------------------------------------------------------------------
-  def __unicode__(self):
-    return unicode(self.indent + self.text)
+    return self.indent + self.text
 
 #=============================================================================
 class String(Token):
@@ -94,11 +90,7 @@ class String(Token):
 
   #---------------------------------------------------------------------------
   def __str__(self):
-    return str(self.indent + self.prefix + self.text + self.suffix)
-
-  #---------------------------------------------------------------------------
-  def __unicode__(self):
-    return unicode(self.indent + self.prefix + self.text + self.suffix)
+    return self.indent + self.prefix + self.text + self.suffix
 
 #=============================================================================
 class Comment(Token):
@@ -132,11 +124,7 @@ class Comment(Token):
 
   #---------------------------------------------------------------------------
   def __str__(self):
-    return str(self.indent + self.prefix + self.text + self.suffix)
-
-  #---------------------------------------------------------------------------
-  def __unicode__(self):
-    return unicode(self.indent + self.prefix + self.text + self.suffix)
+    return self.indent + self.prefix + self.text + self.suffix
 
 #=============================================================================
 class Command(Token):
@@ -180,12 +168,7 @@ class Command(Token):
   #---------------------------------------------------------------------------
   def __str__(self):
     args = "".join([str(a) for a in self.arguments])
-    return str(self.indent + self.text + self.prefix + args + self.suffix)
-
-  #---------------------------------------------------------------------------
-  def __unicode__(self):
-    args = u"".join([unicode(a) for a in self.arguments])
-    return unicode(self.indent + self.text + self.prefix + args + self.suffix)
+    return self.indent + self.text + self.prefix + args + self.suffix
 
 #=============================================================================
 class CMakeScript(object):
@@ -198,7 +181,7 @@ class CMakeScript(object):
   """
 
   _reWhitespace = re.compile(r"\s")
-  _reCommand = re.compile(r"([" + string.letters + r"]\w*)(\s*\()")
+  _reCommand = re.compile(r"([" + string.ascii_letters + r"]\w*)(\s*\()")
   _reComment = re.compile(r"#(\[=*\[)?")
   _reQuote = re.compile("\"")
   _reBracketQuote = re.compile(r"\[=*\[")
@@ -208,7 +191,7 @@ class CMakeScript(object):
   def __init__(self, content):
     """
     :param content: Textual content of a CMake script.
-    :type content: :class:`basestring`
+    :type content: :class:`str`
 
     :raises:
       :exc:`~exceptions.SyntaxError` or :exc:`~exceptions.EOFError` if a
@@ -216,10 +199,10 @@ class CMakeScript(object):
 
     .. code-block:: python
 
-      with fi = open('CMakeLists.txt'):
+      with open('CMakeLists.txt') as fi:
         script = CMakeParser.CMakeScript(f.read())
 
-      with fo = open('CMakeLists.txt.new', 'w'):
+      with open('CMakeLists.txt.new', 'w') as fo:
         fo.write(str(script))
     """
 
@@ -254,10 +237,6 @@ class CMakeScript(object):
   #---------------------------------------------------------------------------
   def __str__(self):
     return "".join([str(t) for t in self.tokens])
-
-  #---------------------------------------------------------------------------
-  def __unicode__(self):
-    return u"".join([unicode(t) for t in self.tokens])
 
   #---------------------------------------------------------------------------
   def _chomp(self):

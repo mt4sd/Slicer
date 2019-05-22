@@ -77,8 +77,7 @@ qSlicerScriptedLoadableModulePrivate::qSlicerScriptedLoadableModulePrivate()
 
 //-----------------------------------------------------------------------------
 qSlicerScriptedLoadableModulePrivate::~qSlicerScriptedLoadableModulePrivate()
-{
-}
+= default;
 
 
 //-----------------------------------------------------------------------------
@@ -256,14 +255,14 @@ qSlicerAbstractModuleRepresentation* qSlicerScriptedLoadableModule::createWidget
 
   if (!this->isWidgetRepresentationCreationEnabled())
     {
-    return 0;
+    return nullptr;
     }
 
   QScopedPointer<qSlicerScriptedLoadableModuleWidget> widget(new qSlicerScriptedLoadableModuleWidget);
   bool ret = widget->setPythonSource(d->PythonSource);
   if (!ret)
     {
-    return 0;
+    return nullptr;
     }
 
   return widget.take();

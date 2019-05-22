@@ -48,12 +48,6 @@
 #include <vtkSmartPointer.h>
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerDataModule, qSlicerDataModule);
-#endif
-
-//-----------------------------------------------------------------------------
 class qSlicerDataModulePrivate
 {
 public:
@@ -68,8 +62,7 @@ qSlicerDataModule::qSlicerDataModule(QObject* parentObject)
 
 //-----------------------------------------------------------------------------
 qSlicerDataModule::~qSlicerDataModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QIcon qSlicerDataModule::icon()const
@@ -101,12 +94,12 @@ void qSlicerDataModule::setup()
   qSlicerAbstractCoreModule* colorsModule =
     qSlicerCoreApplication::application()->moduleManager()->module("Colors");
   vtkMRMLColorLogic* colorLogic =
-    vtkMRMLColorLogic::SafeDownCast(colorsModule ? colorsModule->logic() : 0);
+    vtkMRMLColorLogic::SafeDownCast(colorsModule ? colorsModule->logic() : nullptr);
 
   qSlicerAbstractCoreModule* camerasModule =
     qSlicerCoreApplication::application()->moduleManager()->module("Cameras");
   vtkSlicerCamerasModuleLogic* camerasLogic =
-    vtkSlicerCamerasModuleLogic::SafeDownCast(camerasModule ? camerasModule->logic() : 0);
+    vtkSlicerCamerasModuleLogic::SafeDownCast(camerasModule ? camerasModule->logic() : nullptr);
 
   qSlicerIOManager* ioManager = qSlicerApplication::application()->ioManager();
 

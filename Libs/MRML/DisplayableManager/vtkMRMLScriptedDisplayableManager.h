@@ -33,32 +33,32 @@ class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLScriptedDisplayableManager :
 public:
   static vtkMRMLScriptedDisplayableManager* New();
   vtkTypeMacro(vtkMRMLScriptedDisplayableManager,vtkMRMLAbstractDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void SetPythonSource(const std::string& pythonSource);
 
 protected:
   vtkMRMLScriptedDisplayableManager();
-  virtual ~vtkMRMLScriptedDisplayableManager();
+  ~vtkMRMLScriptedDisplayableManager() override;
 
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
-  virtual void ProcessMRMLSceneEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
-  virtual void ProcessMRMLNodesEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
+  void ProcessMRMLSceneEvents(vtkObject *caller, unsigned long event, void *callData) override;
+  void ProcessMRMLNodesEvents(vtkObject *caller, unsigned long event, void *callData) override;
 
-  virtual void Create() VTK_OVERRIDE;
+  void Create() override;
 
-  virtual void RemoveMRMLObservers() VTK_OVERRIDE;
+  void RemoveMRMLObservers() override;
 
-  virtual void UpdateFromMRML() VTK_OVERRIDE;
+  void UpdateFromMRML() override;
 
-  virtual void OnInteractorStyleEvent(int eventid) VTK_OVERRIDE;
+  void OnInteractorStyleEvent(int eventid) override;
 
-  virtual void OnMRMLDisplayableNodeModifiedEvent(vtkObject* caller) VTK_OVERRIDE;
+  void OnMRMLDisplayableNodeModifiedEvent(vtkObject* caller) override;
 
 private:
-  vtkMRMLScriptedDisplayableManager(const vtkMRMLScriptedDisplayableManager&);// Not implemented
-  void operator=(const vtkMRMLScriptedDisplayableManager&);                   // Not Implemented
+  vtkMRMLScriptedDisplayableManager(const vtkMRMLScriptedDisplayableManager&) = delete;
+  void operator=(const vtkMRMLScriptedDisplayableManager&) = delete;
 
   class vtkInternal;
   vtkInternal * Internal;

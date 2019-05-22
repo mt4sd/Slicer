@@ -1,10 +1,11 @@
 import slicer
 import qt
 import vtk
-# from ctk import ctkCollapsibleButton
-import ColorBox
-from EditUtil import EditUtil
+
 from slicer.util import VTKObservationMixin
+
+from . import ColorBox
+from . import EditUtil
 
 __all__ = ['EditColor']
 
@@ -146,6 +147,6 @@ class EditColor(VTKObservationMixin):
     self.colorNode = EditUtil.getColorNode()
 
     if not self.colorBox:
-      self.colorBox = ColorBox.ColorBox(parameterNode=self.parameterNode, parameter=self.parameter, colorNode=self.colorNode)
+      self.colorBox = ColorBox(parameterNode=self.parameterNode, parameter=self.parameter, colorNode=self.colorNode)
 
     self.colorBox.show(parameterNode=self.parameterNode, parameter=self.parameter, colorNode=self.colorNode)

@@ -51,8 +51,7 @@ qSlicerTransformsReader::qSlicerTransformsReader(
 
 //-----------------------------------------------------------------------------
 qSlicerTransformsReader::~qSlicerTransformsReader()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerTransformsReader::setTransformLogic(vtkSlicerTransformLogic* newTransformLogic)
@@ -93,7 +92,7 @@ bool qSlicerTransformsReader::load(const IOProperties& properties)
   Q_ASSERT(properties.contains("fileName"));
   QString fileName = properties["fileName"].toString();
 
-  if (d->TransformLogic.GetPointer() == 0)
+  if (d->TransformLogic.GetPointer() == nullptr)
     {
     return false;
     }
@@ -107,7 +106,7 @@ bool qSlicerTransformsReader::load(const IOProperties& properties)
     {
     this->setLoadedNodes(QStringList());
     }
-  return node != 0;
+  return node != nullptr;
 }
 
 // TODO: add the save() method. Use vtkSlicerTransformLogic::SaveTransform()

@@ -62,7 +62,7 @@ qMRMLTransformDisplayNodeWidgetPrivate
 ::qMRMLTransformDisplayNodeWidgetPrivate(qMRMLTransformDisplayNodeWidget& object)
   : q_ptr(&object)
 {
-  this->TransformDisplayNode = NULL;
+  this->TransformDisplayNode = nullptr;
   this->ColorTransferFunction = vtkColorTransferFunction::New();
 }
 
@@ -71,7 +71,7 @@ qMRMLTransformDisplayNodeWidgetPrivate
 ::~qMRMLTransformDisplayNodeWidgetPrivate()
 {
   this->ColorTransferFunction->Delete();
-  this->ColorTransferFunction = NULL;
+  this->ColorTransferFunction = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +84,7 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   double validBounds[4] = {VTK_DOUBLE_MIN, VTK_DOUBLE_MAX, 0., 1.};
 
   this->ColorMapWidget->view()->setValidBounds(validBounds);
-  this->ColorMapWidget->view()->addColorTransferFunction(0);
+  this->ColorMapWidget->view()->addColorTransferFunction(nullptr);
   this->ColorMapWidget->view()->setColorTransferFunctionToPlots(this->ColorTransferFunction);
 
   double chartBounds[8]={0};
@@ -122,8 +122,9 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   this->ContourOptions->hide();
   this->GridOptions->hide();
 
-  QObject::connect(this->Visible2dCheckBox, SIGNAL(toggled(bool)), q, SLOT(setVisible2d(bool)));
-  QObject::connect(this->Visible3dCheckBox, SIGNAL(toggled(bool)), q, SLOT(setVisible3d(bool)));
+  QObject::connect(this->VisibleCheckBox, SIGNAL(toggled(bool)), q, SLOT(setVisibility(bool)));
+  QObject::connect(this->Visible2dCheckBox, SIGNAL(toggled(bool)), q, SLOT(setVisibility2d(bool)));
+  QObject::connect(this->Visible3dCheckBox, SIGNAL(toggled(bool)), q, SLOT(setVisibility3d(bool)));
 
   QObject::connect(this->RegionNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)), q, SLOT(regionNodeChanged(vtkMRMLNode*)));
 
@@ -176,8 +177,7 @@ qMRMLTransformDisplayNodeWidget
 //-----------------------------------------------------------------------------
 qMRMLTransformDisplayNodeWidget
 ::~qMRMLTransformDisplayNodeWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qMRMLTransformDisplayNodeWidget
@@ -191,8 +191,8 @@ void qMRMLTransformDisplayNodeWidget
 ::setMRMLTransformNode(vtkMRMLTransformNode* transformNode)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
-  vtkMRMLTransformDisplayNode* displayNode = NULL;
-  if (transformNode!=NULL)
+  vtkMRMLTransformDisplayNode* displayNode = nullptr;
+  if (transformNode!=nullptr)
     {
     displayNode=vtkMRMLTransformDisplayNode::SafeDownCast(transformNode->GetDisplayNode());
     }
@@ -210,7 +210,7 @@ void qMRMLTransformDisplayNodeWidget
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
 
-  this->setEnabled(d->TransformDisplayNode != 0);
+  this->setEnabled(d->TransformDisplayNode != nullptr);
 
   if (!d->TransformDisplayNode)
     {
@@ -228,15 +228,16 @@ void qMRMLTransformDisplayNodeWidget
 
   // Display
 
-  d->Visible2dCheckBox->setChecked(d->TransformDisplayNode->GetSliceIntersectionVisibility());
-  d->Visible3dCheckBox->setChecked(d->TransformDisplayNode->GetVisibility());
+  d->VisibleCheckBox->setChecked(d->TransformDisplayNode->GetVisibility());
+  d->Visible2dCheckBox->setChecked(d->TransformDisplayNode->GetVisibility2D());
+  d->Visible3dCheckBox->setChecked(d->TransformDisplayNode->GetVisibility3D());
 
   switch (d->TransformDisplayNode->GetVisualizationMode())
-   {
+    {
     case vtkMRMLTransformDisplayNode::VIS_MODE_GLYPH: d->GlyphToggle->setChecked(true); break;
     case vtkMRMLTransformDisplayNode::VIS_MODE_GRID: d->GridToggle->setChecked(true); break;
     case vtkMRMLTransformDisplayNode::VIS_MODE_CONTOUR: d->ContourToggle->setChecked(true); break;
-   }
+    }
 
   d->RegionNodeComboBox->setCurrentNode(d->TransformDisplayNode->GetRegionNode());
 
@@ -244,7 +245,7 @@ void qMRMLTransformDisplayNodeWidget
   // Glyph Parameters
   d->GlyphPointsNodeComboBox->setCurrentNode(d->TransformDisplayNode->GetGlyphPointsNode());
   d->GlyphSpacingMm->setValue(d->TransformDisplayNode->GetGlyphSpacingMm());
-  d->GlyphSpacingMm->setEnabled(d->TransformDisplayNode->GetGlyphPointsNode() == NULL);
+  d->GlyphSpacingMm->setEnabled(d->TransformDisplayNode->GetGlyphPointsNode() == nullptr);
   d->GlyphScalePercent->setValue(d->TransformDisplayNode->GetGlyphScalePercent());
   d->GlyphDisplayRangeMm->setMaximumValue(d->TransformDisplayNode->GetGlyphDisplayRangeMaxMm());
   d->GlyphDisplayRangeMm->setMinimumValue(d->TransformDisplayNode->GetGlyphDisplayRangeMinMm());
@@ -270,22 +271,22 @@ void qMRMLTransformDisplayNodeWidget
   std::vector<double> levelsInMRML;
   d->TransformDisplayNode->GetContourLevelsMm(levelsInMRML);
   if (!vtkMRMLTransformDisplayNode::IsContourLevelEqual(levelsInWidget,levelsInMRML))
-  {
+    {
     d->ContourLevelsMm->setText(QLatin1String(d->TransformDisplayNode->GetContourLevelsMmAsString().c_str()));
-  }
+    }
 
   // Update ColorMap
   vtkColorTransferFunction* colorTransferFunctionInNode=d->TransformDisplayNode->GetColorMap();
   if (colorTransferFunctionInNode)
     {
     if (!vtkMRMLProceduralColorNode::IsColorMapEqual(d->ColorTransferFunction,colorTransferFunctionInNode))
-     {
+      {
       // only update the range if the colormap is changed to avoid immediate update,
       // because we don't want to change the colormap plot range while dragging the control point
       d->ColorTransferFunction->DeepCopy(colorTransferFunctionInNode);
       this->colorUpdateRange();
-     }
-   }
+      }
+    }
 
   // Interaction
   d->InteractionVisibleCheckBox->setChecked(d->TransformDisplayNode->GetEditorVisibility());
@@ -341,9 +342,9 @@ void qMRMLTransformDisplayNodeWidget::glyphPointsNodeChanged(vtkMRMLNode* node)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
-  {
+    {
     return;
-  }
+    }
   d->TransformDisplayNode->SetAndObserveGlyphPointsNode(node);
 }
 
@@ -488,7 +489,7 @@ void qMRMLTransformDisplayNodeWidget::setGridShowNonWarped(bool show)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
-   {
+    {
     return;
     }
   d->TransformDisplayNode->SetGridShowNonWarped(show);
@@ -618,18 +619,7 @@ void qMRMLTransformDisplayNodeWidget::setEditorScalingEnabled(bool enabled)
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setVisible2d(bool visible)
-{
-  Q_D(qMRMLTransformDisplayNodeWidget);
-  if (!d->TransformDisplayNode)
-    {
-    return;
-    }
-  d->TransformDisplayNode->SetSliceIntersectionVisibility(visible);
-}
-
-//-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setVisible3d(bool visible)
+void qMRMLTransformDisplayNodeWidget::setVisibility(bool visible)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
@@ -640,6 +630,28 @@ void qMRMLTransformDisplayNodeWidget::setVisible3d(bool visible)
 }
 
 //-----------------------------------------------------------------------------
+void qMRMLTransformDisplayNodeWidget::setVisibility2d(bool visible)
+{
+  Q_D(qMRMLTransformDisplayNodeWidget);
+  if (!d->TransformDisplayNode)
+    {
+    return;
+    }
+  d->TransformDisplayNode->SetVisibility2D(visible);
+}
+
+//-----------------------------------------------------------------------------
+void qMRMLTransformDisplayNodeWidget::setVisibility3d(bool visible)
+{
+  Q_D(qMRMLTransformDisplayNodeWidget);
+  if (!d->TransformDisplayNode)
+    {
+    return;
+    }
+  d->TransformDisplayNode->SetVisibility3D(visible);
+}
+
+//-----------------------------------------------------------------------------
 void qMRMLTransformDisplayNodeWidget::setColorTableNode(vtkMRMLNode* colorTableNode)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
@@ -647,7 +659,7 @@ void qMRMLTransformDisplayNodeWidget::setColorTableNode(vtkMRMLNode* colorTableN
     {
     return;
     }
-  d->TransformDisplayNode->SetAndObserveColorNodeID(colorTableNode?colorTableNode->GetID():NULL);
+  d->TransformDisplayNode->SetAndObserveColorNodeID(colorTableNode?colorTableNode->GetID():nullptr);
 }
 
 // ----------------------------------------------------------------------------
@@ -661,7 +673,7 @@ void qMRMLTransformDisplayNodeWidget::colorUpdateRange()
     }
   // Rescale the chart so that all the points are visible
   vtkColorTransferFunction* colorMap=d->TransformDisplayNode->GetColorMap();
-  if (colorMap==NULL)
+  if (colorMap==nullptr)
     {
     return;
     }

@@ -28,39 +28,39 @@ class VTK_MRML_EXPORT vtkMRMLColorTableNode : public vtkMRMLColorNode
 public:
   static vtkMRMLColorTableNode *New();
   vtkTypeMacro(vtkMRMLColorTableNode,vtkMRMLColorNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "ColorTable";}
+  const char* GetNodeTagName() override {return "ColorTable";}
 
   /// Access lookup table object that stores table values.
   /// \sa SetAndObserveLookupTable()
-  vtkLookupTable* GetLookupTable() VTK_OVERRIDE;
+  vtkLookupTable* GetLookupTable() override;
 
   /// Set lookup table object that this object will use.
   /// \sa GetLookupTable()
   virtual void SetAndObserveLookupTable(vtkLookupTable *newLookupTable);
 
-  /// Deprecated method, kept only for backward compatibility.
+  /// \deprecated Kept only for backward compatibility.
   /// Use SetAndObserveLookupTable method instead.
   /// \sa SetAndObserveLookupTable()
   virtual void SetLookupTable(vtkLookupTable* newLookupTable)
@@ -70,7 +70,7 @@ public:
 
   ///
   /// Get/Set for Type
-  void SetType(int type) VTK_OVERRIDE;
+  void SetType(int type) override;
   //GetType is defined in ColorTableNode class via macro.
   void SetTypeToFullRainbow();
   void SetTypeToGrey();
@@ -110,7 +110,7 @@ public:
   void SetTypeToCoolTint3();
 
 
-  void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) VTK_OVERRIDE;
+  void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) override;
 
   ///
   /// The list of valid table types
@@ -185,12 +185,12 @@ public:
 
   ///
   /// Return the lowest and highest integers, for use in looping
-  int GetFirstType () VTK_OVERRIDE { return this->FullRainbow; };
-  int GetLastType () VTK_OVERRIDE { return this->CoolTint3; };
+  int GetFirstType () override { return this->FullRainbow; };
+  int GetLastType () override { return this->CoolTint3; };
 
   ///
   /// return a text string describing the colour look up table type
-  virtual const char * GetTypeAsString() VTK_OVERRIDE;
+  const char * GetTypeAsString() override;
 
   ///
   /// Set the size of the colour table if it's a User table
@@ -198,7 +198,7 @@ public:
 
   ///
   /// Set the size of the colour table if it's a User table
-  virtual int GetNumberOfColors() VTK_OVERRIDE;
+  int GetNumberOfColors() override;
 
   ///
   /// keep track of where we last added a colour
@@ -219,7 +219,7 @@ public:
 
   /// Retrieve the color associated to the index
   /// Return true if the color exists, false otherwise
-  virtual bool GetColor(int entry, double color[4]) VTK_OVERRIDE;
+  bool GetColor(int entry, double color[4]) override;
 
   ///
   /// clear out the names list
@@ -227,15 +227,15 @@ public:
 
   ///
   /// reset when close the scene
-  virtual void Reset(vtkMRMLNode* defaultNode) VTK_OVERRIDE;
+  void Reset(vtkMRMLNode* defaultNode) override;
 
   ///
-  /// Create default storage node or NULL if does not have one
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE;
+  /// Create default storage node or nullptr if does not have one
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override;
 
 protected:
   vtkMRMLColorTableNode();
-  virtual ~vtkMRMLColorTableNode();
+  ~vtkMRMLColorTableNode() override;
   vtkMRMLColorTableNode(const vtkMRMLColorTableNode&);
   void operator=(const vtkMRMLColorTableNode&);
 

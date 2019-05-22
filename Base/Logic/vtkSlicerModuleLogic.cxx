@@ -18,13 +18,12 @@ vtkStandardNewMacro(vtkSlicerModuleLogic);
 
 //----------------------------------------------------------------------------
 vtkSlicerModuleLogic::vtkSlicerModuleLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkSlicerModuleLogic::~vtkSlicerModuleLogic()
 {
-  this->SetMRMLApplicationLogic(0);
+  this->SetMRMLApplicationLogic(nullptr);
 }
 
 //----------------------------------------------------------------------------

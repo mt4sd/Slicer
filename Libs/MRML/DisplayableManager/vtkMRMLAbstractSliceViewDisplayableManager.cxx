@@ -43,13 +43,11 @@ vtkStandardNewMacro(vtkMRMLAbstractSliceViewDisplayableManager);
 
 //----------------------------------------------------------------------------
 vtkMRMLAbstractSliceViewDisplayableManager::vtkMRMLAbstractSliceViewDisplayableManager()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkMRMLAbstractSliceViewDisplayableManager::~vtkMRMLAbstractSliceViewDisplayableManager()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLAbstractSliceViewDisplayableManager::PrintSelf(ostream& os, vtkIndent indent)
@@ -85,7 +83,7 @@ void vtkMRMLAbstractSliceViewDisplayableManager::ConvertDeviceToXYZ(
     vtkRenderWindowInteractor * interactor, vtkMRMLSliceNode * sliceNode,
     double x, double y, double xyz[3])
 {
-  if (xyz == NULL || interactor == NULL || sliceNode == NULL)
+  if (xyz == nullptr || interactor == nullptr || sliceNode == nullptr)
     {
     return;
     }
@@ -109,6 +107,32 @@ void vtkMRMLAbstractSliceViewDisplayableManager::ConvertDeviceToXYZ(
 }
 
 //---------------------------------------------------------------------------
+void vtkMRMLAbstractSliceViewDisplayableManager::ConvertDeviceToXYZ(
+    vtkRenderer * renderer, vtkMRMLSliceNode * sliceNode,
+    double x, double y, double xyz[3])
+{
+  if (xyz == nullptr || renderer == nullptr || sliceNode == nullptr)
+    {
+    return;
+    }
+
+  double windowWidth = renderer->GetRenderWindow()->GetSize()[0];
+  double windowHeight = renderer->GetRenderWindow()->GetSize()[1];
+
+  int numberOfColumns = sliceNode->GetLayoutGridColumns();
+  int numberOfRows = sliceNode->GetLayoutGridRows();
+
+  float tempX = x / windowWidth;
+  float tempY = (windowHeight - 1 - y) / windowHeight;
+
+  float z = floor(tempY*numberOfRows)*numberOfColumns + floor(tempX*numberOfColumns);
+
+  xyz[0] = x - renderer->GetOrigin()[0];
+  xyz[1] = y - renderer->GetOrigin()[1];
+  xyz[2] = z;
+}
+
+//---------------------------------------------------------------------------
 void vtkMRMLAbstractSliceViewDisplayableManager::ConvertRASToXYZ(double ras[3], double xyz[3])
 {
   Self::ConvertRASToXYZ(this->GetMRMLSliceNode(), ras, xyz);
@@ -118,7 +142,7 @@ void vtkMRMLAbstractSliceViewDisplayableManager::ConvertRASToXYZ(double ras[3], 
 void vtkMRMLAbstractSliceViewDisplayableManager::ConvertRASToXYZ(
     vtkMRMLSliceNode * sliceNode, double ras[3], double xyz[3])
 {
-  if (sliceNode == NULL)
+  if (sliceNode == nullptr)
     {
     return;
     }
@@ -141,7 +165,7 @@ void vtkMRMLAbstractSliceViewDisplayableManager::ConvertXYZToRAS(double xyz[3], 
 void vtkMRMLAbstractSliceViewDisplayableManager::ConvertXYZToRAS(
     vtkMRMLSliceNode * sliceNode, double xyz[3], double ras[3])
 {
-  if (sliceNode == NULL)
+  if (sliceNode == nullptr)
     {
     return;
     }

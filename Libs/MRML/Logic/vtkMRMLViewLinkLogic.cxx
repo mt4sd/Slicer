@@ -48,13 +48,11 @@ vtkStandardNewMacro(vtkMRMLViewLinkLogic);
 
 //----------------------------------------------------------------------------
 vtkMRMLViewLinkLogic::vtkMRMLViewLinkLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkMRMLViewLinkLogic::~vtkMRMLViewLinkLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLViewLinkLogic::SetMRMLSceneInternal(vtkMRMLScene* newScene)
@@ -74,7 +72,7 @@ void vtkMRMLViewLinkLogic::SetMRMLSceneInternal(vtkMRMLScene* newScene)
 
   this->SetAndObserveMRMLSceneEventsInternal(newScene, events.GetPointer(), priorities.GetPointer());
 
-  this->ProcessMRMLSceneEvents(newScene, vtkCommand::ModifiedEvent, 0);
+  this->ProcessMRMLSceneEvents(newScene, vtkCommand::ModifiedEvent, nullptr);
 }
 
 //----------------------------------------------------------------------------
@@ -188,7 +186,7 @@ void vtkMRMLViewLinkLogic::BroadcastCameraNodeEvent(vtkMRMLCameraNode* cameraNod
     }
 
   int requiredViewGroup = viewNode->GetViewGroup();
-  vtkMRMLCameraNode* sNode = NULL;
+  vtkMRMLCameraNode* sNode = nullptr;
   vtkCollectionSimpleIterator it;
   vtkSmartPointer<vtkCollection> nodes;
   nodes.TakeReference(this->GetMRMLScene()->GetNodesByClass("vtkMRMLCameraNode"));
@@ -228,7 +226,7 @@ void vtkMRMLViewLinkLogic::BroadcastCameraNodeEvent(vtkMRMLCameraNode* cameraNod
           vtkNew<vtkMatrix4x4> cameraTransformMatrix;
           // Assumption: mrmlCamera nodes are only linearly transformed
           vtkMRMLTransformNode::GetMatrixTransformBetweenNodes
-            (NULL, sNode->GetParentTransformNode(), cameraTransformMatrix.GetPointer());
+            (nullptr, sNode->GetParentTransformNode(), cameraTransformMatrix.GetPointer());
           cameraTransformMatrix->Invert(cameraTransformMatrix.GetPointer(), cameraTransformMatrix.GetPointer());
           cameraTransform->Concatenate(cameraTransformMatrix.GetPointer());
 
@@ -309,7 +307,7 @@ void vtkMRMLViewLinkLogic::BroadcastCameraNodeEvent(vtkMRMLCameraNode* cameraNod
           vtkNew<vtkMatrix4x4> cameraTransformMatrix;
           // Assumption: mrmlCamera nodes are only linearly transformed
           vtkMRMLTransformNode::GetMatrixTransformBetweenNodes
-            (NULL, sNode->GetParentTransformNode(), cameraTransformMatrix.GetPointer());
+            (nullptr, sNode->GetParentTransformNode(), cameraTransformMatrix.GetPointer());
           cameraTransformMatrix->Invert(cameraTransformMatrix.GetPointer(), cameraTransformMatrix.GetPointer());
           cameraTransform->Concatenate(cameraTransformMatrix.GetPointer());
 
@@ -341,7 +339,7 @@ void vtkMRMLViewLinkLogic::BroadcastCameraNodeEvent(vtkMRMLCameraNode* cameraNod
           vtkNew<vtkMatrix4x4> cameraTransformMatrix;
           // Assumption: mrmlCamera nodes are only linearly transformed
           vtkMRMLTransformNode::GetMatrixTransformBetweenNodes
-            (NULL, sNode->GetParentTransformNode(), cameraTransformMatrix.GetPointer());
+            (nullptr, sNode->GetParentTransformNode(), cameraTransformMatrix.GetPointer());
           cameraTransformMatrix->Invert(cameraTransformMatrix.GetPointer(), cameraTransformMatrix.GetPointer());
           cameraTransform->Concatenate(cameraTransformMatrix.GetPointer());
 
@@ -384,7 +382,7 @@ void vtkMRMLViewLinkLogic::BroadcastViewNodeEvent(vtkMRMLViewNode* viewNode)
     }
 
   int requiredViewGroup = viewNode->GetViewGroup();
-  vtkMRMLViewNode* vNode = NULL;
+  vtkMRMLViewNode* vNode = nullptr;
   vtkCollectionSimpleIterator it;
   vtkSmartPointer<vtkCollection> nodes;
   nodes.TakeReference(this->GetMRMLScene()->GetNodesByClass("vtkMRMLViewNode"));

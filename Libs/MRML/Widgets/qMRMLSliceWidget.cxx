@@ -20,17 +20,15 @@
 
 // Qt includes
 #include <QDebug>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QApplication>
 #include <QMainWindow>
 #include <QWindow>
-#endif
 
 // qMRML includes
 #include "qMRMLSliceWidget_p.h"
 
 // MRMLDisplayableManager includes
-#include <vtkSliceViewInteractorStyle.h>
+#include <vtkMRMLSliceViewInteractorStyle.h>
 
 // MRML includes
 #include <vtkMRMLSliceNode.h>
@@ -54,8 +52,7 @@ qMRMLSliceWidgetPrivate::qMRMLSliceWidgetPrivate(qMRMLSliceWidget& object)
 
 //---------------------------------------------------------------------------
 qMRMLSliceWidgetPrivate::~qMRMLSliceWidgetPrivate()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void qMRMLSliceWidgetPrivate::init()
@@ -80,12 +77,8 @@ void qMRMLSliceWidgetPrivate::init()
 // --------------------------------------------------------------------------
 void qMRMLSliceWidgetPrivate::setSliceViewSize(const QSize& size)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-  const QSize scaledSize = size * this->SliceView->devicePixelRatio();
-  this->SliceController->setSliceViewSize(scaledSize);
-#else
-  this->SliceController->setSliceViewSize(size);
-#endif
+  QSizeF scaledSizeF = QSizeF(size) * this->SliceView->devicePixelRatioF();
+  this->SliceController->setSliceViewSize(scaledSizeF.toSize());
 }
 
 // --------------------------------------------------------------------------
@@ -131,8 +124,7 @@ qMRMLSliceWidget::qMRMLSliceWidget(qMRMLSliceWidgetPrivate* pimpl,
 
 // --------------------------------------------------------------------------
 qMRMLSliceWidget::~qMRMLSliceWidget()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void qMRMLSliceWidget::setMRMLScene(vtkMRMLScene* newScene)
@@ -302,12 +294,11 @@ void qMRMLSliceWidget::showEvent(QShowEvent* event)
 {
   Superclass::showEvent(event);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
   Q_D(qMRMLSliceWidget);
 
   // Reset slice view size when screen changes to account for a possible change
   // in the device pixel ratio.
-  QWindow* window = NULL;
+  QWindow* window = nullptr;
   foreach(QWidget* widget, qApp->topLevelWidgets())
     {
     QMainWindow* mainWindow = qobject_cast<QMainWindow*>(widget);
@@ -322,5 +313,4 @@ void qMRMLSliceWidget::showEvent(QShowEvent* event)
     connect(window, SIGNAL(screenChanged(QScreen*)),
             d, SLOT(resetSliceViewSize()), Qt::UniqueConnection);
     }
-#endif
 }

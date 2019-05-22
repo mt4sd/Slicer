@@ -35,18 +35,18 @@ class qSlicerFiducialsReader
   Q_OBJECT
 public:
   typedef qSlicerFileReader Superclass;
-  qSlicerFiducialsReader(QObject* parent = 0);
-  qSlicerFiducialsReader(vtkSlicerAnnotationModuleLogic* logic, QObject* parent = 0);
-  virtual ~qSlicerFiducialsReader();
+  qSlicerFiducialsReader(QObject* parent = nullptr);
+  qSlicerFiducialsReader(vtkSlicerAnnotationModuleLogic* logic, QObject* parent = nullptr);
+  ~qSlicerFiducialsReader() override;
 
   vtkSlicerAnnotationModuleLogic* annotationLogic()const;
   void setAnnotationLogic(vtkSlicerAnnotationModuleLogic* logic);
 
-  virtual QString description()const;
-  virtual IOFileType fileType()const;
-  virtual QStringList extensions()const;
+  QString description()const override;
+  IOFileType fileType()const override;
+  QStringList extensions()const override;
 
-  virtual bool load(const IOProperties& properties);
+  bool load(const IOProperties& properties) override;
 
 protected:
   QScopedPointer<qSlicerFiducialsReaderPrivate> d_ptr;

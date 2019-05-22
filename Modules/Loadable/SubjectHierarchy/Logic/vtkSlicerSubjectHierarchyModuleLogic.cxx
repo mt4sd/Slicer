@@ -45,13 +45,11 @@ vtkStandardNewMacro(vtkSlicerSubjectHierarchyModuleLogic);
 
 //----------------------------------------------------------------------------
 vtkSlicerSubjectHierarchyModuleLogic::vtkSlicerSubjectHierarchyModuleLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkSlicerSubjectHierarchyModuleLogic::~vtkSlicerSubjectHierarchyModuleLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkSlicerSubjectHierarchyModuleLogic::PrintSelf(ostream& os, vtkIndent indent)
@@ -337,7 +335,7 @@ void vtkSlicerSubjectHierarchyModuleLogic::TransformBranch(
       }
 
     // Apply the transform
-    transformableNode->SetAndObserveTransformNodeID(transformNode ? transformNode->GetID() : NULL);
+    transformableNode->SetAndObserveTransformNodeID(transformNode ? transformNode->GetID() : nullptr);
 
     // Trigger update by invoking the modified event for the subject hierarchy item
     shNode->ItemModified(*childIt);
@@ -375,7 +373,7 @@ void vtkSlicerSubjectHierarchyModuleLogic::HardenTransformOnBranch(vtkMRMLSubjec
 
 //---------------------------------------------------------------------------
 vtkIdType vtkSlicerSubjectHierarchyModuleLogic::CloneSubjectHierarchyItem(
-  vtkMRMLSubjectHierarchyNode* shNode, vtkIdType itemID, const char* name/*=NULL*/)
+  vtkMRMLSubjectHierarchyNode* shNode, vtkIdType itemID, const char* name/*=nullptr*/)
 {
   if (!shNode)
     {
@@ -509,7 +507,7 @@ vtkMRMLSubjectHierarchyNode* vtkSlicerSubjectHierarchyModuleLogic::GetSubjectHie
   if (!scene)
     {
     vtkGenericWarningMacro("vtkSlicerSubjectHierarchyModuleLogic::GetSubjectHierarchyNode: Invalid scene");
-    return NULL;
+    return nullptr;
     }
 
   return vtkMRMLSubjectHierarchyNode::GetSubjectHierarchyNode(scene);

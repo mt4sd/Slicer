@@ -30,9 +30,7 @@ vtkAnnotationRulerRepresentation::vtkAnnotationRulerRepresentation()
 
 //---------------------------------------------------------------------------
 vtkAnnotationRulerRepresentation::~vtkAnnotationRulerRepresentation()
-{
-
-}
+= default;
 
 //----------------------------------------------------------------------
 vtkProperty2D *vtkAnnotationRulerRepresentation::GetLineProperty()
@@ -43,7 +41,7 @@ vtkProperty2D *vtkAnnotationRulerRepresentation::GetLineProperty()
     }
   else
     {
-    return NULL;
+    return nullptr;
     }
 }
 

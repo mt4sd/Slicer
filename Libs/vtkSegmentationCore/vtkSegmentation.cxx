@@ -75,6 +75,7 @@ vtkSegmentation::vtkSegmentation()
   this->MasterRepresentationCallbackCommand->SetCallback( vtkSegmentation::OnMasterRepresentationModified );
 
   this->MasterRepresentationModifiedEnabled = true;
+  this->SegmentModifiedEnabled = true;
 
   this->SegmentIdAutogeneratorIndex = 0;
 
@@ -91,16 +92,16 @@ vtkSegmentation::~vtkSegmentation()
 
   if (this->SegmentCallbackCommand)
     {
-    this->SegmentCallbackCommand->SetClientData(NULL);
+    this->SegmentCallbackCommand->SetClientData(nullptr);
     this->SegmentCallbackCommand->Delete();
-    this->SegmentCallbackCommand = NULL;
+    this->SegmentCallbackCommand = nullptr;
     }
 
   if (this->MasterRepresentationCallbackCommand)
     {
-    this->MasterRepresentationCallbackCommand->SetClientData(NULL);
+    this->MasterRepresentationCallbackCommand->SetClientData(nullptr);
     this->MasterRepresentationCallbackCommand->Delete();
-    this->MasterRepresentationCallbackCommand = NULL;
+    this->MasterRepresentationCallbackCommand = nullptr;
     }
 }
 
@@ -115,9 +116,9 @@ void vtkSegmentation::WriteXML(ostream& of, int vtkNotUsed(nIndent))
 //----------------------------------------------------------------------------
 void vtkSegmentation::ReadXMLAttributes(const char** atts)
 {
-  const char* attName = NULL;
-  const char* attValue = NULL;
-  while (*atts != NULL)
+  const char* attName = nullptr;
+  const char* attValue = nullptr;
+  while (*atts != nullptr)
     {
     attName = *(atts++);
     attValue = *(atts++);
@@ -265,6 +266,32 @@ bool vtkSegmentation::SetMasterRepresentationModifiedEnabled(bool enabled)
 }
 
 //---------------------------------------------------------------------------
+bool vtkSegmentation::SetSegmentModifiedEnabled(bool enabled)
+{
+  if (this->SegmentModifiedEnabled == enabled)
+    {
+    return this->SegmentModifiedEnabled;
+    }
+  // Add/remove observation of master representation in all segments
+  for (SegmentMap::iterator segmentIt = this->Segments.begin(); segmentIt != this->Segments.end(); ++segmentIt)
+    {
+    if (enabled)
+      {
+      if (!segmentIt->second->HasObserver(vtkCommand::ModifiedEvent, this->SegmentCallbackCommand))
+        {
+        segmentIt->second->AddObserver(vtkCommand::ModifiedEvent, this->SegmentCallbackCommand);
+        }
+      }
+    else
+      {
+      segmentIt->second->RemoveObservers(vtkCommand::ModifiedEvent, this->SegmentCallbackCommand);
+      }
+    }
+  this->SegmentModifiedEnabled = enabled;
+  return !enabled; // return old value
+}
+
+//---------------------------------------------------------------------------
 std::string vtkSegmentation::GenerateUniqueSegmentID(std::string id)
 {
   if (!id.empty() &&  this->Segments.find(id) == this->Segments.end())
@@ -312,7 +339,7 @@ bool vtkSegmentation::AddSegment(vtkSegment* segment, std::string segmentId/*=""
     }
 
   // Observe segment underlying data for changes
-  if (!segment->HasObserver(vtkCommand::ModifiedEvent, this->SegmentCallbackCommand))
+  if (this->SegmentModifiedEnabled && !segment->HasObserver(vtkCommand::ModifiedEvent, this->SegmentCallbackCommand))
     {
     segment->AddObserver(vtkCommand::ModifiedEvent, this->SegmentCallbackCommand);
     }
@@ -431,7 +458,7 @@ bool vtkSegmentation::AddSegment(vtkSegment* segment, std::string segmentId/*=""
   std::string key = segmentId;
   if (key.empty())
     {
-    if (segment->GetName() == NULL)
+    if (segment->GetName() == nullptr)
       {
       vtkErrorMacro("AddSegment: Unable to add segment without a key; neither key is given nor segment name is defined!");
       return false;
@@ -603,7 +630,7 @@ vtkSegment* vtkSegmentation::GetSegment(std::string segmentId)
   SegmentMap::iterator segmentIt = this->Segments.find(segmentId);
   if (segmentIt == this->Segments.end())
     {
-    return NULL;
+    return nullptr;
     }
 
   return segmentIt->second;
@@ -620,14 +647,14 @@ vtkSegment* vtkSegmentation::GetNthSegment(unsigned int index) const
 {
   if (index >= this->SegmentIds.size())
     {
-    return NULL;
+    return nullptr;
     }
   std::string segmentId = this->SegmentIds[index];
   SegmentMap::const_iterator segmentIt = this->Segments.find(segmentId);
   if (segmentIt == this->Segments.end())
     {
     // inconsistent segment ID and segment list
-    return NULL;
+    return nullptr;
     }
   return segmentIt->second;
 }
@@ -1031,6 +1058,11 @@ bool vtkSegmentation::CreateRepresentation(const std::string& targetRepresentati
     }
 
   // Perform conversion on all segments (no overwrites)
+  // Delay segment modified event invocation until all segments have the new representation.
+  std::deque< std::string > modifiedSegmentIds;
+
+  bool wasSegmentModifiedEnabled = this->SetSegmentModifiedEnabled(false);
+
   for (SegmentMap::iterator segmentIt = this->Segments.begin(); segmentIt != this->Segments.end(); ++segmentIt)
     {
     vtkDataObject* representationBefore = segmentIt->second->GetRepresentation(targetRepresentationName);
@@ -1041,12 +1073,26 @@ bool vtkSegmentation::CreateRepresentation(const std::string& targetRepresentati
       }
     vtkDataObject* representationAfter = segmentIt->second->GetRepresentation(targetRepresentationName);
     if (representationBefore != representationAfter
-      || (representationBefore != NULL && representationAfter != NULL && representationBefore->GetMTime() != representationAfter->GetMTime()) )
+      || (representationBefore != nullptr && representationAfter != nullptr && representationBefore->GetMTime() != representationAfter->GetMTime()) )
       {
       // representation has been modified
-      const char* segmentId = segmentIt->first.c_str();
-      this->InvokeEvent(vtkSegmentation::RepresentationModified, (void*)segmentId);
+      modifiedSegmentIds.push_back(segmentIt->first);
       }
+    }
+
+  this->SetSegmentModifiedEnabled(wasSegmentModifiedEnabled);
+
+  // All the updates are completed, now invoke modified events
+  for (std::deque< std::string >::iterator segmentIdIt = modifiedSegmentIds.begin();
+    segmentIdIt != modifiedSegmentIds.end(); ++segmentIdIt)
+    {
+    const char* segmentId = segmentIdIt->c_str();
+    vtkSegment* segment = GetSegment(segmentId);
+    if (segment)
+      {
+      segment->Modified();
+      }
+    this->InvokeEvent(vtkSegmentation::RepresentationModified, (void*)segmentId);
     }
 
   this->InvokeEvent(vtkSegmentation::ContainedRepresentationNamesModified);
@@ -1089,11 +1135,26 @@ bool vtkSegmentation::CreateRepresentation(vtkSegmentationConverter::ConversionP
 //---------------------------------------------------------------------------
 void vtkSegmentation::RemoveRepresentation(const std::string& representationName)
 {
+  // We temporarily disable modification of segments to avoid invoking events
+  // when segmentation is in an inconsistent state (when segments have different
+  // representations). We call Modified events after all the updates are completed.
+  std::deque< vtkSegment* > modifiedSegments;
+  bool wasSegmentModifiedEnabled = this->SetSegmentModifiedEnabled(false);
   for (SegmentMap::iterator segmentIt = this->Segments.begin(); segmentIt != this->Segments.end(); ++segmentIt)
     {
-    segmentIt->second->RemoveRepresentation(representationName);
+    if (segmentIt->second->RemoveRepresentation(representationName))
+      {
+      modifiedSegments.push_back(segmentIt->second);
+      }
     }
+  this->SetSegmentModifiedEnabled(wasSegmentModifiedEnabled);
 
+  // All the updates are completed, now invoke modified events
+  for (std::deque< vtkSegment* >::iterator segmentIt = modifiedSegments.begin(); segmentIt != modifiedSegments.end();
+    ++segmentIt)
+    {
+    (*segmentIt)->Modified();
+    }
   this->InvokeEvent(vtkSegmentation::ContainedRepresentationNamesModified);
 }
 
@@ -1103,7 +1164,7 @@ vtkDataObject* vtkSegmentation::GetSegmentRepresentation(std::string segmentId, 
   vtkSegment* segment = this->GetSegment(segmentId);
   if (!segment)
     {
-    return NULL;
+    return nullptr;
     }
   return segment->GetRepresentation(representationName);
 }
@@ -1154,14 +1215,14 @@ bool vtkSegmentation::IsMasterRepresentationPolyData()
     // Assume the first segment contains the same name of representations as all segments (this should be the case by design)
     vtkSegment* firstSegment = this->Segments.begin()->second;
     vtkDataObject* masterRepresentation = firstSegment->GetRepresentation(this->MasterRepresentationName);
-    return vtkPolyData::SafeDownCast(masterRepresentation) != NULL;
+    return vtkPolyData::SafeDownCast(masterRepresentation) != nullptr;
     }
   else
     {
     // There are no segments, create an empty representation to find out what type it is
     vtkSmartPointer<vtkDataObject> masterRepresentation = vtkSmartPointer<vtkDataObject>::Take(
       vtkSegmentationConverterFactory::GetInstance()->ConstructRepresentationObjectByRepresentation(this->MasterRepresentationName));
-    return vtkPolyData::SafeDownCast(masterRepresentation) != NULL;
+    return vtkPolyData::SafeDownCast(masterRepresentation) != nullptr;
     }
 }
 
@@ -1173,14 +1234,14 @@ bool vtkSegmentation::IsMasterRepresentationImageData()
     // Assume the first segment contains the same name of representations as all segments (this should be the case by design)
     vtkSegment* firstSegment = this->Segments.begin()->second;
     vtkDataObject* masterRepresentation = firstSegment->GetRepresentation(this->MasterRepresentationName);
-    return vtkOrientedImageData::SafeDownCast(masterRepresentation) != NULL;
+    return vtkOrientedImageData::SafeDownCast(masterRepresentation) != nullptr;
     }
   else
     {
     // There are no segments, create an empty representation to find out what type it is
     vtkSmartPointer<vtkDataObject> masterRepresentation = vtkSmartPointer<vtkDataObject>::Take(
       vtkSegmentationConverterFactory::GetInstance()->ConstructRepresentationObjectByRepresentation(this->MasterRepresentationName));
-    return vtkOrientedImageData::SafeDownCast(masterRepresentation) != NULL;
+    return vtkOrientedImageData::SafeDownCast(masterRepresentation) != nullptr;
     }
 }
 
@@ -1237,7 +1298,7 @@ bool vtkSegmentation::CanAcceptSegment(vtkSegment* segment)
 }
 
 //-----------------------------------------------------------------------------
-std::string vtkSegmentation::AddEmptySegment(std::string segmentId/*=""*/, std::string segmentName/*=""*/, double* color/*=NULL*/)
+std::string vtkSegmentation::AddEmptySegment(std::string segmentId/*=""*/, std::string segmentName/*=""*/, double* color/*=nullptr*/)
 {
   vtkSmartPointer<vtkSegment> segment = vtkSmartPointer<vtkSegment>::New();
   if (color)
@@ -1351,7 +1412,7 @@ std::string vtkSegmentation::DetermineCommonLabelmapGeometry(int extentComputati
 
 //-----------------------------------------------------------------------------
 void vtkSegmentation::DetermineCommonLabelmapExtent(int commonGeometryExtent[6], vtkOrientedImageData* commonGeometryImage,
-  vtkStringArray* segmentIds /*=NULL*/, bool computeEffectiveExtent /*=false*/, bool addPadding /*=false*/)
+  vtkStringArray* segmentIds /*=nullptr*/, bool computeEffectiveExtent /*=false*/, bool addPadding /*=false*/)
 {
   std::vector<std::string> segmentIdsVector;
   if (segmentIds)
@@ -1379,7 +1440,7 @@ std::string vtkSegmentation::DetermineCommonLabelmapGeometry(int extentComputati
     }
 
   // Get highest resolution reference geometry available in segments
-  vtkOrientedImageData* highestResolutionLabelmap = NULL;
+  vtkOrientedImageData* highestResolutionLabelmap = nullptr;
   double lowestSpacing[3] = {1, 1, 1}; // We'll multiply the spacings together to get the voxel size
   for (std::vector<std::string>::iterator segmentIt = mergedSegmentIDs.begin(); segmentIt != mergedSegmentIDs.end(); ++segmentIt)
     {
@@ -1486,7 +1547,7 @@ void vtkSegmentation::DetermineCommonLabelmapExtent(int commonGeometryExtent[6],
       }
     vtkOrientedImageData* currentBinaryLabelmap = vtkOrientedImageData::SafeDownCast(
       currentSegment->GetRepresentation(vtkSegmentationConverter::GetSegmentationBinaryLabelmapRepresentationName()));
-    if (currentBinaryLabelmap==NULL || currentBinaryLabelmap->IsEmpty())
+    if (currentBinaryLabelmap==nullptr || currentBinaryLabelmap->IsEmpty())
       {
       continue;
       }
@@ -1548,7 +1609,7 @@ void vtkSegmentation::DetermineCommonLabelmapExtent(int commonGeometryExtent[6],
 }
 
 //----------------------------------------------------------------------------
-bool vtkSegmentation::SetImageGeometryFromCommonLabelmapGeometry(vtkOrientedImageData* imageData, vtkStringArray* segmentIDs /*=NULL*/,
+bool vtkSegmentation::SetImageGeometryFromCommonLabelmapGeometry(vtkOrientedImageData* imageData, vtkStringArray* segmentIDs /*=nullptr*/,
   int extentComputationMode /*=vtkSegmentation::EXTENT_UNION_OF_EFFECTIVE_SEGMENTS*/)
 {
   std::string commonGeometryString = this->DetermineCommonLabelmapGeometry(extentComputationMode, segmentIDs);

@@ -40,8 +40,8 @@ class QMRML_WIDGETS_EXPORT qMRMLClipNodeWidget : public QWidget
   Q_OBJECT
   QVTK_OBJECT
 public:
-  qMRMLClipNodeWidget(QWidget *parent=0);
-  virtual ~qMRMLClipNodeWidget();
+  qMRMLClipNodeWidget(QWidget *parent=nullptr);
+  ~qMRMLClipNodeWidget() override;
 
   vtkMRMLClipModelsNode* mrmlClipNode()const;
 

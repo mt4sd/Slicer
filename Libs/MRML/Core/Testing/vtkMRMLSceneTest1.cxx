@@ -26,10 +26,10 @@ public:
   static vtkMRMLCustomNode *New();
   vtkTypeMacro(vtkMRMLCustomNode, vtkMRMLNode);
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
-  virtual const char* GetNodeTagName() VTK_OVERRIDE { return "Custom"; }
+  vtkMRMLNode* CreateNodeInstance() override;
+  const char* GetNodeTagName() override { return "Custom"; }
 
-  virtual void Reset(vtkMRMLNode* defaultNode) VTK_OVERRIDE
+  void Reset(vtkMRMLNode* defaultNode) override
     {
     ++this->ResetCount;
     this->vtkMRMLNode::Reset(defaultNode);
@@ -39,7 +39,7 @@ public:
 
 protected:
   vtkMRMLCustomNode():ResetCount(0){}
-  ~vtkMRMLCustomNode(){}
+  ~vtkMRMLCustomNode() override = default;
   vtkMRMLCustomNode(const vtkMRMLCustomNode&);
   void operator=(const vtkMRMLCustomNode&);
 };
@@ -55,12 +55,12 @@ public:
   static vtkMRMLAnotherCustomNode *New();
   vtkTypeMacro(vtkMRMLAnotherCustomNode, vtkMRMLNode);
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
-  virtual const char* GetNodeTagName() VTK_OVERRIDE { return "AnotherCustom"; }
+  vtkMRMLNode* CreateNodeInstance() override;
+  const char* GetNodeTagName() override { return "AnotherCustom"; }
 
 protected:
-  vtkMRMLAnotherCustomNode(){}
-  ~vtkMRMLAnotherCustomNode(){}
+  vtkMRMLAnotherCustomNode() = default;
+  ~vtkMRMLAnotherCustomNode() override = default;
   vtkMRMLAnotherCustomNode(const vtkMRMLAnotherCustomNode&);
   void operator=(const vtkMRMLAnotherCustomNode&);
 };
@@ -221,7 +221,7 @@ int vtkMRMLSceneTest1(int , char * [] )
   {
     vtkMRMLNode* expectedFirstNodeByClass = node1;
     vtkMRMLNode* currentFirstNodeByClass = scene1->GetFirstNode(
-          /* byName= */ 0, /* byClass= */ "vtkMRMLCustomNode");
+          /* byName= */ nullptr, /* byClass= */ "vtkMRMLCustomNode");
     if (currentFirstNodeByClass != expectedFirstNodeByClass)
       {
       std::cerr << "Line " << __LINE__ << " - Problem with GetNodesByClass()\n"
@@ -234,7 +234,7 @@ int vtkMRMLSceneTest1(int , char * [] )
   {
     vtkMRMLNode* expectedFirstNodeByClass = node2;
     vtkMRMLNode* currentFirstNodeByClass = scene1->GetFirstNode(
-          /* byName= */ 0, /* byClass= */ "vtkMRMLAnotherCustomNode");
+          /* byName= */ nullptr, /* byClass= */ "vtkMRMLAnotherCustomNode");
     if (currentFirstNodeByClass != expectedFirstNodeByClass)
       {
       std::cerr << "Line " << __LINE__ << " - Problem with GetNodesByClass()\n"
@@ -265,8 +265,8 @@ int vtkMRMLSceneTest1(int , char * [] )
     vtkMRMLNode* expectedFirstNodeByClass = node2;
     vtkMRMLNode* currentFirstNodeByClass = scene1->GetFirstNode(
           /* byName= */ "Node.+",
-          /* byClass= */ 0,
-          /* byHideFromEditors= */ 0,
+          /* byClass= */ nullptr,
+          /* byHideFromEditors= */ nullptr,
           /* exactNameMatch= */ false);
     if (currentFirstNodeByClass != expectedFirstNodeByClass)
       {
@@ -283,7 +283,7 @@ int vtkMRMLSceneTest1(int , char * [] )
     int hideFromEditors = 1;
     vtkMRMLNode* expectedFirstNodeByClass = node3;
     vtkMRMLNode* currentFirstNodeByClass = scene1->GetFirstNode(
-          /* byName= */ 0, /* byClass= */ 0, /* byHideFromEditors= */ &hideFromEditors);
+          /* byName= */ nullptr, /* byClass= */ nullptr, /* byHideFromEditors= */ &hideFromEditors);
     if (currentFirstNodeByClass != expectedFirstNodeByClass)
       {
       std::cerr << "Line " << __LINE__ << " - Problem with GetNodesByClass()\n"
@@ -328,7 +328,7 @@ int vtkMRMLSceneTest1(int , char * [] )
     vtkMRMLNode* currentFirstNodeByClass = scene1->GetFirstNode(
           /* byName= */ "Node.+",
           /* byClass= */ "vtkMRMLCustomNode",
-          /* byHideFromEditors= */ 0,
+          /* byHideFromEditors= */ nullptr,
           /* exactNameMatch= */ false);
     if (currentFirstNodeByClass != expectedFirstNodeByClass)
       {

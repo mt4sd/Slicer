@@ -47,8 +47,8 @@ public:
   typedef qMRMLViewControllerBar Superclass;
 
   /// Constructors
-  explicit qMRMLPlotViewControllerWidget(QWidget* parent = 0);
-  virtual ~qMRMLPlotViewControllerWidget();
+  explicit qMRMLPlotViewControllerWidget(QWidget* parent = nullptr);
+  ~qMRMLPlotViewControllerWidget() override;
 
   /// Set the label for the Plot view (abbreviation for the view name).
   void setViewLabel(const QString& newViewLabel);
@@ -58,7 +58,7 @@ public:
 
 public slots:
   /// Set the scene.
-  virtual void setMRMLScene(vtkMRMLScene* newScene);
+  void setMRMLScene(vtkMRMLScene* newScene) override;
 
   /// Set the PlotView with which this controller interacts.
   void setPlotView(qMRMLPlotView* PlotView);

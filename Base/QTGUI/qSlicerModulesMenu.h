@@ -54,29 +54,35 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerModulesMenu: public QMenu
   /// changing its value won't change the visibility of the current volumes but
   /// only the future added modules
   Q_PROPERTY(bool showHiddenModules READ showHiddenModules WRITE setShowHiddenModules)
+
+  /// By default (isAllModulesCategoryVisible = true), setting this property controls
+  /// the visibility of the "All Modules" category.
+  Q_PROPERTY(bool allModulesCategoryVisible READ isAllModulesCategoryVisible WRITE setAllModulesCategoryVisible)
+
+  Q_PROPERTY(QStringList topLevelCategoryOrder READ topLevelCategoryOrder WRITE setTopLevelCategoryOrder)
 public:
   typedef QMenu Superclass;
 
   /// Constructor
   /// title is the name of the menu (can appear using right click on the
   /// toolbar area)
-  qSlicerModulesMenu(const QString& title, QWidget* parent = 0);
-  qSlicerModulesMenu(QWidget* parent = 0);
-  virtual ~qSlicerModulesMenu();
+  qSlicerModulesMenu(const QString& title, QWidget* parent = nullptr);
+  qSlicerModulesMenu(QWidget* parent = nullptr);
+  ~qSlicerModulesMenu() override;
 
   ///
-  QAction* moduleAction(const QString& moduleName)const;
+  Q_INVOKABLE QAction* moduleAction(const QString& moduleName)const;
 
-  /// Add a list of module available for selection
+  /// Add a list of module available for selection.
   inline void addModules(const QStringList& moduleNames);
 
-  /// Add a list of module available for selection
+  /// Add a list of module available for selection.
   inline void removeModules(const QStringList& moduleNames);
 
-  /// Return the last selected module name
+  /// Return the last selected module name.
   QString currentModule()const;
 
-  /// Set the module manager to retrieve the modules from
+  /// Set the module manager to retrieve the modules from.
   void setModuleManager(qSlicerModuleManager* moduleManager);
   qSlicerModuleManager* moduleManager()const;
 
@@ -88,24 +94,67 @@ public:
   void setShowHiddenModules(bool show);
   bool showHiddenModules()const;
 
+  /// Return menu associated with the special "All Modules" category.
+  Q_INVOKABLE QMenu* allModulesCategory()const;
+
+  void setAllModulesCategoryVisible(bool visible);
+  bool isAllModulesCategoryVisible()const;
+
+  void setTopLevelCategoryOrder(const QStringList& categories);
+  QStringList topLevelCategoryOrder()const;
+
+  /// Remove a top-level category or sub-category. Return true if it was found and removed.
+  ///
+  /// Sub-category can be specified using a "dot" separator (i.e. "CategoryName.SubCategoryName")
+  ///
+  /// \note The special catergory "All Modules" can not be removed with this function. Instead
+  /// consider setting \a allModulesCategoryVisible property.
+  ///
+  /// \sa removeModule(), setAllModulesCategoryVisible()
+  Q_INVOKABLE bool removeCategory(const QString& categoryName);
+
 public slots:
   /// Add a module by name into the menu.
+  ///
   /// The category property of the module is used to assign a submenu to the
   /// module action. If a module is hidden and showHiddenModules is false
   /// (default), the module is ignored and not added into the list
+  ///
   /// \sa qSlicerAbstractCoreModule::category()
   /// \sa qSlicerAbstractCoreModule::action()
   /// \sa qSlicerAbstractCoreModule::isHidden()
   void addModule(const QString& moduleName);
 
-  /// Remove the module from the list of available module
-  void removeModule(const QString& moduleName);
+  /// Remove the module from the menu.
+  ///
+  /// Return true if the module was found and removed.
+  ///
+  /// By default, matching module entries are removed from the top-level category,
+  /// the custom and pre-defined categories as well as the "All Modules" special
+  /// category. Setting \a removeFromAllModules to false allows to change this.
+  ///
+  /// \a removeFromAllModules to false allows to change this.
+  bool removeModule(const QString& moduleName, bool removeFromAllModules=true);
 
-  /// Select a module by title. It looks for the module action and triggers it
+  /// Select a module by title. It looks for the module action and triggers it.
+  /// \sa setCurrentModule()
   void setCurrentModuleByTitle(const QString& title);
 
-  /// Select a module by name. It looks for the module action and triggers it
+  /// Select a module by name. It looks for the module action and triggers it.
+  /// \sa setCurrentModuleByTitle()
   void setCurrentModule(const QString& moduleName);
+
+  /// Add a module into the menu.
+  void addModule(qSlicerAbstractCoreModule*);
+
+  /// Remove the module from the menu.
+  ///
+  /// By default, matching module entries are removed from the top-level category,
+  /// the custom and pre-defined categories as well as the "All Modules" special
+  /// category. Setting \a removeFromAllModules to false allows to change this.
+  ///
+  /// Return true if the module was found and removed.
+  bool removeModule(qSlicerAbstractCoreModule*, bool removeFromAllModules=true);
 
 signals:
   /// The signal is fired every time a module is selected. The QAction of the
@@ -118,9 +167,6 @@ protected slots:
 
 protected:
   QScopedPointer<qSlicerModulesMenuPrivate> d_ptr;
-
-  void addModule(qSlicerAbstractCoreModule*);
-  void removeModule(qSlicerAbstractCoreModule*);
 
 private:
   Q_DECLARE_PRIVATE(qSlicerModulesMenu);

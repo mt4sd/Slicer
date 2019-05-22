@@ -99,8 +99,7 @@ qSlicerSegmentEditorScriptedLabelEffectPrivate::qSlicerSegmentEditorScriptedLabe
 
 //-----------------------------------------------------------------------------
 qSlicerSegmentEditorScriptedLabelEffectPrivate::~qSlicerSegmentEditorScriptedLabelEffectPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSegmentEditorScriptedLabelEffect methods
@@ -115,8 +114,7 @@ qSlicerSegmentEditorScriptedLabelEffect::qSlicerSegmentEditorScriptedLabelEffect
 
 //-----------------------------------------------------------------------------
 qSlicerSegmentEditorScriptedLabelEffect::~qSlicerSegmentEditorScriptedLabelEffect()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerSegmentEditorScriptedLabelEffect::pythonSource()const
@@ -277,7 +275,7 @@ qSlicerSegmentEditorAbstractEffect* qSlicerSegmentEditorScriptedLabelEffect::clo
   if (!result)
     {
     qCritical() << d->PythonSource << ": clone: Failed to call mandatory clone method! If it is implemented, please see python output for errors.";
-    return NULL;
+    return nullptr;
     }
 
   // Parse result
@@ -287,7 +285,7 @@ qSlicerSegmentEditorAbstractEffect* qSlicerSegmentEditorScriptedLabelEffect::clo
   if (!clonedEffect)
     {
     qCritical() << d->PythonSource << ": clone: Invalid cloned effect object returned from python!";
-    return NULL;
+    return nullptr;
     }
   return clonedEffect;
 }

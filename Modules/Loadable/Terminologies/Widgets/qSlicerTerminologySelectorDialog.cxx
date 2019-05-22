@@ -41,7 +41,7 @@ protected:
   qSlicerTerminologySelectorDialog* const q_ptr;
 public:
   qSlicerTerminologySelectorDialogPrivate(qSlicerTerminologySelectorDialog& object);
-  virtual ~qSlicerTerminologySelectorDialogPrivate();
+  ~qSlicerTerminologySelectorDialogPrivate() override;
 public:
   void init();
 private:
@@ -61,8 +61,7 @@ qSlicerTerminologySelectorDialogPrivate::qSlicerTerminologySelectorDialogPrivate
 
 //-----------------------------------------------------------------------------
 qSlicerTerminologySelectorDialogPrivate::~qSlicerTerminologySelectorDialogPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerTerminologySelectorDialogPrivate::init()
@@ -114,8 +113,7 @@ qSlicerTerminologySelectorDialog::qSlicerTerminologySelectorDialog(
 
 //-----------------------------------------------------------------------------
 qSlicerTerminologySelectorDialog::~qSlicerTerminologySelectorDialog()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 bool qSlicerTerminologySelectorDialog::exec()

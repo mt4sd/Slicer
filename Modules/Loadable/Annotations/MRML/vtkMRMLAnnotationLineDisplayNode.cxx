@@ -28,7 +28,7 @@ vtkMRMLAnnotationLineDisplayNode::vtkMRMLAnnotationLineDisplayNode()
   this->UnderLineThickness = 1.0;
   this->OverLineThickness = 3.0;
   /// bug 2375: don't show the slice intersection until it's correct
-  this->SliceIntersectionVisibility = 0;
+  this->Visibility2D = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ void vtkMRMLAnnotationLineDisplayNode::ReadXMLAttributes(const char** atts)
 
   const char* attName;
   const char* attValue;
-  while (*atts != NULL)
+  while (*atts != nullptr)
     {
     attName = *(atts++);
     attValue = *(atts++);

@@ -24,10 +24,10 @@ public:
   typedef QWidget Superclass;
 
   /// Constructor
-  explicit qSlicerExtensionsRestoreWidget(QWidget* parent = 0);
+  explicit qSlicerExtensionsRestoreWidget(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerExtensionsRestoreWidget();
+  ~qSlicerExtensionsRestoreWidget() override;
 
   Q_INVOKABLE qSlicerExtensionsManagerModel* extensionsManagerModel()const;
   Q_INVOKABLE void setExtensionsManagerModel(qSlicerExtensionsManagerModel* model);
@@ -38,7 +38,7 @@ public:
   QAction* installSelectedAction() const;
 
   // Events
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
 protected slots :
   void onSelectAllExtensionsTriggered();

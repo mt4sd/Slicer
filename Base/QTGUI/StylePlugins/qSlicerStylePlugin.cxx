@@ -28,23 +28,15 @@
 #include "qSlicerStylePlugin.h"
 
 // --------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerStylePlugin, qSlicerStylePlugin)
-#endif
-
-// --------------------------------------------------------------------------
 // qSlicerStylePlugin methods
 
 //-----------------------------------------------------------------------------
 qSlicerStylePlugin::qSlicerStylePlugin()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 qSlicerStylePlugin::~qSlicerStylePlugin()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QStyle* qSlicerStylePlugin::create( const QString & key )
@@ -57,7 +49,7 @@ QStyle* qSlicerStylePlugin::create( const QString & key )
     {
     return new qSlicerDarkStyle();
     }
-  return 0;
+  return nullptr;
 }
 
 //-----------------------------------------------------------------------------

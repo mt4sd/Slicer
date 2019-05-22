@@ -40,8 +40,7 @@ qMRMLSliceInformationWidgetPrivate::qMRMLSliceInformationWidgetPrivate(qMRMLSlic
 
 //---------------------------------------------------------------------------
 qMRMLSliceInformationWidgetPrivate::~qMRMLSliceInformationWidgetPrivate()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void qMRMLSliceInformationWidgetPrivate::setupUi(qMRMLWidget* widget)
@@ -94,8 +93,8 @@ void qMRMLSliceInformationWidgetPrivate::updateWidgetFromMRMLSliceNode()
 {
   Q_Q(qMRMLSliceInformationWidget);
 
-  q->setEnabled(this->MRMLSliceNode != 0);
-  if (this->MRMLSliceNode == 0)
+  q->setEnabled(this->MRMLSliceNode != nullptr);
+  if (this->MRMLSliceNode == nullptr)
     {
     return;
     }
@@ -166,8 +165,7 @@ qMRMLSliceInformationWidget::qMRMLSliceInformationWidget(QWidget* _parent) : Sup
 
 // --------------------------------------------------------------------------
 qMRMLSliceInformationWidget::~qMRMLSliceInformationWidget()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 vtkMRMLSliceNode* qMRMLSliceInformationWidget::mrmlSliceNode()const

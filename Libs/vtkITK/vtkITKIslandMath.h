@@ -22,7 +22,7 @@ class VTK_ITK_EXPORT vtkITKIslandMath : public vtkSimpleImageToImageFilter
  public:
   static vtkITKIslandMath *New();
   vtkTypeMacro(vtkITKIslandMath, vtkSimpleImageToImageFilter);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// If non-zero, islands are defined by pixels that touch on edges and/or vertices.
@@ -61,9 +61,9 @@ class VTK_ITK_EXPORT vtkITKIslandMath : public vtkSimpleImageToImageFilter
 
 protected:
   vtkITKIslandMath();
-  ~vtkITKIslandMath();
+  ~vtkITKIslandMath() override;
 
-  virtual void SimpleExecute(vtkImageData* input, vtkImageData* output) VTK_OVERRIDE;
+  void SimpleExecute(vtkImageData* input, vtkImageData* output) override;
 
   int FullyConnected;
   int SliceBySlice;
@@ -74,8 +74,8 @@ protected:
   unsigned long OriginalNumberOfIslands;
 
 private:
-  vtkITKIslandMath(const vtkITKIslandMath&);  /// Not implemented.
-  void operator=(const vtkITKIslandMath&);  /// Not implemented.
+  vtkITKIslandMath(const vtkITKIslandMath&) = delete;
+  void operator=(const vtkITKIslandMath&) = delete;
 };
 
 #endif

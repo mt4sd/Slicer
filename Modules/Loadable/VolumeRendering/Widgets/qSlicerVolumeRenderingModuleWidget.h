@@ -46,8 +46,8 @@ class Q_SLICER_MODULE_VOLUMERENDERING_WIDGETS_EXPORT qSlicerVolumeRenderingModul
 
 public:
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerVolumeRenderingModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerVolumeRenderingModuleWidget();
+  qSlicerVolumeRenderingModuleWidget(QWidget *parent=nullptr);
+  ~qSlicerVolumeRenderingModuleWidget() override;
 
   Q_INVOKABLE vtkMRMLVolumeNode* mrmlVolumeNode()const;
   Q_INVOKABLE vtkMRMLAnnotationROINode* mrmlROINode()const;
@@ -56,8 +56,8 @@ public:
 
   void addRenderingMethodWidget(const QString& methodClassName, qSlicerVolumeRenderingPropertiesWidget* widget);
 
-  virtual bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString());
-  virtual double nodeEditable(vtkMRMLNode* node);
+  bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString()) override;
+  double nodeEditable(vtkMRMLNode* node) override;
 
 public slots:
   void setMRMLVolumeNode(vtkMRMLNode* node);
@@ -92,7 +92,7 @@ protected slots:
   void onEffectiveRangeModified();
 
 protected:
-  virtual void setup();
+  void setup() override;
 
 protected:
   QScopedPointer<qSlicerVolumeRenderingModuleWidgetPrivate> d_ptr;

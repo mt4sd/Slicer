@@ -67,12 +67,6 @@
 VTK_MODULE_INIT(vtkSlicerSegmentationsModuleMRMLDisplayableManager)
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerSegmentationsModule, qSlicerSegmentationsModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup SlicerRt_QtModules_Segmentations
 class qSlicerSegmentationsModulePrivate
 {
@@ -85,8 +79,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerSegmentationsModulePrivate::qSlicerSegmentationsModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSegmentationsModule methods
@@ -100,8 +93,7 @@ qSlicerSegmentationsModule::qSlicerSegmentationsModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerSegmentationsModule::~qSlicerSegmentationsModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerSegmentationsModule::helpText()const

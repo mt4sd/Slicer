@@ -35,14 +35,13 @@ class qSlicerNodeWriterOptionsWidgetPrivate
   , public Ui_qSlicerNodeWriterOptionsWidget
 {
 public:
-  virtual ~qSlicerNodeWriterOptionsWidgetPrivate();
+  ~qSlicerNodeWriterOptionsWidgetPrivate() override;
   virtual void setupUi(QWidget* widget);
 };
 
 //------------------------------------------------------------------------------
 qSlicerNodeWriterOptionsWidgetPrivate::~qSlicerNodeWriterOptionsWidgetPrivate()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qSlicerNodeWriterOptionsWidgetPrivate::setupUi(QWidget* widget)
@@ -64,8 +63,7 @@ qSlicerNodeWriterOptionsWidget::qSlicerNodeWriterOptionsWidget(QWidget* parentWi
 
 //------------------------------------------------------------------------------
 qSlicerNodeWriterOptionsWidget::~qSlicerNodeWriterOptionsWidget()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 bool qSlicerNodeWriterOptionsWidget::isValid()const
@@ -80,7 +78,7 @@ void qSlicerNodeWriterOptionsWidget::setObject(vtkObject* object)
 {
   Q_D(qSlicerNodeWriterOptionsWidget);
   vtkMRMLStorableNode* storableNode = vtkMRMLStorableNode::SafeDownCast(object);
-  if (storableNode != 0)
+  if (storableNode != nullptr)
     {
     d->Properties["nodeID"] = storableNode->GetID();
     }
@@ -89,7 +87,7 @@ void qSlicerNodeWriterOptionsWidget::setObject(vtkObject* object)
     d->Properties.remove("nodeID");
     }
   vtkMRMLStorageNode* storageNode = storableNode->GetStorageNode();
-  d->UseCompressionCheckBox->setEnabled(storageNode != 0);
+  d->UseCompressionCheckBox->setEnabled(storageNode != nullptr);
   if (storageNode)
     {
     d->UseCompressionCheckBox->setChecked(
@@ -107,7 +105,7 @@ void qSlicerNodeWriterOptionsWidget::setObject(vtkObject* object)
     this->setCompressionParameter(QString::fromStdString(storageNode->GetCompressionParameter()));
     }
   d->CompressionParameterSelector->setVisible(d->CompressionParameterSelector->count() > 0);
-  d->CompressionParameterSelector->setEnabled(storageNode != 0 && d->UseCompressionCheckBox->isChecked());
+  d->CompressionParameterSelector->setEnabled(storageNode != nullptr && d->UseCompressionCheckBox->isChecked());
 
   this->updateValid();
 }

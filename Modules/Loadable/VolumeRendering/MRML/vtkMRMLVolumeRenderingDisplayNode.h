@@ -35,16 +35,16 @@ class VTK_SLICER_VOLUMERENDERING_MODULE_MRML_EXPORT vtkMRMLVolumeRenderingDispla
 {
 public:
   vtkTypeMacro(vtkMRMLVolumeRenderingDisplayNode,vtkMRMLDisplayNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   const char* GetVolumeNodeID();
   void SetAndObserveVolumeNodeID(const char *volumeNodeID);
@@ -83,11 +83,11 @@ public:
 
 protected:
   vtkMRMLVolumeRenderingDisplayNode();
-  ~vtkMRMLVolumeRenderingDisplayNode();
+  ~vtkMRMLVolumeRenderingDisplayNode() override;
   vtkMRMLVolumeRenderingDisplayNode(const vtkMRMLVolumeRenderingDisplayNode&);
   void operator=(const vtkMRMLVolumeRenderingDisplayNode&);
 
-  virtual void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
+  void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData) override;
 
   static const char* VolumeNodeReferenceRole;
   static const char* VolumeNodeReferenceMRMLAttributeName;

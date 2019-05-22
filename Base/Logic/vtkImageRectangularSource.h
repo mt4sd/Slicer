@@ -16,7 +16,7 @@ class  VTK_SLICER_BASE_LOGIC_EXPORT vtkImageRectangularSource : public vtkImageA
 public:
   static vtkImageRectangularSource *New();
   vtkTypeMacro(vtkImageRectangularSource,vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Set/Get the extent of the whole output image.
@@ -81,7 +81,7 @@ public:
 
 protected:
   vtkImageRectangularSource();
-  ~vtkImageRectangularSource();
+  ~vtkImageRectangularSource() override;
 
   int **Corners;
 
@@ -93,11 +93,11 @@ protected:
   int OutputScalarType;
   int InsideGraySlopeFlag;
 
-  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
-  virtual void ExecuteDataWithInformation(vtkDataObject *output, vtkInformation* outInfo) VTK_OVERRIDE;
+  int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
+  void ExecuteDataWithInformation(vtkDataObject *output, vtkInformation* outInfo) override;
 private:
-  vtkImageRectangularSource(const vtkImageRectangularSource&);  /// Not implemented.
-  void operator=(const vtkImageRectangularSource&);  /// Not implemented.
+  vtkImageRectangularSource(const vtkImageRectangularSource&) = delete;
+  void operator=(const vtkImageRectangularSource&) = delete;
 };
 
 

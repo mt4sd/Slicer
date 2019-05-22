@@ -48,8 +48,8 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerAbstractModule
 public:
 
   typedef qSlicerAbstractCoreModule Superclass;
-  qSlicerAbstractModule(QObject *parent=0);
-  virtual ~qSlicerAbstractModule();
+  qSlicerAbstractModule(QObject *parent=nullptr);
+  ~qSlicerAbstractModule() override;
 
   /// Icon of the module. Anytime a graphical representation of the module
   /// is needed, the icon is used. It's the icon shown in the module selector

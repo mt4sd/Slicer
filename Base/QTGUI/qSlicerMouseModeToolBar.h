@@ -49,12 +49,9 @@ public:
 
   /// Constructor
   /// Title is the name of the toolbar (can appear using right click on the toolbar area)
-  qSlicerMouseModeToolBar(const QString& title, QWidget* parent = 0);
-  qSlicerMouseModeToolBar(QWidget* parent = 0);
-  virtual ~qSlicerMouseModeToolBar();
-
-  /// For testing, return the active action text
-  QString activeActionText();
+  qSlicerMouseModeToolBar(const QString& title, QWidget* parent = nullptr);
+  qSlicerMouseModeToolBar(QWidget* parent = nullptr);
+  ~qSlicerMouseModeToolBar() override;
 
   QString defaultPlaceClassName()const;
   void setDefaultPlaceClassName(const QString& className);
@@ -85,6 +82,8 @@ public slots:
   /// Set interaction node used to update the toolbar.
   /// \sa interactionNode()
   void setInteractionNode(vtkMRMLInteractionNode* interactionNode);
+
+  void interactionModeActionTriggered(bool);
 
 protected:
   QScopedPointer<qSlicerMouseModeToolBarPrivate> d_ptr;

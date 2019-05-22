@@ -55,7 +55,7 @@ class VTK_SLICER_EDITORLIB_MODULE_LOGIC_EXPORT vtkImageSlicePaint : public vtkOb
 public:
   static vtkImageSlicePaint *New();
   vtkTypeMacro(vtkImageSlicePaint,vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 
   ///
@@ -79,7 +79,7 @@ public:
   vtkGetMacro(BrushRadius, double);
 
   ///
-  /// The mask image: used instead of brush if non NULL
+  /// The mask image: used instead of brush if non nullptr
   /// - image corresponds to the PaintRegion but is
   ///   in World coordinates.
   vtkSetObjectMacro(MaskImage, vtkImageData);
@@ -143,7 +143,7 @@ public:
 
 protected:
   vtkImageSlicePaint();
-  ~vtkImageSlicePaint();
+  ~vtkImageSlicePaint() override;
 
   int TopLeft[3];
   int TopRight[3];
@@ -168,8 +168,8 @@ protected:
   int PaintOver;
 
 private:
-  vtkImageSlicePaint(const vtkImageSlicePaint&);  /// Not implemented.
-  void operator=(const vtkImageSlicePaint&);  /// Not implemented.
+  vtkImageSlicePaint(const vtkImageSlicePaint&) = delete;
+  void operator=(const vtkImageSlicePaint&) = delete;
 };
 
 #endif

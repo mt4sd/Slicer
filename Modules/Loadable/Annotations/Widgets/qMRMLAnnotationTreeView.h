@@ -47,8 +47,8 @@ class Q_SLICER_MODULE_ANNOTATIONS_WIDGETS_EXPORT qMRMLAnnotationTreeView
 
 public:
   typedef qMRMLTreeView Superclass;
-  qMRMLAnnotationTreeView(QWidget *parent=0);
-  virtual ~qMRMLAnnotationTreeView();
+  qMRMLAnnotationTreeView(QWidget *parent=nullptr);
+  ~qMRMLAnnotationTreeView() override;
 
   void hideScene();
 
@@ -77,19 +77,19 @@ protected slots:
 protected:
   QScopedPointer<qMRMLAnnotationTreeViewPrivate> d_ptr;
 #ifndef QT_NO_CURSOR
-  void mouseMoveEvent(QMouseEvent* e);
-  bool viewportEvent(QEvent* e);
+  void mouseMoveEvent(QMouseEvent* e) override;
+  bool viewportEvent(QEvent* e) override;
 #endif
-  virtual void mousePressEvent(QMouseEvent* event);
+  void mousePressEvent(QMouseEvent* event) override;
 
-  virtual void toggleVisibility(const QModelIndex& index);
+  void toggleVisibility(const QModelIndex& index) override;
 
   /// Reimplemented to also set the active hierarchy node when the current
   /// index changes.
   /// \sa qMRMLTreeView::onSelectionChanged(),
   /// vtkSlicerAnnotationModuleLogic::SetActiveHierarchyNodeID()
-  virtual void onSelectionChanged(const QItemSelection & selected,
-                                  const QItemSelection & deselected);
+  void onSelectionChanged(const QItemSelection & selected,
+                                  const QItemSelection & deselected) override;
 
 private:
   Q_DECLARE_PRIVATE(qMRMLAnnotationTreeView);

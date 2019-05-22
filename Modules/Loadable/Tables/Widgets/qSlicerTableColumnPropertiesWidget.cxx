@@ -77,8 +77,7 @@ qSlicerTableColumnPropertiesWidgetPrivate::qSlicerTableColumnPropertiesWidgetPri
 
 //-----------------------------------------------------------------------------
 qSlicerTableColumnPropertiesWidgetPrivate::~qSlicerTableColumnPropertiesWidgetPrivate()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qSlicerTableColumnPropertiesWidgetPrivate::setupUi(qSlicerTableColumnPropertiesWidget* widget)
@@ -101,7 +100,7 @@ qSlicerTableColumnPropertiesWidget::qSlicerTableColumnPropertiesWidget(QWidget* 
 //-----------------------------------------------------------------------------
 qSlicerTableColumnPropertiesWidget::~qSlicerTableColumnPropertiesWidget()
 {
-  this->setMRMLTableNode((vtkMRMLTableNode*)NULL);
+  this->setMRMLTableNode((vtkMRMLTableNode*)nullptr);
 }
 
 //-----------------------------------------------------------------------------
@@ -169,7 +168,7 @@ vtkMRMLTableNode* qSlicerTableColumnPropertiesWidget::mrmlTableNode()const
 void qSlicerTableColumnPropertiesWidget::setColumnProperty(QString propertyName, QString propertyValue)
 {
   Q_D(qSlicerTableColumnPropertiesWidget);
-  if (d->CurrentTableNode == NULL)
+  if (d->CurrentTableNode == nullptr)
     {
     qWarning() << Q_FUNC_INFO << " failed: table node is not selected";
     return;
@@ -189,7 +188,7 @@ void qSlicerTableColumnPropertiesWidget::setColumnProperty(QString propertyName,
 QString qSlicerTableColumnPropertiesWidget::columnProperty(QString propertyName) const
 {
   Q_D(const qSlicerTableColumnPropertiesWidget);
-  if (d->CurrentTableNode == NULL)
+  if (d->CurrentTableNode == nullptr)
   {
     qWarning() << Q_FUNC_INFO << " failed: table node is not selected";
     return "";
@@ -219,7 +218,7 @@ void qSlicerTableColumnPropertiesWidget::updateWidget()
   d->NameLabel->setVisible(d->ColumnNameVisible);
   d->NameLineEdit->setVisible(d->ColumnNameVisible);
 
-  if (d->CurrentTableNode == NULL)
+  if (d->CurrentTableNode == nullptr)
     {
     this->setEnabled(false);
     return;
@@ -256,10 +255,10 @@ void qSlicerTableColumnPropertiesWidget::setSelectionFromMRMLTableView(qMRMLTabl
     // no change
     return;
     }
-  vtkMRMLScene* newScene = NULL;
-  vtkMRMLTableNode* newTableNode = NULL;
+  vtkMRMLScene* newScene = nullptr;
+  vtkMRMLTableNode* newTableNode = nullptr;
 
-  if (tableView != NULL)
+  if (tableView != nullptr)
     {
     newScene = tableView->mrmlScene();
     newTableNode = tableView->mrmlTableNode();
@@ -286,9 +285,9 @@ void qSlicerTableColumnPropertiesWidget::tableViewSelectionChanged()
 {
   Q_D(const qSlicerTableColumnPropertiesWidget);
 
-  if (d->TableViewForSelection == NULL)
+  if (d->TableViewForSelection == nullptr)
     {
-    this->setMRMLTableNode((vtkMRMLTableNode*)NULL);
+    this->setMRMLTableNode((vtkMRMLTableNode*)nullptr);
     return;
     }
 
@@ -354,7 +353,7 @@ void qSlicerTableColumnPropertiesWidget::onDataTypeChanged(const QString& newDat
 void qSlicerTableColumnPropertiesWidget::onPropertyChanged(const QString& newPropertyValue)
 {
   QLineEdit* propertyWidget = qobject_cast<QLineEdit*>(sender());
-  if (propertyWidget != NULL)
+  if (propertyWidget != nullptr)
     {
     QString propertyName = propertyWidget->property(SCHEMA_PROPERTY_NAME).toString();
     this->setColumnProperty(propertyName, newPropertyValue);

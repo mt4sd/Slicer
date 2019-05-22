@@ -25,13 +25,13 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerPythonManager : public qSlicerCorePython
 
 public:
   typedef qSlicerCorePythonManager Superclass;
-  qSlicerPythonManager(QObject* parent=0);
-  ~qSlicerPythonManager();
+  qSlicerPythonManager(QObject* parent=nullptr);
+  ~qSlicerPythonManager() override;
 
 protected:
 
-  virtual void preInitialization();
-  virtual void executeInitializationScripts();
+  void preInitialization() override;
+  void executeInitializationScripts() override;
 
 private:
 

@@ -44,10 +44,10 @@ public:
   typedef qSlicerWebWidget Superclass;
 
   /// Constructor
-  explicit qSlicerExtensionsInstallWidget(QWidget* parent = 0);
+  explicit qSlicerExtensionsInstallWidget(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerExtensionsInstallWidget();
+  ~qSlicerExtensionsInstallWidget() override;
 
   Q_INVOKABLE qSlicerExtensionsManagerModel* extensionsManagerModel()const;
   Q_INVOKABLE void setExtensionsManagerModel(qSlicerExtensionsManagerModel* model);
@@ -79,17 +79,12 @@ public slots:
   void onMessageLogged(const QString& text, ctkErrorLogLevel::LogLevels level);
 
 protected:
-#ifndef Slicer_HAVE_WEBKIT_SUPPORT
-  virtual bool acceptNavigationRequest(const QUrl & url, QWebEnginePage::NavigationType type, bool isMainFrame);
-#endif
+  bool acceptNavigationRequest(const QUrl & url, QWebEnginePage::NavigationType type, bool isMainFrame) override;
 
 protected slots:
-  virtual void initJavascript();
-  virtual void onLoadFinished(bool ok);
-#ifdef Slicer_HAVE_WEBKIT_SUPPORT
-  virtual void onLinkClicked(const QUrl& url);
-#endif
-  virtual void onLoadStarted();
+  void initJavascript() override;
+  void onLoadFinished(bool ok) override;
+  void onLoadStarted() override;
 
 private:
   Q_DECLARE_PRIVATE(qSlicerExtensionsInstallWidget);

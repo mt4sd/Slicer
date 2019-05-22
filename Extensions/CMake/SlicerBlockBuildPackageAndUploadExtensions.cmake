@@ -1,11 +1,6 @@
 
-if(Slicer_REQUIRED_QT_VERSION VERSION_LESS "5")
-  set(Slicer_QT_VERSION_MAJOR "${QT_VERSION_MAJOR}")
-  set(Slicer_QT_VERSION_MINOR "${QT_VERSION_MINOR}")
-else()
   set(Slicer_QT_VERSION_MAJOR "${Qt5_VERSION_MAJOR}")
   set(Slicer_QT_VERSION_MINOR "${Qt5_VERSION_MINOR}")
-endif()
 
 #-----------------------------------------------------------------------------
 # Sanity checks
@@ -193,7 +188,7 @@ foreach(EXTENSION_NAME ${EXTENSION_LIST})
         message(STATUS \"Generating '${EXTENSION_SOURCE_DIR}/CMakeLists.txt'\")
         file(MAKE_DIRECTORY \"${EXTENSION_SOURCE_DIR}\")
         file(WRITE \"${EXTENSION_SOURCE_DIR}/CMakeLists.txt\"
-          \"cmake_minimum_required(VERSION 3.5)
+          \"cmake_minimum_required(VERSION 3.13.4)
           project(${proj} NONE)
           message(FATAL_ERROR \\\"Failed to download extension using ${ext_ep_options_repository}\\n\${sanitized_error}\\\")
           \"

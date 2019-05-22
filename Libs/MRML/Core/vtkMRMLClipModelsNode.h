@@ -28,30 +28,30 @@ class VTK_MRML_EXPORT vtkMRMLClipModelsNode : public vtkMRMLNode
 public:
   static vtkMRMLClipModelsNode *New();
   vtkTypeMacro(vtkMRMLClipModelsNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "ClipModels";}
+  const char* GetNodeTagName() override {return "ClipModels";}
 
   ///
   /// Indicates the type of clipping
@@ -109,7 +109,7 @@ public:
 
 protected:
   vtkMRMLClipModelsNode();
-  ~vtkMRMLClipModelsNode();
+  ~vtkMRMLClipModelsNode() override;
   vtkMRMLClipModelsNode(const vtkMRMLClipModelsNode&);
   void operator=(const vtkMRMLClipModelsNode&);
 

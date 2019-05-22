@@ -51,8 +51,7 @@ qSlicerVolumesModuleWidget::qSlicerVolumesModuleWidget(QWidget* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerVolumesModuleWidget::~qSlicerVolumesModuleWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerVolumesModuleWidget::setup()
@@ -147,7 +146,7 @@ void qSlicerVolumesModuleWidget::convertVolume()
   // If there is no target labelmap node selected, then perform in-place conversion
   vtkMRMLVolumeNode* targetVolumeNode = vtkMRMLVolumeNode::SafeDownCast(
     d->ConvertVolumeTargetSelector->currentNode());
-  bool inPlaceConversion = (targetVolumeNode == NULL);
+  bool inPlaceConversion = (targetVolumeNode == nullptr);
   if (inPlaceConversion)
     {
     if (currentLabelMapVolumeNode)

@@ -30,13 +30,13 @@ class Q_SLICER_MODULE_SEGMENTATIONS_WIDGETS_PLUGINS_EXPORT qMRMLSegmentationConv
   Q_OBJECT
 
 public:
-  qMRMLSegmentationConversionParametersWidgetPlugin(QObject* parent = 0);
+  qMRMLSegmentationConversionParametersWidgetPlugin(QObject* parent = nullptr);
 
-  QWidget *createWidget(QWidget* parent);
-  QString  domXml() const;
-  QString  includeFile() const;
-  bool     isContainer() const;
-  QString  name() const;
+  QWidget *createWidget(QWidget* parent) override;
+  QString  domXml() const override;
+  QString  includeFile() const override;
+  bool     isContainer() const override;
+  QString  name() const override;
 
 };
 

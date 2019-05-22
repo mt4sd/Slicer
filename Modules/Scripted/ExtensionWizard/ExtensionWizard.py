@@ -17,7 +17,7 @@ def _settingsList(settings, key):
 
   value = settings.value(key)
 
-  if isinstance(value, basestring):
+  if isinstance(value, str):
     return [value]
 
   return [] if value is None else value
@@ -27,7 +27,7 @@ def _settingsList(settings, key):
 # ExtensionWizard
 #
 #=============================================================================
-class ExtensionWizard:
+class ExtensionWizard(object):
   #---------------------------------------------------------------------------
   def __init__(self, parent):
     parent.title = "Extension Wizard"
@@ -51,7 +51,7 @@ class ExtensionWizard:
 # ExtensionWizardWidget
 #
 #=============================================================================
-class ExtensionWizardWidget:
+class ExtensionWizardWidget(object):
   #---------------------------------------------------------------------------
   def __init__(self, parent = None):
     if not parent:
@@ -305,7 +305,7 @@ class ExtensionWizardWidget:
     self.extensionContentsView.setRootIndex(ri)
 
     w = self.extensionContentsView.width
-    self.extensionContentsView.setColumnWidth(0, (w * 4) / 9)
+    self.extensionContentsView.setColumnWidth(0, int((w * 4) / 9))
 
     # Prompt to load scripted modules from extension
     self.loadModules(path)
@@ -411,7 +411,7 @@ class ExtensionWizardWidget:
       except:
         if not slicer.util.confirmRetryCloseDisplay("An error occurred while trying to create the module.",
                                                     parent=self.parent.window(),
-                                                    detailtedText=traceback.format_exc()):
+                                                    detailedText=traceback.format_exc()):
           return
 
         continue

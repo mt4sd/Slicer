@@ -40,7 +40,7 @@
 qMRMLItemDelegate::qMRMLItemDelegate(QObject *parent)
   : QStyledItemDelegate(parent)
 {
-  this->DummySpinBox = new ctkDoubleSpinBox(0);
+  this->DummySpinBox = new ctkDoubleSpinBox(nullptr);
   this->DummySpinBox->setDecimals(2);
   this->DummySpinBox->setRange(0., 1.);
 }
@@ -49,7 +49,7 @@ qMRMLItemDelegate::qMRMLItemDelegate(QObject *parent)
 qMRMLItemDelegate::~qMRMLItemDelegate()
 {
   delete this->DummySpinBox;
-  this->DummySpinBox = 0;
+  this->DummySpinBox = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ QWidget *qMRMLItemDelegate
     }
   else if (this->is0To1Value(index))
     {
-    ctkSliderWidget* slider = new ctkSliderWidget(0);
+    ctkSliderWidget* slider = new ctkSliderWidget(nullptr);
     slider->setDecimals(2);
     slider->setSingleStep(0.1);
     slider->setRange(0., 1.);
@@ -145,7 +145,7 @@ void qMRMLItemDelegate::setEditorData(QWidget *editor,
     {
     QColor color = index.data(this->colorRole(index)).value<QColor>();
     ctkColorPickerButton* colorPicker = qobject_cast<ctkColorPickerButton*>(editor);
-    if (colorPicker) // colorPicker may be NULL, don't make the application crash when that happens
+    if (colorPicker) // colorPicker may be nullptr, don't make the application crash when that happens
       {
       colorPicker->blockSignals(true);
       colorPicker->setColor(color);
@@ -165,7 +165,7 @@ void qMRMLItemDelegate::setEditorData(QWidget *editor,
     {
     ctkSliderWidget *sliderWidget = qobject_cast<ctkSliderWidget*>(editor);
     double value = index.data(Qt::EditRole).toDouble();
-    if (sliderWidget) // sliderWidget may be NULL, don't make the application crash when that happens
+    if (sliderWidget) // sliderWidget may be nullptr, don't make the application crash when that happens
       {
       sliderWidget->setValue(value);
       }

@@ -43,7 +43,7 @@ class VTK_ITK_EXPORT vtkITKTimeSeriesDatabase : public vtkImageAlgorithm
 public:
   /// vtkStandardNewMacro ( vtkITKTimeSeriesDatabase );
   static vtkITKTimeSeriesDatabase *New();
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE{ Superclass::PrintSelf(os, indent);}
+  void PrintSelf(ostream& os, vtkIndent indent) override{ Superclass::PrintSelf(os, indent);}
   vtkTypeMacro(vtkITKTimeSeriesDatabase,vtkImageAlgorithm);
 
 public:
@@ -75,7 +75,7 @@ protected:
     ConnectPipelines ( this->itkExporter, this->vtkImporter );
     this->itkExporter->SetInput ( m_Filter->GetOutput() );
     };
-  ~vtkITKTimeSeriesDatabase()
+  ~vtkITKTimeSeriesDatabase() override
     {
     this->vtkImporter->Delete();
     }
@@ -90,13 +90,13 @@ protected:
   ImageExportType::Pointer itkExporter;
   vtkImageImport* vtkImporter;
 
-  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
   /// defined in the subclasses
-  virtual void ExecuteDataWithInformation(vtkDataObject *output, vtkInformation *outInfo) VTK_OVERRIDE;
+  void ExecuteDataWithInformation(vtkDataObject *output, vtkInformation *outInfo) override;
 
 private:
-  vtkITKTimeSeriesDatabase(const vtkITKTimeSeriesDatabase&);  /// Not implemented.
-  void operator=(const vtkITKTimeSeriesDatabase&);  /// Not implemented.
+  vtkITKTimeSeriesDatabase(const vtkITKTimeSeriesDatabase&) = delete;
+  void operator=(const vtkITKTimeSeriesDatabase&) = delete;
 
 };
 

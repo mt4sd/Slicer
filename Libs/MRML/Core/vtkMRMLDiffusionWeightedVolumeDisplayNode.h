@@ -37,32 +37,32 @@ class VTK_MRML_EXPORT vtkMRMLDiffusionWeightedVolumeDisplayNode : public vtkMRML
   public:
   static vtkMRMLDiffusionWeightedVolumeDisplayNode *New();
   vtkTypeMacro(vtkMRMLDiffusionWeightedVolumeDisplayNode,vtkMRMLScalarVolumeDisplayNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "DiffusionWeightedVolumeDisplay";}
+  const char* GetNodeTagName() override {return "DiffusionWeightedVolumeDisplay";}
 
   ///
   /// Get the pipeline input
-  virtual vtkAlgorithmOutput* GetInputImageDataConnection() VTK_OVERRIDE;
+  vtkAlgorithmOutput* GetInputImageDataConnection() override;
 
 
-  virtual void UpdateImageDataPipeline() VTK_OVERRIDE;
+  void UpdateImageDataPipeline() override;
 
   //--------------------------------------------------------------------------
   /// Display Information
@@ -75,15 +75,15 @@ class VTK_MRML_EXPORT vtkMRMLDiffusionWeightedVolumeDisplayNode : public vtkMRML
 
 protected:
   vtkMRMLDiffusionWeightedVolumeDisplayNode();
-  ~vtkMRMLDiffusionWeightedVolumeDisplayNode();
+  ~vtkMRMLDiffusionWeightedVolumeDisplayNode() override;
   vtkMRMLDiffusionWeightedVolumeDisplayNode(const vtkMRMLDiffusionWeightedVolumeDisplayNode&);
   void operator=(const vtkMRMLDiffusionWeightedVolumeDisplayNode&);
 
   ///
   /// Set the input of the pipeline
-  virtual void SetInputToImageDataPipeline(vtkAlgorithmOutput *imageDataConnection) VTK_OVERRIDE;
+  void SetInputToImageDataPipeline(vtkAlgorithmOutput *imageDataConnection) override;
 
-  virtual vtkAlgorithmOutput* GetScalarImageDataConnection() VTK_OVERRIDE;
+  vtkAlgorithmOutput* GetScalarImageDataConnection() override;
 
   /// This property holds the current diffusion component used for display.
   int DiffusionComponent;

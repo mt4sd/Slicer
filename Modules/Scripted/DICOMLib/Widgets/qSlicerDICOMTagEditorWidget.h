@@ -46,8 +46,8 @@ class Q_SLICER_MODULE_DICOMLIB_WIDGETS_EXPORT qSlicerDICOMTagEditorWidget : publ
 
 public:
   typedef QWidget Superclass;
-  qSlicerDICOMTagEditorWidget(QWidget *parent=0);
-  virtual ~qSlicerDICOMTagEditorWidget();
+  qSlicerDICOMTagEditorWidget(QWidget *parent=nullptr);
+  ~qSlicerDICOMTagEditorWidget() override;
 
 public:
   /// Set exportables to show the series pseudo-tags to edit.

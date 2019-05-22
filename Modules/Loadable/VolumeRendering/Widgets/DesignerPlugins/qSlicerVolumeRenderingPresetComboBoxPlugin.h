@@ -30,13 +30,13 @@ class Q_SLICER_MODULE_VOLUMERENDERING_WIDGETS_PLUGINS_EXPORT qSlicerVolumeRender
   Q_OBJECT
 
 public:
-  qSlicerVolumeRenderingPresetComboBoxPlugin(QObject *_parent = 0);
+  qSlicerVolumeRenderingPresetComboBoxPlugin(QObject *_parent = nullptr);
 
-  QWidget *createWidget(QWidget *_parent);
-  QString  domXml() const;
-  QString  includeFile() const;
-  bool     isContainer() const;
-  QString  name() const;
+  QWidget *createWidget(QWidget *_parent) override;
+  QString  domXml() const override;
+  QString  includeFile() const override;
+  bool     isContainer() const override;
+  QString  name() const override;
 };
 
 #endif

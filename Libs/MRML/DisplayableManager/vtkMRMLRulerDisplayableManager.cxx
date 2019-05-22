@@ -65,9 +65,9 @@ public:
     }
   vtkRulerRendererUpdateObserver()
     {
-    this->DisplayableManager = 0;
+    this->DisplayableManager = nullptr;
     }
-  virtual void Execute(vtkObject* vtkNotUsed(wdg), unsigned long vtkNotUsed(event), void* vtkNotUsed(calldata))
+  void Execute(vtkObject* vtkNotUsed(wdg), unsigned long vtkNotUsed(event), void* vtkNotUsed(calldata)) override
     {
     if (this->DisplayableManager)
       {
@@ -124,6 +124,8 @@ vtkMRMLRulerDisplayableManager::vtkInternal::vtkInternal(vtkMRMLRulerDisplayable
   this->RendererUpdateObservationId = 0;
   this->ActorsAddedToRenderer = false;
   this->MarkerRenderer = vtkSmartPointer<vtkRenderer>::New();
+  // Prevent erasing Z-buffer (important for quick picking and markup label visibility assessment)
+  this->MarkerRenderer->EraseOff();
   this->RulerLineActor = vtkSmartPointer<vtkAxisActor2D>::New();
   this->RulerTextActor = vtkSmartPointer<vtkTextActor>::New();
 }
@@ -173,7 +175,7 @@ void vtkMRMLRulerDisplayableManager::vtkInternal::RemoveRendererUpdateObserver()
     {
     this->ObservedRenderer->RemoveObserver(this->RendererUpdateObservationId);
     this->RendererUpdateObservationId = 0;
-    this->ObservedRenderer = NULL;
+    this->ObservedRenderer = nullptr;
     }
 }
 
@@ -181,7 +183,7 @@ void vtkMRMLRulerDisplayableManager::vtkInternal::RemoveRendererUpdateObserver()
 void vtkMRMLRulerDisplayableManager::vtkInternal::SetupMarkerRenderer()
 {
   vtkRenderer* renderer = this->External->GetRenderer();
-  if (renderer==NULL)
+  if (renderer==nullptr)
     {
     vtkErrorWithObjectMacro(this->External, "vtkMRMLRulerDisplayableManager::vtkInternal::SetupMarkerRenderer() failed: renderer is invalid");
     return;

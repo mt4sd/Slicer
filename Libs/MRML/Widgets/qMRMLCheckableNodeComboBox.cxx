@@ -20,9 +20,6 @@
 
 // Qt includes
 #include <QDebug>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QPlastiqueStyle>
-#endif
 #include <QStandardItem>
 
 // CTK includes
@@ -42,11 +39,11 @@ class qMRMLCheckableNodeComboBoxPrivate: public qMRMLNodeComboBoxPrivate
   Q_DECLARE_PUBLIC(qMRMLCheckableNodeComboBox);
 protected:
   qMRMLCheckableNodeComboBox* const q_ptr;
-  virtual void setModel(QAbstractItemModel* model);
+  void setModel(QAbstractItemModel* model) override;
 public:
   qMRMLCheckableNodeComboBoxPrivate(qMRMLCheckableNodeComboBox& object);
-  virtual ~qMRMLCheckableNodeComboBoxPrivate();
-  virtual void init(QAbstractItemModel* model);
+  ~qMRMLCheckableNodeComboBoxPrivate() override;
+  void init(QAbstractItemModel* model) override;
 };
 
 // -----------------------------------------------------------------------------
@@ -59,8 +56,7 @@ qMRMLCheckableNodeComboBoxPrivate
 
 // -----------------------------------------------------------------------------
 qMRMLCheckableNodeComboBoxPrivate::~qMRMLCheckableNodeComboBoxPrivate()
-{
-}
+= default;
 
 // -----------------------------------------------------------------------------
 void qMRMLCheckableNodeComboBoxPrivate::init(QAbstractItemModel* model)
@@ -104,8 +100,7 @@ qMRMLCheckableNodeComboBox::qMRMLCheckableNodeComboBox(QWidget* parentWidget)
 
 // --------------------------------------------------------------------------
 qMRMLCheckableNodeComboBox::~qMRMLCheckableNodeComboBox()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 QList<vtkMRMLNode*> qMRMLCheckableNodeComboBox::checkedNodes()const

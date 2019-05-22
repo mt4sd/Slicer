@@ -38,8 +38,8 @@ class QMRML_WIDGETS_EXPORT qMRMLSceneFactoryWidget : public QWidget
 {
   Q_OBJECT
 public:
-  qMRMLSceneFactoryWidget(QWidget* parent = 0);
-  ~qMRMLSceneFactoryWidget();
+  qMRMLSceneFactoryWidget(QWidget* parent = nullptr);
+  ~qMRMLSceneFactoryWidget() override;
 
   vtkMRMLScene* mrmlScene()const;
 

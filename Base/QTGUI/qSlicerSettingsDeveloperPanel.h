@@ -42,10 +42,10 @@ public:
   typedef ctkSettingsPanel Superclass;
 
   /// Constructor
-  explicit qSlicerSettingsDeveloperPanel(QWidget* parent = 0);
+  explicit qSlicerSettingsDeveloperPanel(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerSettingsDeveloperPanel();
+  ~qSlicerSettingsDeveloperPanel() override;
 
 public slots:
 

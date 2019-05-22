@@ -68,8 +68,7 @@ qSlicerNodeWriter::qSlicerNodeWriter(const QString& description,
 
 //----------------------------------------------------------------------------
 qSlicerNodeWriter::~qSlicerNodeWriter()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 QString qSlicerNodeWriter::description()const
@@ -136,7 +135,7 @@ bool qSlicerNodeWriter::write(const qSlicerIO::IOProperties& properties)
     return false;
     }
   vtkMRMLStorageNode* snode = qSlicerCoreIOManager::createAndAddDefaultStorageNode(node);
-  if (snode == 0)
+  if (snode == nullptr)
     {
     qDebug() << "No storage node for node" << properties["nodeID"].toString();
     return false;
@@ -152,7 +151,7 @@ bool qSlicerNodeWriter::write(const qSlicerIO::IOProperties& properties)
   QString fileFormat =
     properties.value("fileFormat", coreIOManager->completeSlicerWritableFileNameSuffix(node)).toString();
   snode->SetWriteFileFormat(fileFormat.toLatin1());
-  snode->SetURI(0);
+  snode->SetURI(nullptr);
   if (properties.contains("useCompression"))
     {
     snode->SetUseCompression(properties["useCompression"].toInt());
@@ -175,7 +174,7 @@ bool qSlicerNodeWriter::write(const qSlicerIO::IOProperties& properties)
 vtkMRMLNode* qSlicerNodeWriter::getNodeByID(const char *id)const
 {
   vtkMRMLNode *node = this->mrmlScene()->GetNodeByID(id);
-  if (node == 0)
+  if (node == nullptr)
     {
     // search in SceneView nodes
     std::string sID(id);

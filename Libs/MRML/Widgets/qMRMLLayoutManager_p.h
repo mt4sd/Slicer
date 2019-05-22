@@ -41,6 +41,7 @@
 #include <ctkLayoutManager_p.h>
 
 // qMRML includes
+#include "qMRMLWidgetsConfigure.h" // For MRML_WIDGETS_HAVE_WEBGINE_SUPPORT
 #include "qMRMLLayoutManager.h"
 #include "qMRMLLayoutViewFactory.h"
 
@@ -85,7 +86,7 @@ protected:
 
 public:
   qMRMLLayoutManagerPrivate(qMRMLLayoutManager& object);
-  virtual ~qMRMLLayoutManagerPrivate();
+  ~qMRMLLayoutManagerPrivate() override;
 
   virtual void init();
 
@@ -161,39 +162,41 @@ class QMRML_WIDGETS_EXPORT qMRMLLayoutThreeDViewFactory
   Q_OBJECT
 public:
   typedef qMRMLLayoutViewFactory Superclass;
-  qMRMLLayoutThreeDViewFactory(QObject* parent = 0);
-  virtual ~qMRMLLayoutThreeDViewFactory();
+  qMRMLLayoutThreeDViewFactory(QObject* parent = nullptr);
+  ~qMRMLLayoutThreeDViewFactory() override;
 
-  virtual QString viewClassName()const;
+  QString viewClassName()const override;
 
   vtkCollection* viewLogics()const;
   void setViewLogics(vtkCollection* viewLogics);
 
 protected:
-  virtual QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode);
-  virtual void deleteView(vtkMRMLAbstractViewNode* viewNode);
+  QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode) override;
+  void deleteView(vtkMRMLAbstractViewNode* viewNode) override;
 
   vtkCollection* ViewLogics;
 };
 
 //------------------------------------------------------------------------------
+#ifdef MRML_WIDGETS_HAVE_WEBGINE_SUPPORT
 class QMRML_WIDGETS_EXPORT qMRMLLayoutChartViewFactory
   : public qMRMLLayoutViewFactory
 {
   Q_OBJECT
 public:
   typedef qMRMLLayoutViewFactory Superclass;
-  qMRMLLayoutChartViewFactory(QObject* parent = 0);
+  qMRMLLayoutChartViewFactory(QObject* parent = nullptr);
 
-  virtual QString viewClassName()const;
+  QString viewClassName()const override;
 
   vtkMRMLColorLogic* colorLogic()const;
   void setColorLogic(vtkMRMLColorLogic* colorLogic);
 
 protected:
-  virtual QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode);
+  QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode) override;
   vtkMRMLColorLogic* ColorLogic;
 };
+#endif
 
 //------------------------------------------------------------------------------
 class QMRML_WIDGETS_EXPORT qMRMLLayoutTableViewFactory
@@ -202,12 +205,12 @@ class QMRML_WIDGETS_EXPORT qMRMLLayoutTableViewFactory
   Q_OBJECT
 public:
   typedef qMRMLLayoutViewFactory Superclass;
-  qMRMLLayoutTableViewFactory(QObject* parent = 0);
+  qMRMLLayoutTableViewFactory(QObject* parent = nullptr);
 
-  virtual QString viewClassName()const;
+  QString viewClassName()const override;
 
 protected:
-  virtual QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode);
+  QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode) override;
 };
 
 //------------------------------------------------------------------------------
@@ -217,12 +220,12 @@ class QMRML_WIDGETS_EXPORT qMRMLLayoutPlotViewFactory
   Q_OBJECT
 public:
   typedef qMRMLLayoutViewFactory Superclass;
-  qMRMLLayoutPlotViewFactory(QObject* parent = 0);
+  qMRMLLayoutPlotViewFactory(QObject* parent = nullptr);
 
-  virtual QString viewClassName()const;
+  QString viewClassName()const override;
 
 protected:
-  virtual QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode);
+  QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode) override;
   vtkMRMLColorLogic* ColorLogic;
 };
 
@@ -233,17 +236,17 @@ class QMRML_WIDGETS_EXPORT qMRMLLayoutSliceViewFactory
   Q_OBJECT
 public:
   typedef qMRMLLayoutViewFactory Superclass;
-  qMRMLLayoutSliceViewFactory(QObject* parent = 0);
-  virtual ~qMRMLLayoutSliceViewFactory();
+  qMRMLLayoutSliceViewFactory(QObject* parent = nullptr);
+  ~qMRMLLayoutSliceViewFactory() override;
 
-  virtual QString viewClassName()const;
+  QString viewClassName()const override;
 
   vtkCollection* sliceLogics()const;
   void setSliceLogics(vtkCollection* sliceLogics);
 
 protected:
-  virtual QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode);
-  virtual void deleteView(vtkMRMLAbstractViewNode* viewNode);
+  QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode) override;
+  void deleteView(vtkMRMLAbstractViewNode* viewNode) override;
 
   QButtonGroup* SliceControllerButtonGroup;
   vtkCollection* SliceLogics;

@@ -41,10 +41,10 @@ public:
   typedef QListWidget Superclass;
 
   /// Constructor
-  explicit qSlicerExtensionsManageWidget(QWidget* parent = 0);
+  explicit qSlicerExtensionsManageWidget(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerExtensionsManageWidget();
+  ~qSlicerExtensionsManageWidget() override;
 
   Q_INVOKABLE qSlicerExtensionsManagerModel* extensionsManagerModel()const;
   Q_INVOKABLE void setExtensionsManagerModel(qSlicerExtensionsManagerModel* model);

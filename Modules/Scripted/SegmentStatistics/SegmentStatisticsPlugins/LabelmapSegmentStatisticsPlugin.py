@@ -1,6 +1,7 @@
 import vtk
 import slicer
 from SegmentStatisticsPlugins import SegmentStatisticsPluginBase
+from functools import reduce
 
 class LabelmapSegmentStatisticsPlugin(SegmentStatisticsPluginBase):
   """Statistical plugin for Labelmaps"""
@@ -29,6 +30,12 @@ class LabelmapSegmentStatisticsPlugin(SegmentStatisticsPluginBase):
     segment = segmentationNode.GetSegmentation().GetSegment(segmentID)
     segBinaryLabelName = vtkSegmentationCore.vtkSegmentationConverter.GetSegmentationBinaryLabelmapRepresentationName()
     segmentLabelmap = segment.GetRepresentation(segBinaryLabelName)
+
+    if (not segmentLabelmap
+      or not segmentLabelmap.GetPointData()
+      or not segmentLabelmap.GetPointData().GetScalars()):
+      # No input label data
+      return {}
 
     # We need to know exactly the value of the segment voxels, apply threshold to make force the selected label value
     labelValue = 1
@@ -67,7 +74,7 @@ class LabelmapSegmentStatisticsPlugin(SegmentStatisticsPluginBase):
   def getMeasurementInfo(self, key):
     """Get information (name, description, units, ...) about the measurement for the given key"""
     info = {}
-    
+
     # @fedorov could not find any suitable DICOM quantity code for "number of voxels".
     # DCM has "Number of needles" etc., so probably "Number of voxels"
     # should be added too. Need to discuss with @dclunie. For now, a

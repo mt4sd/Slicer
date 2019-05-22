@@ -27,13 +27,12 @@ vtkStandardNewMacro(vtkFSSurfaceScalarReader);
 //-------------------------------------------------------------------------
 vtkFSSurfaceScalarReader::vtkFSSurfaceScalarReader()
 {
-    this->Scalars = NULL;
+    this->Scalars = nullptr;
 }
 
 //-------------------------------------------------------------------------
 vtkFSSurfaceScalarReader::~vtkFSSurfaceScalarReader()
-{
-}
+= default;
 
 //-------------------------------------------------------------------------
 vtkFloatArray * vtkFSSurfaceScalarReader::GetOutput()
@@ -61,7 +60,7 @@ int vtkFSSurfaceScalarReader::ReadFSScalars()
   float *FSscalars;
   vtkFloatArray *output = this->Scalars;
 
-  if (output == NULL)
+  if (output == nullptr)
   {
       cerr << "ERROR vtkFSSurfaceScalarReader ReadFSScalars() : output is null" << endl;
       return 0;

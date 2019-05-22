@@ -63,7 +63,7 @@ protected:
   qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyDiffusionTensorVolumesPluginPrivate(qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin& object);
-  ~qSlicerSubjectHierarchyDiffusionTensorVolumesPluginPrivate();
+  ~qSlicerSubjectHierarchyDiffusionTensorVolumesPluginPrivate() override;
   void init();
 public:
   QIcon DiffusionTensorVolumeIcon;
@@ -81,8 +81,8 @@ qSlicerSubjectHierarchyDiffusionTensorVolumesPluginPrivate::qSlicerSubjectHierar
 {
   this->DiffusionTensorVolumeIcon = QIcon(":Icons/DiffusionTensorVolume.png");
 
-  this->TractographyLabelMapSeedingAction = NULL;
-  this->TractographyInteractiveSeedingAction = NULL;
+  this->TractographyLabelMapSeedingAction = nullptr;
+  this->TractographyInteractiveSeedingAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -98,8 +98,7 @@ void qSlicerSubjectHierarchyDiffusionTensorVolumesPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyDiffusionTensorVolumesPluginPrivate::~qSlicerSubjectHierarchyDiffusionTensorVolumesPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin methods
@@ -117,8 +116,7 @@ qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin::qSlicerSubjectHierarchyDiff
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin::~qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin::canAddNodeToSubjectHierarchy(
@@ -127,7 +125,7 @@ double qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin::canAddNodeToSubjectH
   Q_UNUSED(parentItemID);
   if (!node)
     {
-    qCritical() << Q_FUNC_INFO << ": Input node is NULL!";
+    qCritical() << Q_FUNC_INFO << ": Input node is nullptr!";
     return 0.0;
     }
   else if (node->IsA("vtkMRMLDiffusionTensorVolumeNode"))
@@ -190,7 +188,7 @@ QString qSlicerSubjectHierarchyDiffusionTensorVolumesPlugin::tooltip(vtkIdType i
   // Additional DTI-related information
   vtkMRMLDiffusionTensorVolumeNode* dtiVolumeNode = vtkMRMLDiffusionTensorVolumeNode::SafeDownCast(shNode->GetItemDataNode(itemID));
   Q_UNUSED(dtiVolumeNode);
-  //vtkImageData* imageData = (dtiVolumeNode ? dtiVolumeNode->GetImageData() : NULL);
+  //vtkImageData* imageData = (dtiVolumeNode ? dtiVolumeNode->GetImageData() : nullptr);
   //if (dtiVolumeNode && imageData)
   //  {
   //  int dimensions[3] = {0,0,0};

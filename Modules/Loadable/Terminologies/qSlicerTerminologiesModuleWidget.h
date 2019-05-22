@@ -40,13 +40,13 @@ class Q_SLICER_QTMODULES_TERMINOLOGIES_EXPORT qSlicerTerminologiesModuleWidget :
 public:
 
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerTerminologiesModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerTerminologiesModuleWidget();
+  qSlicerTerminologiesModuleWidget(QWidget *parent=nullptr);
+  ~qSlicerTerminologiesModuleWidget() override;
 
 protected:
   QScopedPointer<qSlicerTerminologiesModuleWidgetPrivate> d_ptr;
   
-  virtual void setup();
+  void setup() override;
 
 private:
   Q_DECLARE_PRIVATE(qSlicerTerminologiesModuleWidget);

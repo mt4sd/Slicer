@@ -58,7 +58,7 @@ public:
   /// The Usual VTK class functions
   static vtkMRMLViewLogic *New();
   vtkTypeMacro(vtkMRMLViewLogic,vtkMRMLAbstractLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Set / Get SliceLogic name
   vtkSetStringMacro(Name);
@@ -106,13 +106,13 @@ public:
 
 protected:
   vtkMRMLViewLogic();
-  virtual ~vtkMRMLViewLogic();
+  ~vtkMRMLViewLogic() override;
 
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void UpdateFromMRMLScene() VTK_OVERRIDE;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) override;
+  void UpdateFromMRMLScene() override;
 
   void UpdateMRMLNodes();
 
@@ -121,8 +121,8 @@ protected:
   vtkMRMLCameraNode* CameraNode;
 
 private:
-  vtkMRMLViewLogic(const vtkMRMLViewLogic&);
-  void operator=(const vtkMRMLViewLogic&);
+  vtkMRMLViewLogic(const vtkMRMLViewLogic&) = delete;
+  void operator=(const vtkMRMLViewLogic&) = delete;
 
 };
 

@@ -47,7 +47,7 @@ public:
 
   static vtkSlicerPlotsLogic *New();
   vtkTypeMacro(vtkSlicerPlotsLogic, vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Returns ID of the layout that is similar to current layout but also contains a table view
   static int GetLayoutWithPlot(int currentLayout);
@@ -65,11 +65,11 @@ public:
 
 protected:
   vtkSlicerPlotsLogic();
-  virtual ~vtkSlicerPlotsLogic();
+  ~vtkSlicerPlotsLogic() override;
 
 private:
-  vtkSlicerPlotsLogic(const vtkSlicerPlotsLogic&); // Not implemented
-  void operator=(const vtkSlicerPlotsLogic&);               // Not implemented
+  vtkSlicerPlotsLogic(const vtkSlicerPlotsLogic&) = delete;
+  void operator=(const vtkSlicerPlotsLogic&) = delete;
 };
 
 #endif

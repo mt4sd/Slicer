@@ -43,8 +43,8 @@ class QMRML_WIDGETS_EXPORT qMRMLNodeAttributeTableWidget : public QWidget
 
 public:
   /// Constructors
-  explicit qMRMLNodeAttributeTableWidget(QWidget* parent = 0);
-  virtual ~qMRMLNodeAttributeTableWidget();
+  explicit qMRMLNodeAttributeTableWidget(QWidget* parent = nullptr);
+  ~qMRMLNodeAttributeTableWidget() override;
 
   /// Get node attribute table view
   qMRMLNodeAttributeTableView* tableView();
@@ -60,7 +60,7 @@ public slots:
   void updateWidgetFromMRML();
 
 protected:
-  virtual void showEvent(QShowEvent *);
+  void showEvent(QShowEvent *) override;
 
   QScopedPointer<qMRMLNodeAttributeTableWidgetPrivate> d_ptr;
 

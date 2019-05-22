@@ -30,41 +30,41 @@ class VTK_MRML_EXPORT vtkMRMLHierarchyNode : public vtkMRMLNode
 public:
   static vtkMRMLHierarchyNode *New();
   vtkTypeMacro(vtkMRMLHierarchyNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Hierarchy";}
+  const char* GetNodeTagName() override {return "Hierarchy";}
 
   /// Set the reference node to current scene.
-  virtual void SetSceneReferences() VTK_OVERRIDE;
+  void SetSceneReferences() override;
 
   ///
   /// Updates this node if it depends on other nodes
   /// when the node is deleted in the scene
-  virtual void UpdateReferences() VTK_OVERRIDE;
+  void UpdateReferences() override;
 
   ///
   /// Observe the reference transform node
-  virtual void UpdateScene(vtkMRMLScene *scene) VTK_OVERRIDE;
+  void UpdateScene(vtkMRMLScene *scene) override;
 
   ///
   /// Update the stored reference to another node in the scene
-  virtual void UpdateReferenceID(const char *oldID, const char *newID) VTK_OVERRIDE;
+  void UpdateReferenceID(const char *oldID, const char *newID) override;
 
   ///
   /// Associated prent MRML node
@@ -142,8 +142,8 @@ public:
 
 
   /// Find all associated children nodes of a specified class in the hierarchy
-  /// if childClass is NULL returns all associated children nodes.
-  virtual void GetAssociatedChildrenNodes(vtkCollection *children, const char* childClass=NULL);
+  /// if childClass is nullptr returns all associated children nodes.
+  virtual void GetAssociatedChildrenNodes(vtkCollection *children, const char* childClass=nullptr);
 
   ///
   /// Get Hierarchy node for a given associated node
@@ -167,7 +167,7 @@ public:
 
 protected:
   vtkMRMLHierarchyNode();
-  ~vtkMRMLHierarchyNode();
+  ~vtkMRMLHierarchyNode() override;
   vtkMRMLHierarchyNode(const vtkMRMLHierarchyNode&);
   void operator=(const vtkMRMLHierarchyNode&);
 
@@ -225,7 +225,7 @@ protected:
   /// it parent, and also on a parent that add/remove/move a child
   /// Invoke the event on the passed node if not null, otherwise on the
   /// associated node if not null.
-  void InvokeHierarchyModifiedEvent(vtkMRMLNode *node = NULL);
+  void InvokeHierarchyModifiedEvent(vtkMRMLNode *node = nullptr);
 };
 
 #endif

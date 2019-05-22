@@ -11,6 +11,9 @@
 
 // this is a test of the slicer slice logic resampling pipeline
 
+// Slicer includes
+#include "vtkSlicerConfigure.h" // For Slicer_VTK_USE_QVTKOPENGLWIDGET, Slicer_BUILD_WEBENGINE_SUPPORT
+
 // Qt includes
 #include <QApplication>
 #include <QProcessEnvironment>
@@ -18,14 +21,9 @@
 #include <QString>
 #include <QTimer>
 #include <QVBoxLayout>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 6, 0))
-#include <QWebView>
-#else
+#ifdef Slicer_BUILD_WEBENGINE_SUPPORT
 #include <QWebEngineView>
 #endif
-
-// Slicer includes
-#include "vtkSlicerConfigure.h"
 
 // SlicerQt includes
 #include "qSlicerWidget.h"
@@ -190,14 +188,12 @@ int qSlicerWidgetTest2(int argc, char * argv[] )
   vbox.addWidget(vtkWidget);
   vtkWidget->GetRenderWindow()->Render();
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 6, 0))
-  QWebView webView;
-#else
+#ifdef Slicer_BUILD_WEBENGINE_SUPPORT
   QWebEngineView webView;
-#endif
   webView.setParent(&parentWidget);
   webView.setUrl(QUrl("http://pyjs.org/examples"));
   vbox.addWidget(&webView);
+#endif
 
   vtkMRMLScene* scene = vtkMRMLScene::New();
   widget->setMRMLScene(scene);

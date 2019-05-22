@@ -59,7 +59,7 @@ vtkMRMLDisplayNode* qMRMLSceneDisplayableModelPrivate
     return vtkMRMLDisplayNode::SafeDownCast(node);
     }
 
-  vtkMRMLSelectionNode* selectionNode = 0;
+  vtkMRMLSelectionNode* selectionNode = nullptr;
   if (this->MRMLScene)
     {
     selectionNode = vtkMRMLSelectionNode::SafeDownCast(
@@ -99,7 +99,7 @@ vtkMRMLDisplayNode* qMRMLSceneDisplayableModelPrivate
     {
     return displayableHierarchyNode->GetDisplayNode();
     }
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -121,8 +121,7 @@ qMRMLSceneDisplayableModel::qMRMLSceneDisplayableModel(
 
 //------------------------------------------------------------------------------
 qMRMLSceneDisplayableModel::~qMRMLSceneDisplayableModel()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 vtkMRMLNode* qMRMLSceneDisplayableModel::parentNode(vtkMRMLNode* node)const
@@ -166,17 +165,17 @@ QFlags<Qt::ItemFlag> qMRMLSceneDisplayableModel::nodeFlags(vtkMRMLNode* node, in
   QFlags<Qt::ItemFlag> flags = this->Superclass::nodeFlags(node, column);
   vtkMRMLNode *displayNode = d->displayNode(node);
   if (column == this->visibilityColumn() &&
-      displayNode != 0)
+      displayNode != nullptr)
     {
     flags |= Qt::ItemIsEditable;
     }
   if (column == this->colorColumn() &&
-      displayNode != 0)
+      displayNode != nullptr)
     {
     flags |= Qt::ItemIsEditable;
     }
   if (column == this->opacityColumn() &&
-      displayNode != 0)
+      displayNode != nullptr)
     {
     flags |= Qt::ItemIsEditable;
     }

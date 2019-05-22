@@ -42,12 +42,6 @@
 #include "vtkSlicerColorLogic.h"
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerColorsModule, qSlicerColorsModule);
-#endif
-
-//-----------------------------------------------------------------------------
 class qSlicerColorsModulePrivate
 {
 public:
@@ -59,7 +53,7 @@ public:
 qSlicerColorsModulePrivate::qSlicerColorsModulePrivate()
 {
   this->ColorDialogPickerWidget =
-    QSharedPointer<qMRMLColorPickerWidget>(new qMRMLColorPickerWidget(0));
+    QSharedPointer<qMRMLColorPickerWidget>(new qMRMLColorPickerWidget(nullptr));
 }
 
 //-----------------------------------------------------------------------------
@@ -71,8 +65,7 @@ qSlicerColorsModule::qSlicerColorsModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerColorsModule::~qSlicerColorsModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QStringList qSlicerColorsModule::categories()const
@@ -96,7 +89,7 @@ void qSlicerColorsModule::setup()
     return;
     }
   vtkSlicerColorLogic* colorLogic = vtkSlicerColorLogic::SafeDownCast(this->logic());
-  if (this->appLogic() != 0)
+  if (this->appLogic() != nullptr)
     {
     this->appLogic()->SetColorLogic(colorLogic);
     }

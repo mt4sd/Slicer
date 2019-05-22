@@ -51,7 +51,7 @@ qMRMLAnnotationRulerProjectionPropertyWidgetPrivate
 ::qMRMLAnnotationRulerProjectionPropertyWidgetPrivate(qMRMLAnnotationRulerProjectionPropertyWidget& object)
   : q_ptr(&object)
 {
-  this->RulerDisplayNode = NULL;
+  this->RulerDisplayNode = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -95,8 +95,7 @@ qMRMLAnnotationRulerProjectionPropertyWidget
 //-----------------------------------------------------------------------------
 qMRMLAnnotationRulerProjectionPropertyWidget
 ::~qMRMLAnnotationRulerProjectionPropertyWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qMRMLAnnotationRulerProjectionPropertyWidget
@@ -268,7 +267,7 @@ void qMRMLAnnotationRulerProjectionPropertyWidget
 {
   Q_D(qMRMLAnnotationRulerProjectionPropertyWidget);
 
-  this->setEnabled(d->RulerDisplayNode != 0);
+  this->setEnabled(d->RulerDisplayNode != nullptr);
 
   if (!d->RulerDisplayNode)
     {

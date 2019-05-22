@@ -40,30 +40,30 @@ class VTK_MRML_EXPORT vtkMRMLSliceNode : public vtkMRMLAbstractViewNode
   /// vtkMRMLScene::CreateNodeByClass(const char*)
   static vtkMRMLSliceNode *New();
   vtkTypeMacro(vtkMRMLSliceNode,vtkMRMLAbstractViewNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// \brief Reimplemented to preserve orientation and layout color when reset.
   /// \sa GetOrientationString()
   /// \sa GetLayoutColor()
-  virtual void Reset(vtkMRMLNode* defaultNode) VTK_OVERRIDE;
+  void Reset(vtkMRMLNode* defaultNode) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Slice";};
+  const char* GetNodeTagName() override {return "Slice";};
 
   ///
   /// Mapping from RAS space onto the slice plane
@@ -101,7 +101,7 @@ class VTK_MRML_EXPORT vtkMRMLSliceNode : public vtkMRMLAbstractViewNode
   /// \sa ThreeDViewIDs, GetThreeDViewIDs(), AddThreeDViewID()
   int GetNumberOfThreeDViewIDs()const;
   /// Get View Node ID's for the view to display this node in.
-  /// If NULL, display in all views
+  /// If nullptr, display in all views
   /// \sa ThreeDViewIDs, GetThreeDViewIDs(), AddThreeDViewID()
   const char* GetNthThreeDViewID(unsigned int index);
   /// Get all View Node ID's for the view to display this node in.
@@ -353,11 +353,11 @@ public:
   /// Jump all slices in the scene.
   /// viewGroup can be used to jump only slice views that are in a specific group.
   /// By default viewGroup is set to -1, which means that all slice views are jumped.
-  /// If a non-NULL exclude pointer is specified then position of that slice node will not be changed.
+  /// If a non-nullptr exclude pointer is specified then position of that slice node will not be changed.
   /// If jumpMode is set to vtkMRMLSliceNode::DefaultJumpSlice then jump mode set in the slice node will be used.
   /// specified in the slice node will be used.
   static void JumpAllSlices(vtkMRMLScene* scene, double r, double a, double s,
-    int jumpMode = vtkMRMLSliceNode::DefaultJumpSlice, int viewGroup = -1, vtkMRMLSliceNode* exclude = NULL);
+    int jumpMode = vtkMRMLSliceNode::DefaultJumpSlice, int viewGroup = -1, vtkMRMLSliceNode* exclude = nullptr);
   void JumpSliceByOffsetting(double r, double a, double s);
   void JumpSliceByOffsetting(int k, double r, double a, double s);
   void JumpSliceByCentering(double r, double a, double s);
@@ -498,7 +498,7 @@ public:
 
 protected:
   vtkMRMLSliceNode();
-  ~vtkMRMLSliceNode();
+  ~vtkMRMLSliceNode() override;
   vtkMRMLSliceNode(const vtkMRMLSliceNode&);
   void operator=(const vtkMRMLSliceNode&);
 

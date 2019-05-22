@@ -1,3 +1,4 @@
+from __future__ import print_function
 import traceback
 import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
@@ -92,8 +93,7 @@ class SelfTestsWidget(ScriptedLoadableModuleWidget):
     self.testButtons = {}
     self.testMapper = qt.QSignalMapper()
     self.testMapper.connect('mapped(const QString&)', self.onRun)
-    testKeys = slicer.selfTests.keys()
-    testKeys.sort()
+    testKeys = sorted(slicer.selfTests.keys())
     for test in testKeys:
       self.testButtons[test] = qt.QPushButton(test)
       self.testButtons[test].setToolTip(slicer.selfTests[test].__doc__)
@@ -116,7 +116,7 @@ class SelfTestsWidget(ScriptedLoadableModuleWidget):
     slicer.app.processEvents(qt.QEventLoop.ExcludeUserInputEvents)
     return True
 
-class SelfTestsLogic:
+class SelfTestsLogic(object):
   """Logic to handle invoking the tests and reporting the results"""
 
   def __init__(self,selfTests):
@@ -126,7 +126,7 @@ class SelfTestsLogic:
     self.failed = []
 
   def __str__(self):
-    testsRun = len(self.results.keys())
+    testsRun = len(list(self.results.keys()))
     if testsRun == 0:
       return "No tests run"
     s = "%.0f%% passed (%d of %d)" % (
@@ -139,13 +139,13 @@ class SelfTestsLogic:
 
   def run(self,tests=None,continueCheck=None):
     if not tests:
-      tests = self.selfTests.keys()
+      tests = list(self.selfTests.keys())
 
     for test in tests:
       try:
         result = self.selfTests[test]()
         self.passed.append(test)
-      except Exception, e:
+      except Exception as e:
         traceback.print_exc()
         result = "Failed with: %s" % e
         self.failed.append(test)
@@ -156,7 +156,7 @@ class SelfTestsLogic:
 
 def SelfTestsTest():
   if hasattr(slicer,'selfTests'):
-    logic = SelfTestsLogic(slicer.selfTests.keys())
+    logic = SelfTestsLogic(list(slicer.selfTests.keys()))
     logic.run()
   print(logic.results)
   print("SelfTestsTest Passed!")

@@ -59,13 +59,8 @@ qSlicerDataDialogPrivate::qSlicerDataDialogPrivate(QWidget* _parent)
   ctkCheckableHeaderView* headerView = new ctkCheckableHeaderView(
     Qt::Horizontal, this->FileWidget);
   // Copy the previous behavior of the header into the new checkable header view
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  headerView->setClickable(previousHeaderView->isClickable());
-  headerView->setMovable(previousHeaderView->isMovable());
-#else
   headerView->setSectionsClickable(previousHeaderView->sectionsClickable());
   headerView->setSectionsMovable(previousHeaderView->sectionsMovable());
-#endif
   headerView->setHighlightSections(previousHeaderView->highlightSections());
   headerView->setStretchLastSection(previousHeaderView->stretchLastSection());
   // Propagate to top-level items only (depth = 1),no need to go deeper
@@ -75,15 +70,9 @@ qSlicerDataDialogPrivate::qSlicerDataDialogPrivate(QWidget* _parent)
   this->FileWidget->setHorizontalHeader(headerView);
 
   headerView->setStretchLastSection(false);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  headerView->setResizeMode(FileColumn, QHeaderView::Stretch);
-  headerView->setResizeMode(TypeColumn, QHeaderView::ResizeToContents);
-  headerView->setResizeMode(OptionsColumn, QHeaderView::ResizeToContents);
-#else
   headerView->setSectionResizeMode(FileColumn, QHeaderView::Stretch);
   headerView->setSectionResizeMode(TypeColumn, QHeaderView::ResizeToContents);
   headerView->setSectionResizeMode(OptionsColumn, QHeaderView::ResizeToContents);
-#endif
 
   this->FileWidget->sortItems(-1, Qt::AscendingOrder);
 
@@ -126,8 +115,7 @@ qSlicerDataDialogPrivate::qSlicerDataDialogPrivate(QWidget* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerDataDialogPrivate::~qSlicerDataDialogPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerDataDialogPrivate::addDirectory()
@@ -512,15 +500,14 @@ void qSlicerDataDialogPrivate::updateCheckBoxHeader(int itemRow, int itemColumn)
 //-----------------------------------------------------------------------------
 qSlicerDataDialog::qSlicerDataDialog(QObject* _parent)
   : qSlicerFileDialog(_parent)
-  , d_ptr(new qSlicerDataDialogPrivate(0))
+  , d_ptr(new qSlicerDataDialogPrivate(nullptr))
 {
   // FIXME give qSlicerDataDialog as a parent of qSlicerDataDialogPrivate;
 }
 
 //-----------------------------------------------------------------------------
 qSlicerDataDialog::~qSlicerDataDialog()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 qSlicerIO::IOFileType qSlicerDataDialog::fileType()const

@@ -30,13 +30,13 @@ class Q_SLICER_MODULE_SEGMENTATIONS_WIDGETS_PLUGINS_EXPORT qMRMLSegmentationFile
   Q_OBJECT
 
 public:
-  qMRMLSegmentationFileExportWidgetPlugin(QObject* parent = 0);
+  qMRMLSegmentationFileExportWidgetPlugin(QObject* parent = nullptr);
 
-  QWidget *createWidget(QWidget* parent);
-  QString  domXml() const;
-  QString  includeFile() const;
-  bool     isContainer() const;
-  QString  name() const;
+  QWidget *createWidget(QWidget* parent) override;
+  QString  domXml() const override;
+  QString  includeFile() const override;
+  bool     isContainer() const override;
+  QString  name() const override;
 
 };
 

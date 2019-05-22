@@ -37,8 +37,8 @@ class Q_SLICER_QTMODULES_SEGMENTATIONS_EXPORT qSlicerSegmentationsIOOptionsWidge
 {
   Q_OBJECT
 public:
-  qSlicerSegmentationsIOOptionsWidget(QWidget *parent=0);
-  virtual ~qSlicerSegmentationsIOOptionsWidget();
+  qSlicerSegmentationsIOOptionsWidget(QWidget *parent=nullptr);
+  ~qSlicerSegmentationsIOOptionsWidget() override;
 
 protected slots:
   /// Update IO plugin properties

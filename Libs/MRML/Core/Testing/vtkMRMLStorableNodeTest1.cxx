@@ -27,18 +27,18 @@ public:
 
   vtkTypeMacro(vtkMRMLStorableNodeTestHelper1,vtkMRMLStorableNode);
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE
+  vtkMRMLNode* CreateNodeInstance() override
     {
     return vtkMRMLStorableNodeTestHelper1::New();
     }
-  virtual const char* GetNodeTagName() VTK_OVERRIDE
+  const char* GetNodeTagName() override
     {
     return "vtkMRMLStorableNodeTestHelper1";
     }
 
   // for testing purposes, return a valid storage node,
-  // vtkMRMLStorageNode::New returns NULL
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE { return vtkMRMLModelStorageNode::New(); }
+  // vtkMRMLStorageNode::New returns nullptr
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override { return vtkMRMLModelStorageNode::New(); }
 };
 vtkStandardNewMacro(vtkMRMLStorableNodeTestHelper1);
 

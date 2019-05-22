@@ -31,7 +31,7 @@ class qMRMLSliceViewPrivate;
 class vtkCollection;
 class vtkMRMLScene;
 class vtkMRMLSliceNode;
-class vtkSliceViewInteractorStyle;
+class vtkMRMLSliceViewInteractorStyle;
 
 /// \brief 2D view for slice nodes.
 /// For performance reasons, the view block refreshs when the scene is in
@@ -46,8 +46,8 @@ public:
   typedef ctkVTKSliceView Superclass;
 
   /// Constructors
-  explicit qMRMLSliceView(QWidget* parent = 0);
-  virtual ~qMRMLSliceView();
+  explicit qMRMLSliceView(QWidget* parent = nullptr);
+  ~qMRMLSliceView() override;
 
   /// Add a displayable manager to the view,
   /// the displayable manager is proper to the 2D view and is not shared
@@ -68,7 +68,7 @@ public:
   Q_INVOKABLE vtkMRMLSliceNode* mrmlSliceNode()const;
 
   /// Returns the interactor style of the view
-  Q_INVOKABLE vtkSliceViewInteractorStyle* sliceViewInteractorStyle()const;
+  Q_INVOKABLE vtkMRMLSliceViewInteractorStyle* sliceViewInteractorStyle()const;
 
   /// Convert device coordinates to XYZ coordinates. The x and y
   /// components of the return value are the positions within a
@@ -87,6 +87,12 @@ public:
   /// in the LightBox pane.
   Q_INVOKABLE QList<double> convertXYZToRAS(const QList<double> &xyz)const;
 
+  /// Set cursor in the view area
+  Q_INVOKABLE void setViewCursor(const QCursor &);
+  /// Restore default cursor in the view area
+  Q_INVOKABLE void unsetViewCursor();
+  /// Set default cursor in the view area
+  Q_INVOKABLE void setDefaultViewCursor(const QCursor &cursor);
 
 public slots:
 

@@ -39,8 +39,7 @@ vtkITKIslandMath::vtkITKIslandMath()
 }
 
 vtkITKIslandMath::~vtkITKIslandMath()
-{
-}
+= default;
 
 void vtkITKIslandMath::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -140,13 +139,13 @@ void vtkITKIslandMath::SimpleExecute(vtkImageData *input, vtkImageData *output)
   //
   vtkPointData *pd = input->GetPointData();
   pd=input->GetPointData();
-  if (pd ==NULL)
+  if (pd ==nullptr)
     {
     vtkErrorMacro(<<"PointData is NULL");
     return;
     }
   vtkDataArray *inScalars=pd->GetScalars();
-  if ( inScalars == NULL )
+  if ( inScalars == nullptr )
     {
     vtkErrorMacro(<<"Scalars must be defined for island math");
     return;

@@ -22,29 +22,23 @@
 #define __qSlicerTablesModuleWidgetsAbstractPlugin_h
 
 #include <QtGlobal>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QDesignerCustomWidgetInterface>
-#else
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
-#endif
 #include "qSlicerTablesModuleWidgetsPluginsExport.h"
 
 class Q_SLICER_MODULE_TABLES_WIDGETS_PLUGINS_EXPORT qSlicerTablesModuleWidgetsAbstractPlugin
     : public QDesignerCustomWidgetInterface
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
   Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface")
-#endif
   Q_INTERFACES(QDesignerCustomWidgetInterface);
 public:
 
   qSlicerTablesModuleWidgetsAbstractPlugin();
   // Don't reimplement this method.
-  QString group() const;
+  QString group() const override;
   // You can reimplement these methods
-  virtual QIcon icon() const;
-  virtual QString toolTip() const;
-  virtual QString whatsThis() const;
+  QIcon icon() const override;
+  QString toolTip() const override;
+  QString whatsThis() const override;
 
 };
 

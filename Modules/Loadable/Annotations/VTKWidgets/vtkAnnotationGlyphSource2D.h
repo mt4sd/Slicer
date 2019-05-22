@@ -62,7 +62,7 @@ vtkAnnotationGlyphSource2D
 {
 public:
   vtkTypeMacro(vtkAnnotationGlyphSource2D,vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Construct a vertex glyph centered at the origin, scale 1.0, white in
@@ -144,9 +144,9 @@ public:
 
 protected:
   vtkAnnotationGlyphSource2D();
-  ~vtkAnnotationGlyphSource2D() {};
+  ~vtkAnnotationGlyphSource2D() override  = default;
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
 
   double Center[3];
   double Scale;
@@ -188,8 +188,8 @@ protected:
                        vtkCellArray *polys, vtkUnsignedCharArray *colors, double scale);
 
 private:
-  vtkAnnotationGlyphSource2D(const vtkAnnotationGlyphSource2D&);  /// Not implemented.
-  void operator=(const vtkAnnotationGlyphSource2D&);  /// Not implemented.
+  vtkAnnotationGlyphSource2D(const vtkAnnotationGlyphSource2D&) = delete;
+  void operator=(const vtkAnnotationGlyphSource2D&) = delete;
 };
 
 #endif

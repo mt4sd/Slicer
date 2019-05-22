@@ -41,17 +41,17 @@ public:
 
   static vtkSlicerDoubleArraysLogic *New();
   vtkTypeMacro(vtkSlicerDoubleArraysLogic, vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkMRMLDoubleArrayNode* AddDoubleArray(const char* fileName,
-                                         const char* name = 0);
+                                         const char* name = nullptr);
 protected:
   vtkSlicerDoubleArraysLogic();
-  virtual ~vtkSlicerDoubleArraysLogic();
+  ~vtkSlicerDoubleArraysLogic() override;
 
 private:
-  vtkSlicerDoubleArraysLogic(const vtkSlicerDoubleArraysLogic&); // Not implemented
-  void operator=(const vtkSlicerDoubleArraysLogic&);               // Not implemented
+  vtkSlicerDoubleArraysLogic(const vtkSlicerDoubleArraysLogic&) = delete;
+  void operator=(const vtkSlicerDoubleArraysLogic&) = delete;
 };
 
 #endif

@@ -44,8 +44,8 @@ public:
   typedef qMRMLWidget Superclass;
 
   /// Constructors
-  explicit qMRMLThreeDViewInformationWidget(QWidget* parent = 0);
-  virtual ~qMRMLThreeDViewInformationWidget();
+  explicit qMRMLThreeDViewInformationWidget(QWidget* parent = nullptr);
+  ~qMRMLThreeDViewInformationWidget() override;
 
   /// Get \a viewNode
   vtkMRMLViewNode* mrmlViewNode()const;

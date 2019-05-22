@@ -50,7 +50,7 @@ protected:
   qMRMLThreeDWidget* const q_ptr;
 public:
   qMRMLThreeDWidgetPrivate(qMRMLThreeDWidget& object);
-  ~qMRMLThreeDWidgetPrivate();
+  ~qMRMLThreeDWidgetPrivate() override;
 
   void init();
 
@@ -63,14 +63,13 @@ public:
 qMRMLThreeDWidgetPrivate::qMRMLThreeDWidgetPrivate(qMRMLThreeDWidget& object)
   : q_ptr(&object)
 {
-  this->ThreeDView = 0;
-  this->ThreeDController = 0;
+  this->ThreeDView = nullptr;
+  this->ThreeDController = nullptr;
 }
 
 //---------------------------------------------------------------------------
 qMRMLThreeDWidgetPrivate::~qMRMLThreeDWidgetPrivate()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void qMRMLThreeDWidgetPrivate::init()
@@ -111,8 +110,7 @@ qMRMLThreeDWidget::qMRMLThreeDWidget(QWidget* parentWidget)
 
 // --------------------------------------------------------------------------
 qMRMLThreeDWidget::~qMRMLThreeDWidget()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLThreeDWidget::addDisplayableManager(const QString& dManager)

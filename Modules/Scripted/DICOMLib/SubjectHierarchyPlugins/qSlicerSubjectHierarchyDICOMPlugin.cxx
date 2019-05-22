@@ -57,7 +57,7 @@ protected:
   qSlicerSubjectHierarchyDICOMPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyDICOMPluginPrivate(qSlicerSubjectHierarchyDICOMPlugin& object);
-  ~qSlicerSubjectHierarchyDICOMPluginPrivate();
+  ~qSlicerSubjectHierarchyDICOMPluginPrivate() override;
   void init();
 public:
   QIcon PatientIcon;
@@ -80,11 +80,11 @@ qSlicerSubjectHierarchyDICOMPluginPrivate::qSlicerSubjectHierarchyDICOMPluginPri
   this->PatientIcon = QIcon(":Icons/Patient.png");
   this->StudyIcon = QIcon(":Icons/Study.png");
 
-  this->CreatePatientAction = NULL;
-  this->CreateStudyAction = NULL;
-  this->ConvertFolderToPatientAction = NULL;
-  this->ConvertFolderToStudyAction = NULL;
-  this->OpenDICOMExportDialogAction = NULL;
+  this->CreatePatientAction = nullptr;
+  this->CreateStudyAction = nullptr;
+  this->ConvertFolderToPatientAction = nullptr;
+  this->ConvertFolderToStudyAction = nullptr;
+  this->OpenDICOMExportDialogAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -110,8 +110,7 @@ void qSlicerSubjectHierarchyDICOMPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyDICOMPluginPrivate::~qSlicerSubjectHierarchyDICOMPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyDICOMPlugin methods
@@ -129,8 +128,7 @@ qSlicerSubjectHierarchyDICOMPlugin::qSlicerSubjectHierarchyDICOMPlugin(QObject* 
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyDICOMPlugin::~qSlicerSubjectHierarchyDICOMPlugin()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 double qSlicerSubjectHierarchyDICOMPlugin::canOwnSubjectHierarchyItem(vtkIdType itemID)const
@@ -464,7 +462,7 @@ void qSlicerSubjectHierarchyDICOMPlugin::openDICOMExportDialog()
                               "and choosing 'Create new subject'. Study can be similarly created under the patient. The data "
                               "to export can be drag&dropped under the study.");
     QMessageBox::StandardButton answer =
-      QMessageBox::question(NULL, tr("Create new patient and study for DICOM export?"), message,
+      QMessageBox::question(nullptr, tr("Create new patient and study for DICOM export?"), message,
       QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
     if (answer == QMessageBox::Ok)
       {
@@ -552,7 +550,7 @@ void qSlicerSubjectHierarchyDICOMPlugin::openDICOMExportDialog()
     }
 
   // Open export dialog
-  qSlicerDICOMExportDialog* exportDialog = new qSlicerDICOMExportDialog(NULL);
+  qSlicerDICOMExportDialog* exportDialog = new qSlicerDICOMExportDialog(nullptr);
   exportDialog->setMRMLScene(qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene());
   exportDialog->exec(currentItemID);
 

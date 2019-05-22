@@ -36,10 +36,10 @@ class qSlicerDummyIOOptionsWidget
   : public qSlicerIOOptionsWidget
 {
 public:
-  qSlicerDummyIOOptionsWidget(QWidget *parent=0): qSlicerIOOptionsWidget(parent){}
-  virtual ~qSlicerDummyIOOptionsWidget(){};
-  virtual QSize minimumSizeHint()const {return QSize(300, 30);}
-  virtual QSize sizeHint()const{return QSize(500,30);}
+  qSlicerDummyIOOptionsWidget(QWidget *parent=nullptr): qSlicerIOOptionsWidget(parent){}
+  ~qSlicerDummyIOOptionsWidget() override = default;
+  QSize minimumSizeHint()const override {return QSize(300, 30);}
+  QSize sizeHint()const override{return QSize(500,30);}
 
 private:
   Q_DISABLE_COPY(qSlicerDummyIOOptionsWidget);
@@ -50,12 +50,12 @@ private:
 class qSlicerDummyIO: public qSlicerIO
 {
 public:
-  qSlicerDummyIO(QObject* parent = 0):qSlicerIO(parent){}
-  virtual ~qSlicerDummyIO(){}
-  virtual QString description()const{return "Dummy";}
-  virtual IOFileType fileType()const{return QString("UserFile");}
+  qSlicerDummyIO(QObject* parent = nullptr):qSlicerIO(parent){}
+  ~qSlicerDummyIO() override = default;
+  QString description()const override{return "Dummy";}
+  IOFileType fileType()const override{return QString("UserFile");}
   virtual QStringList extensions()const{return QStringList(QString("All Files(*)"));}
-  virtual qSlicerIOOptions* options()const{return new qSlicerDummyIOOptionsWidget;}
+  qSlicerIOOptions* options()const override{return new qSlicerDummyIOOptionsWidget;}
 
   virtual bool load(const IOProperties& properties);
 };
@@ -71,7 +71,7 @@ bool qSlicerDummyIO::load(const IOProperties& properties)
 int qSlicerDataDialogTest1(int argc, char * argv[] )
 {
   qSlicerApplication app(argc, argv);
-  app.coreIOManager()->registerIO(new qSlicerDummyIO(0));
+  app.coreIOManager()->registerIO(new qSlicerDummyIO(nullptr));
 
   qSlicerDataDialog dataDialog;
 

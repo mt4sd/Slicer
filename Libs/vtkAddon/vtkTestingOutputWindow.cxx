@@ -25,7 +25,7 @@ vtkStandardNewMacro(vtkTestingOutputWindow);
 vtkTestingOutputWindow* vtkTestingOutputWindow::GetInstance()
 {
   vtkTestingOutputWindow* testingOutputWindow = vtkTestingOutputWindow::SafeDownCast(vtkOutputWindow::GetInstance());
-  if (testingOutputWindow != NULL)
+  if (testingOutputWindow != nullptr)
     {
     return testingOutputWindow;
     }
@@ -44,8 +44,7 @@ vtkTestingOutputWindow::vtkTestingOutputWindow()
 
 //-------------------------------------------------------
 vtkTestingOutputWindow::~vtkTestingOutputWindow()
-{
-}
+= default;
 
 //-------------------------------------------------------
 void vtkTestingOutputWindow::DisplayText(const char* text)

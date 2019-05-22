@@ -36,11 +36,11 @@ class VTK_ADDON_EXPORT vtkOrientedBSplineTransform : public vtkBSplineTransform
 public:
   static vtkOrientedBSplineTransform *New();
   vtkTypeMacro(vtkOrientedBSplineTransform,vtkBSplineTransform);
-  virtual void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Make another transform of the same type.
-  vtkAbstractTransform *MakeTransform() VTK_OVERRIDE;
+  vtkAbstractTransform *MakeTransform() override;
 
   // Description:
   // Set/Get the b-spline grid axis directions.
@@ -58,27 +58,27 @@ public:
 
 protected:
   vtkOrientedBSplineTransform();
-  ~vtkOrientedBSplineTransform();
+  ~vtkOrientedBSplineTransform() override;
 
   // Description:
   // Update the displacement grid.
-  void InternalUpdate() VTK_OVERRIDE;
+  void InternalUpdate() override;
 
   // Description:
   // Copy this transform from another of the same type.
-  void InternalDeepCopy(vtkAbstractTransform *transform) VTK_OVERRIDE;
+  void InternalDeepCopy(vtkAbstractTransform *transform) override;
 
   // Description:
   // Internal functions for calculating the transformation.
-  void ForwardTransformPoint(const double in[3], double out[3]) VTK_OVERRIDE;
+  void ForwardTransformPoint(const double in[3], double out[3]) override;
   using Superclass::ForwardTransformPoint; // Inherit the float version from parent
 
   void ForwardTransformDerivative(const double in[3], double out[3],
-                                  double derivative[3][3]) VTK_OVERRIDE;
+                                  double derivative[3][3]) override;
   using Superclass::ForwardTransformDerivative; // Inherit the float version from parent
 
   void InverseTransformDerivative(const double in[3], double out[3],
-                                  double derivative[3][3]) VTK_OVERRIDE;
+                                  double derivative[3][3]) override;
   using Superclass::InverseTransformDerivative; // Inherit the float version from parent
 
   // Description:
@@ -94,8 +94,8 @@ protected:
   vtkMatrix4x4* InverseBulkTransformMatrixCached;
 
 private:
-  vtkOrientedBSplineTransform(const vtkOrientedBSplineTransform&);  // Not implemented.
-  void operator=(const vtkOrientedBSplineTransform&);  // Not implemented.
+  vtkOrientedBSplineTransform(const vtkOrientedBSplineTransform&) = delete;
+  void operator=(const vtkOrientedBSplineTransform&) = delete;
 };
 
 #endif

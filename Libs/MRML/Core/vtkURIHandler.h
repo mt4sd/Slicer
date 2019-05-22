@@ -12,10 +12,10 @@ class VTK_MRML_EXPORT vtkURIHandler : public vtkObject
 {
 public:
   /// The Usual vtk class functions
-  //static vtkURIHandler *New() { return NULL; };
+  //static vtkURIHandler *New() { return nullptr; };
     static vtkURIHandler *New();
   vtkTypeMacro(vtkURIHandler, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkGetStringMacro (HostName);
   vtkSetStringMacro (HostName);
@@ -85,7 +85,7 @@ public:
 
  protected:
   vtkURIHandler();
-  virtual ~vtkURIHandler();
+  ~vtkURIHandler() override;
   vtkURIHandler(const vtkURIHandler&);
   void operator=(const vtkURIHandler&);
 

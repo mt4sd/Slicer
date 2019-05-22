@@ -65,7 +65,7 @@ qMRMLSettingsUnitWidgetPrivate::qMRMLSettingsUnitWidgetPrivate(
   qMRMLSettingsUnitWidget& object)
   : q_ptr(&object)
 {
-  this->Logic = 0;
+  this->Logic = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -96,8 +96,7 @@ qMRMLSettingsUnitWidget::qMRMLSettingsUnitWidget(QWidget* _parent)
 
 //-----------------------------------------------------------------------------
 qMRMLSettingsUnitWidget::~qMRMLSettingsUnitWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qMRMLSettingsUnitWidget::setUnitsLogic(vtkSlicerUnitsLogic* logic)
@@ -109,7 +108,7 @@ void qMRMLSettingsUnitWidget::setUnitsLogic(vtkSlicerUnitsLogic* logic)
     }
 
   d->Logic = logic;
-  d->UnitInfoWidget->setMRMLScene(d->Logic ? d->Logic->GetUnitsScene() : 0);
+  d->UnitInfoWidget->setMRMLScene(d->Logic ? d->Logic->GetUnitsScene() : nullptr);
 }
 
 //-----------------------------------------------------------------------------

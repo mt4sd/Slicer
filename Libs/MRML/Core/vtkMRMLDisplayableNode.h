@@ -44,23 +44,23 @@ class VTK_MRML_EXPORT vtkMRMLDisplayableNode : public vtkMRMLTransformableNode
 {
 public:
   vtkTypeMacro(vtkMRMLDisplayableNode,vtkMRMLTransformableNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE = 0;
+  vtkMRMLNode* CreateNodeInstance() override = 0;
 
-  virtual const char* GetNodeTagName() VTK_OVERRIDE = 0;
+  const char* GetNodeTagName() override = 0;
 
   ///
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Write this node's information to a vector of strings for passing to a CLI.
   /// If the prefix is not an empty string, it gets pushed onto the vector
@@ -74,7 +74,7 @@ public:
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Convenience method that sets the first display node ID.
@@ -158,9 +158,9 @@ public:
 
   ///
   /// alternative method to propagate events generated in Display nodes
-  virtual void ProcessMRMLEvents ( vtkObject * /*caller*/,
+  void ProcessMRMLEvents ( vtkObject * /*caller*/,
                                    unsigned long /*event*/,
-                                   void * /*callData*/ ) VTK_OVERRIDE;
+                                   void * /*callData*/ ) override;
 
   /// DisplayModifiedEvent is fired when:
   ///  - a new display node is observed
@@ -180,8 +180,7 @@ public:
   /// display nodes.
   virtual void CreateDefaultDisplayNodes();
 
-  /// TODO: Change it to Get/SetVisibility() for consistency with
-  /// vtkMRMLDisplayNode.
+  /// TODO: Remove these functions when removing the Annotations module
   /// Utility to return the visibility of all the display nodes.
   /// Return 0 if they are all hidden, 1 if all are visible and 2 if some are
   /// visible and some are hidden.
@@ -209,11 +208,11 @@ public:
   ///
   /// Override default selectable setting to notify display node
   /// about the change.
-  virtual void SetSelectable(int) VTK_OVERRIDE;
+  void SetSelectable(int) override;
 
- protected:
+protected:
   vtkMRMLDisplayableNode();
-  ~vtkMRMLDisplayableNode();
+  ~vtkMRMLDisplayableNode() override;
   vtkMRMLDisplayableNode(const vtkMRMLDisplayableNode&);
   void operator=(const vtkMRMLDisplayableNode&);
 
@@ -224,18 +223,17 @@ public:
 
   ///
   /// Called when a node reference ID is added (list size increased).
-  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) override;
 
   ///
   /// Called when a node reference ID is modified.
-  virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceModified(vtkMRMLNodeReference *reference) override;
 
   ///
   /// Called after a node reference ID is removed (list size decreased).
-  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference) override;
 
- private:
-
+private:
   /// Internally cached list of display nodes used ONLY to return the vector of node in GetDisplayNodes()
   /// DON'T USE this variable anywhere else
   std::vector<vtkMRMLDisplayNode *> DisplayNodes;

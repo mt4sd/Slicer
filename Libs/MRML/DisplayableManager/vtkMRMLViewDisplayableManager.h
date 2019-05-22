@@ -42,26 +42,26 @@ class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLViewDisplayableManager
 public:
   static vtkMRMLViewDisplayableManager* New();
   vtkTypeMacro(vtkMRMLViewDisplayableManager,vtkMRMLAbstractThreeDViewDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
 
   vtkMRMLViewDisplayableManager();
-  virtual ~vtkMRMLViewDisplayableManager();
+  ~vtkMRMLViewDisplayableManager() override;
 
   /// Receives events from the view and the camera nodes.
-  virtual void ProcessMRMLNodesEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
-  virtual void ProcessWidgetsEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
+  void ProcessMRMLNodesEvents(vtkObject *caller, unsigned long event, void *callData) override;
+  void ProcessWidgetsEvents(vtkObject *caller, unsigned long event, void *callData) override;
 
-  virtual void AdditionalInitializeStep() VTK_OVERRIDE;
+  void AdditionalInitializeStep() override;
 
   /// Observe the View node and initialize the renderer accordingly.
-  virtual void Create() VTK_OVERRIDE;
+  void Create() override;
 
   /// Called each time the view node is modified.
   /// Internally update the renderer from the view node.
   /// \sa UpdateFromMRMLViewNode()
-  virtual void OnMRMLDisplayableNodeModifiedEvent(vtkObject* caller) VTK_OVERRIDE;
+  void OnMRMLDisplayableNodeModifiedEvent(vtkObject* caller) override;
 
   /// Update the renderer from the view node properties.
   /// \sa UpdateFromCameraNode
@@ -77,8 +77,8 @@ protected:
 
 private:
 
-  vtkMRMLViewDisplayableManager(const vtkMRMLViewDisplayableManager&);// Not implemented
-  void operator=(const vtkMRMLViewDisplayableManager&); // Not Implemented
+  vtkMRMLViewDisplayableManager(const vtkMRMLViewDisplayableManager&) = delete;
+  void operator=(const vtkMRMLViewDisplayableManager&) = delete;
 
   class vtkInternal;
   vtkInternal * Internal;

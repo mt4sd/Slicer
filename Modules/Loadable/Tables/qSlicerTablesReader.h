@@ -37,19 +37,19 @@ class qSlicerTablesReader
   Q_OBJECT
 public:
   typedef qSlicerFileReader Superclass;
-  qSlicerTablesReader(QObject* parent = 0);
+  qSlicerTablesReader(QObject* parent = nullptr);
   qSlicerTablesReader(vtkSlicerTablesLogic* logic,
-                       QObject* parent = 0);
-  virtual ~qSlicerTablesReader();
+                       QObject* parent = nullptr);
+  ~qSlicerTablesReader() override;
 
   vtkSlicerTablesLogic* logic()const;
   void setLogic(vtkSlicerTablesLogic* logic);
 
-  virtual QString description()const;
-  virtual IOFileType fileType()const;
-  virtual QStringList extensions()const;
+  QString description()const override;
+  IOFileType fileType()const override;
+  QStringList extensions()const override;
 
-  virtual bool load(const IOProperties& properties);
+  bool load(const IOProperties& properties) override;
 protected:
   QScopedPointer<qSlicerTablesReaderPrivate> d_ptr;
 

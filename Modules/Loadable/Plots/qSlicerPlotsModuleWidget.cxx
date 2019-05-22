@@ -72,8 +72,8 @@ public:
 qSlicerPlotsModuleWidgetPrivate::qSlicerPlotsModuleWidgetPrivate(qSlicerPlotsModuleWidget& object)
   : q_ptr(&object)
 {
-  this->MRMLPlotChartNode = 0;
-  this->MRMLPlotSeriesNode = 0;
+  this->MRMLPlotChartNode = nullptr;
+  this->MRMLPlotSeriesNode = nullptr;
 }
 //-----------------------------------------------------------------------------
 vtkSlicerPlotsLogic* qSlicerPlotsModuleWidgetPrivate::logic()const
@@ -86,9 +86,9 @@ vtkSlicerPlotsLogic* qSlicerPlotsModuleWidgetPrivate::logic()const
 //-----------------------------------------------------------------------------
 vtkPlot* qSlicerPlotsModuleWidgetPrivate::table()const
 {
-  if (this->MRMLPlotChartNode.GetPointer()==NULL)
+  if (this->MRMLPlotChartNode.GetPointer()==nullptr)
     {
-    return NULL;
+    return nullptr;
     }
   return this->MRMLPlotChartNode->GetPlot();
 }
@@ -103,8 +103,7 @@ qSlicerPlotsModuleWidget::qSlicerPlotsModuleWidget(QWidget* _parentWidget)
 
 //-----------------------------------------------------------------------------
 qSlicerPlotsModuleWidget::~qSlicerPlotsModuleWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerPlotsModuleWidget::setup()
@@ -253,10 +252,10 @@ void qSlicerPlotsModuleWidget::onCopyPlotSeriesNodeClicked()
     }
 
 
-  vtkMRMLPlotSeriesNode *clonedSeriesNode = logic->CloneSeries(d->MRMLPlotSeriesNode, NULL);
+  vtkMRMLPlotSeriesNode *clonedSeriesNode = logic->CloneSeries(d->MRMLPlotSeriesNode, nullptr);
 
   // Add the cloned node to the selected chart node
-  if (d->MRMLPlotChartNode!= NULL)
+  if (d->MRMLPlotChartNode!= nullptr)
     {
     d->MRMLPlotChartNode->AddAndObservePlotSeriesNodeID(clonedSeriesNode->GetID());
     }

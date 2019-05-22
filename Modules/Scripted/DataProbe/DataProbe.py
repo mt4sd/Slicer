@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import unittest
 import vtk, qt, ctk, slicer
@@ -98,7 +99,7 @@ class DataProbeInfoWidget(object):
     if not nameSize:
       nameSize = self.nameSize
     if len(name) > nameSize:
-      preSize = nameSize / 2
+      preSize = int(nameSize / 2)
       postSize = preSize - 3
       name = name[:preSize] + "..." + name[-postSize:]
     return name
@@ -121,7 +122,7 @@ class DataProbeInfoWidget(object):
     if not imageData:
       return "No Image"
     dims = imageData.GetDimensions()
-    for ele in xrange(3):
+    for ele in range(3):
       if ijk[ele] < 0 or ijk[ele] >= dims[ele]:
         return "Out of Frame"
     pixel = ""
@@ -166,7 +167,7 @@ class DataProbeInfoWidget(object):
     numberOfComponents = imageData.GetNumberOfScalarComponents()
     if numberOfComponents > 3:
       return "%d components" % numberOfComponents
-    for c in xrange(numberOfComponents):
+    for c in range(numberOfComponents):
       component = imageData.GetScalarComponentAsDouble(ijk[0],ijk[1],ijk[2],c)
       if component.is_integer():
         component = int(component)
@@ -250,10 +251,10 @@ class DataProbeInfoWidget(object):
     # collect information from displayable managers
     displayableManagerCollection = vtk.vtkCollection()
     if sliceNode:
-      sliceView = slicer.app.layoutManager().sliceWidget(sliceNode.GetLayoutName()).sliceView()
+      sliceView = slicer.app.layoutManager().sliceWidget(sliceNode.GetName()).sliceView()
       sliceView.getDisplayableManagers(displayableManagerCollection)
     aggregatedDisplayableManagerInfo = ''
-    for index in xrange(displayableManagerCollection.GetNumberOfItems()):
+    for index in range(displayableManagerCollection.GetNumberOfItems()):
       displayableManager = displayableManagerCollection.GetItemAsObject(index)
       infoString = displayableManager.GetDataProbeInfoStringForPosition(xyz)
       if infoString != "":
@@ -358,8 +359,8 @@ class DataProbeInfoWidget(object):
         pen = qt.QPen()
         pen.setColor(crosshairColor)
         painter.setPen(pen)
-        painter.drawLine(0, imagePixmap.height()/2, imagePixmap.width(), imagePixmap.height()/2)
-        painter.drawLine(imagePixmap.width()/2,0, imagePixmap.width()/2, imagePixmap.height())
+        painter.drawLine(0, int(imagePixmap.height()/2), imagePixmap.width(), int(imagePixmap.height()/2))
+        painter.drawLine(int(imagePixmap.width()/2), 0, int(imagePixmap.width()/2), imagePixmap.height())
         painter.end()
         return imagePixmap
     return None

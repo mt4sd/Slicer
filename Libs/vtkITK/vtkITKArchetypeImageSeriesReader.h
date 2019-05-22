@@ -47,7 +47,7 @@ class VTK_ITK_EXPORT vtkITKArchetypeImageSeriesReader : public vtkImageAlgorithm
 public:
   static vtkITKArchetypeImageSeriesReader *New();
   vtkTypeMacro(vtkITKArchetypeImageSeriesReader,vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   typedef itk::SpatialOrientation::ValidCoordinateOrientationFlags CoordinateOrientationCode;
 
@@ -563,7 +563,7 @@ public:
     {
       if ( n >= this->GetNumberOfSeriesInstanceUIDs() )
         {
-        return NULL;
+        return nullptr;
         }
       return this->SeriesInstanceUIDs[n].c_str();
     }
@@ -572,7 +572,7 @@ public:
     {
       if ( n >= this->GetNumberOfContentTime() )
         {
-        return NULL;
+        return nullptr;
         }
       return this->ContentTime[n].c_str();
     }
@@ -581,7 +581,7 @@ public:
     {
       if ( n >= this->GetNumberOfTriggerTime() )
         {
-        return NULL;
+        return nullptr;
         }
       return this->TriggerTime[n].c_str();
     }
@@ -590,7 +590,7 @@ public:
     {
       if ( n >= this->GetNumberOfEchoNumbers() )
         {
-        return NULL;
+        return nullptr;
         }
       return this->EchoNumbers[n].c_str();
     }
@@ -599,7 +599,7 @@ public:
     {
       if ( n >= this->GetNumberOfDiffusionGradientOrientation() )
         {
-        return NULL;
+        return nullptr;
         }
       float *dgo = new float [3];
       for (int k = 0; k <3; k++)
@@ -622,7 +622,7 @@ public:
     {
       if ( n >= this->GetNumberOfImageOrientationPatient() )
         {
-        return NULL;
+        return nullptr;
         }
       float *dgo = new float [6];
       for (int k = 0; k <6; k++)
@@ -636,7 +636,7 @@ public:
     {
       if (n >= this->GetNumberOfImagePositionPatient() )
         {
-        return NULL;
+        return nullptr;
         }
       float *ipp = new float [3];
       for (int k = 0; k <3; k++)
@@ -801,7 +801,7 @@ public:
 
 protected:
   vtkITKArchetypeImageSeriesReader();
-  ~vtkITKArchetypeImageSeriesReader();
+  ~vtkITKArchetypeImageSeriesReader() override;
 
   /// Get MetaData from dictionary, removing all whitespaces from the string.
   static std::string GetMetaDataWithoutSpaces(const itk::MetaDataDictionary &dict, const std::string& tag);
@@ -852,7 +852,7 @@ protected:
   std::vector<std::string> FileNames;
   std::vector<std::pair <double, int> > FileNameSliceKey;
   CoordinateOrientationCode DesiredCoordinateOrientation;
-  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
 
   itk::MetaDataDictionary Dictionary;
 
@@ -895,8 +895,8 @@ protected:
   std::vector<long int> IndexImagePositionPatient;
 
 private:
-  vtkITKArchetypeImageSeriesReader(const vtkITKArchetypeImageSeriesReader&);  /// Not implemented.
-  void operator=(const vtkITKArchetypeImageSeriesReader&);  /// Not implemented.
+  vtkITKArchetypeImageSeriesReader(const vtkITKArchetypeImageSeriesReader&) = delete;
+  void operator=(const vtkITKArchetypeImageSeriesReader&) = delete;
 };
 
 #endif

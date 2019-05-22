@@ -74,7 +74,7 @@ public:
   itkStaticConstMacro(OutputImageDimension, unsigned int,
                       TOutputImage::ImageDimension);
 
-  void PrintSelf ( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
+  void PrintSelf ( std::ostream& os, Indent indent ) const override;
 
   /// Set/Get the seed
   itkSetMacro(Seed, IndexType);
@@ -92,15 +92,15 @@ public:
 
 protected:
   LevelTracingImageFilter();
-  ~LevelTracingImageFilter(){}
+  ~LevelTracingImageFilter() override = default;
 
   /// Override since the filter needs all the data for the algorithm
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   /// Override since the filter produces the entire dataset
-  void EnlargeOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
+  void EnlargeOutputRequestedRegion(DataObject *output) override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   using Superclass::MakeOutput;
   DataObjectPointer MakeOutput(unsigned int output);
@@ -115,8 +115,8 @@ protected:
   virtual void Trace( const DispatchBase &);
 
 private:
-  LevelTracingImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  LevelTracingImageFilter(const Self&) = delete;
+  void operator=(const Self&) = delete;
 
   IndexType           m_Seed;
   InputImagePixelType m_Max;

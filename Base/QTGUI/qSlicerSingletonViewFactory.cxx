@@ -49,14 +49,12 @@ protected:
 qSlicerSingletonViewFactoryPrivate
 ::qSlicerSingletonViewFactoryPrivate(qSlicerSingletonViewFactory& object)
   : q_ptr(&object)
-  , Widget(NULL)
 {
 }
 
 //-----------------------------------------------------------------------------
 qSlicerSingletonViewFactoryPrivate::~qSlicerSingletonViewFactoryPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerSingletonViewFactoryPrivate::init()
@@ -78,8 +76,7 @@ qSlicerSingletonViewFactory::qSlicerSingletonViewFactory(QObject* parent)
 
 //-----------------------------------------------------------------------------
 qSlicerSingletonViewFactory::~qSlicerSingletonViewFactory()
-{
-}
+= default;
 
 
 //-----------------------------------------------------------------------------
@@ -120,6 +117,7 @@ QStringList qSlicerSingletonViewFactory::supportedElementNames() const
 //---------------------------------------------------------------------------
 QWidget* qSlicerSingletonViewFactory::createViewFromXML(QDomElement layoutElement)
 {
+  Q_UNUSED(layoutElement);
   Q_D(qSlicerSingletonViewFactory);
   if (this->widget()->isVisible())
     {

@@ -1,4 +1,5 @@
 """ This module sets up root logging and loads the Slicer library modules into its namespace."""
+from __future__ import print_function
 
 #-----------------------------------------------------------------------------
 def _createModule(name, globals, docstring):
@@ -32,12 +33,12 @@ value is the module name.
 # Load modules: Add VTK and PythonQt python module attributes into slicer namespace
 
 try:
-  from kits import available_kits
-except ImportError:
+  from .kits import available_kits
+except ImportError as detail:
   available_kits = []
 
 import string, os, sys
-standalone_python = "python" in string.lower(os.path.split(sys.executable)[-1])
+standalone_python = "python" in str.lower(os.path.split(sys.executable)[-1])
 
 for kit in available_kits:
   # skip PythonQt kits if we are running in a regular python interpreter
@@ -45,14 +46,15 @@ for kit in available_kits:
     continue
 
   try:
-    exec "from %s import *" % (kit)
+    exec("from %s import *" % (kit))
   except ImportError as detail:
-    print detail
+    print(detail)
+
+  del kit
 
 #-----------------------------------------------------------------------------
 # Cleanup: Removing things the user shouldn't have to see.
 
 del _createModule
 del available_kits
-del kit
 del standalone_python

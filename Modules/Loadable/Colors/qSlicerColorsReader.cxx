@@ -50,8 +50,7 @@ qSlicerColorsReader::qSlicerColorsReader(
 
 //-----------------------------------------------------------------------------
 qSlicerColorsReader::~qSlicerColorsReader()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerColorsReader::setColorLogic(vtkSlicerColorLogic* newColorLogic)
@@ -92,7 +91,7 @@ bool qSlicerColorsReader::load(const IOProperties& properties)
   Q_ASSERT(properties.contains("fileName"));
   QString fileName = properties["fileName"].toString();
 
-  if (d->ColorLogic.GetPointer() == 0)
+  if (d->ColorLogic.GetPointer() == nullptr)
     {
     return false;
     }
@@ -104,7 +103,7 @@ bool qSlicerColorsReader::load(const IOProperties& properties)
     loadedNodes << QString(node->GetID());
     }
   this->setLoadedNodes(loadedNodes);
-  return node != 0;
+  return node != nullptr;
 }
 
 // TODO: add the save() method. Use vtkSlicerColorLogic::SaveColor()

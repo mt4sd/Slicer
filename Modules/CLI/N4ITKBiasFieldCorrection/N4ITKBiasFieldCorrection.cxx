@@ -25,16 +25,15 @@ public:
   itkNewMacro( Self );
 protected:
   CommandIterationUpdate()
-  {
-  };
+   = default;
 public:
 
-  void Execute(itk::Object *caller, const itk::EventObject & event) ITK_OVERRIDE
+  void Execute(itk::Object *caller, const itk::EventObject & event) override
   {
     Execute( (const itk::Object *) caller, event);
   }
 
-  void Execute(const itk::Object * object, const itk::EventObject & event) ITK_OVERRIDE
+  void Execute(const itk::Object * object, const itk::EventObject & event) override
   {
     const TFilter * filter =
       dynamic_cast<const TFilter *>( object );
@@ -67,10 +66,10 @@ int main(int argc, char* * argv)
 
   PARSE_ARGS;
 
-  ImageType::Pointer inputImage = ITK_NULLPTR;
+  ImageType::Pointer inputImage = nullptr;
 
   typedef itk::Image<unsigned char, ImageDimension> MaskImageType;
-  MaskImageType::Pointer maskImage = ITK_NULLPTR;
+  MaskImageType::Pointer maskImage = nullptr;
 
   typedef    itk::N4BiasFieldCorrectionImageFilter<ImageType, MaskImageType, ImageType> CorrecterType;
   CorrecterType::Pointer correcter = CorrecterType::New();
@@ -126,7 +125,7 @@ int main(int argc, char* * argv)
     maskImage = otsu->GetOutput();
     }
 
-  ImageType::Pointer weightImage = ITK_NULLPTR;
+  ImageType::Pointer weightImage = nullptr;
 
   if( weightImageName != "" )
     {

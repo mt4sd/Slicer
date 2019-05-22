@@ -27,13 +27,12 @@ vtkMRMLInteractionNode::vtkMRMLInteractionNode()
 
 //----------------------------------------------------------------------------
 vtkMRMLInteractionNode::~vtkMRMLInteractionNode()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 int vtkMRMLInteractionNode::GetInteractionModeByString ( const char * modeString )
 {
-  if (modeString == NULL)
+  if (modeString == nullptr)
     {
     return (-1);
     }
@@ -77,7 +76,7 @@ void vtkMRMLInteractionNode::SetPlaceModePersistence ( int val )
   if (this->PlaceModePersistence != val)
     {
     this->PlaceModePersistence = val;
-    this->InvokeEvent(this->InteractionModePersistenceChangedEvent, NULL);
+    this->InvokeEvent(this->InteractionModePersistenceChangedEvent, nullptr);
     this->Modified();
     }
 }
@@ -88,7 +87,7 @@ void vtkMRMLInteractionNode::SetTransformModePersistence ( int val )
   if (this->TransformModePersistence != val)
     {
     this->TransformModePersistence = val;
-    this->InvokeEvent(this->InteractionModePersistenceChangedEvent, NULL);
+    this->InvokeEvent(this->InteractionModePersistenceChangedEvent, nullptr);
     this->Modified();
     }
 }
@@ -105,32 +104,18 @@ void vtkMRMLInteractionNode::SetLastInteractionMode ( int mode )
 //----------------------------------------------------------------------------
 void vtkMRMLInteractionNode::SetCurrentInteractionMode ( int mode )
 {
-  if ( this->CurrentInteractionMode == mode )
+  if (this->CurrentInteractionMode == mode)
     {
     return;
     }
-  switch (mode)
-    {
-    case vtkMRMLInteractionNode::Place:
-      this->CurrentInteractionMode = mode;
-      this->InvokeEvent(this->InteractionModeChangedEvent, NULL);
-      break;
-    case vtkMRMLInteractionNode::ViewTransform:
-      this->CurrentInteractionMode = mode;
-      this->InvokeEvent(this->InteractionModeChangedEvent, NULL);
-      break;
-    case vtkMRMLInteractionNode::Select:
-      this->CurrentInteractionMode = mode;
-      this->InvokeEvent(this->InteractionModeChangedEvent, NULL);
-      break;
-//    case vtkMRMLInteractionNode::LassoRegion:
-//      this->CurrentInteractionMode = mode;
-//      this->InvokeEvent(this->InteractionModeChangedEvent, NULL);
-//      break;
-    default:
-      break;
-    }
+  bool wasPlacing = (mode == vtkMRMLInteractionNode::Place);
+  this->CurrentInteractionMode = mode;
   this->Modified();
+  this->InvokeCustomModifiedEvent(vtkMRMLInteractionNode::InteractionModeChangedEvent);
+  if (wasPlacing)
+    {
+    this->InvokeCustomModifiedEvent(vtkMRMLInteractionNode::EndPlacementEvent);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -186,7 +171,7 @@ void vtkMRMLInteractionNode::ReadXMLAttributes(const char** atts)
 
   const char* attName;
   const char* attValue;
-  while (*atts != NULL)
+  while (*atts != nullptr)
     {
     attName = *(atts++);
     attValue = *(atts++);

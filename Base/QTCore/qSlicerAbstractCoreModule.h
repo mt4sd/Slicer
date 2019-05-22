@@ -40,7 +40,7 @@ class qSlicerAbstractCoreModulePrivate;
 
 #define qSlicerGetTitleMacro(_TITLE)               \
   static QString staticTitle() { return _TITLE; }  \
-  virtual QString title()const { return _TITLE; }
+  QString title() const override { return _TITLE; }
 
 /// \brief qSlicerAbstractCoreModule is the base class of any module in Slicer.
 //
@@ -192,8 +192,8 @@ public:
   /// The modules can typically be instantiated before the application
   /// is initialized (module manager, iomanager...). Most of the
   /// initialization must be done in qSlicerAbstractCoreModule::setup()
-  qSlicerAbstractCoreModule(QObject *parent=0);
-  virtual ~qSlicerAbstractCoreModule();
+  qSlicerAbstractCoreModule(QObject *parent=nullptr);
+  ~qSlicerAbstractCoreModule() override;
 
   virtual void printAdditionalInfo();
 
@@ -228,7 +228,7 @@ public:
   /// Returns \a true if the module should be hidden to the user.
   /// By default, interactive modules are visible and non-interactive
   /// modules are hidden.
-  /// \sa hidden, widgetRepresentationAvailable
+  /// \sa hidden, isWidgetRepresentationCreationEnabled
   virtual bool isHidden()const;
 
   /// Return the contributors of the module

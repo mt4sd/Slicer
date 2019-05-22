@@ -33,9 +33,6 @@
 
 // VTK includes
 #include <vtkObjectFactory.h>
-#include <vtkSmartPointer.h>
-#include <vtkCollection.h>
-#include <vtksys/SystemTools.hxx>
 
 // Qt includes
 #include <QDebug>
@@ -51,7 +48,7 @@ protected:
   qSlicerSubjectHierarchyCloneNodePlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyCloneNodePluginPrivate(qSlicerSubjectHierarchyCloneNodePlugin& object);
-  ~qSlicerSubjectHierarchyCloneNodePluginPrivate();
+  ~qSlicerSubjectHierarchyCloneNodePluginPrivate() override;
   void init();
 public:
   QAction* CloneItemAction;
@@ -64,7 +61,7 @@ public:
 qSlicerSubjectHierarchyCloneNodePluginPrivate::qSlicerSubjectHierarchyCloneNodePluginPrivate(qSlicerSubjectHierarchyCloneNodePlugin& object)
 : q_ptr(&object)
 {
-  this->CloneItemAction = NULL;
+  this->CloneItemAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -79,8 +76,7 @@ void qSlicerSubjectHierarchyCloneNodePluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyCloneNodePluginPrivate::~qSlicerSubjectHierarchyCloneNodePluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyCloneNodePlugin methods
@@ -98,8 +94,7 @@ qSlicerSubjectHierarchyCloneNodePlugin::qSlicerSubjectHierarchyCloneNodePlugin(Q
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyCloneNodePlugin::~qSlicerSubjectHierarchyCloneNodePlugin()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 QList<QAction*> qSlicerSubjectHierarchyCloneNodePlugin::itemContextMenuActions()const

@@ -44,33 +44,35 @@ class VTK_MRML_EXPORT vtkMRMLModelNode : public vtkMRMLDisplayableNode
 public:
   static vtkMRMLModelNode *New();
   vtkTypeMacro(vtkMRMLModelNode,vtkMRMLDisplayableNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Model";};
+  const char* GetNodeTagName() override {return "Model";};
 
  /// Description:
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// alternative method to propagate events generated in Display nodes
-  virtual void ProcessMRMLEvents ( vtkObject * /*caller*/,
+  void ProcessMRMLEvents ( vtkObject * /*caller*/,
                                    unsigned long /*event*/,
-                                   void * /*callData*/ ) VTK_OVERRIDE;
+                                   void * /*callData*/ ) override;
 
   /// Get associated model display MRML node
   vtkMRMLModelDisplayNode* GetModelDisplayNode();
 
   /// Set and observe mesh for this model.
-  /// \deprecated
   /// \sa GetMesh()
   virtual void SetAndObserveMesh(vtkPointSet *Mesh);
+
+  /// Set and observe mesh for this model.
+  /// \deprecated Use SetAndObserveMesh instead.
   virtual void SetAndObservePolyData(vtkPolyData *polyData);
 
   /// Return the input mesh.
@@ -119,7 +121,7 @@ public:
 
   /// Get the mesh type of that model. The safest way
   /// to know if the mesh is unstructuredGrid is to check
-  /// if GetUnstructuredGrid() is not NULL, but it requires
+  /// if GetUnstructuredGrid() is not nullptr, but it requires
   /// to update the pipeline.
   /// \sa MeshType, GetUnstructuredGrid()
   vtkGetMacro(MeshType, MeshTypeHint);
@@ -133,7 +135,7 @@ public:
   enum
     {
     MeshModifiedEvent = 17001,
-    PolyDataModifiedEvent = 17001 /// \deprecated Use MeshModifiedEvent
+    PolyDataModifiedEvent = 17001 ///< \deprecated Use MeshModifiedEvent
     };
 
   /// Utility function that adds an array to the mesh's point data.
@@ -217,12 +219,12 @@ public:
   /// This method returns the bounds of the object with any transforms that may
   /// be applied to it.
   /// \sa GetBounds()
-  virtual void GetRASBounds(double bounds[6]) VTK_OVERRIDE;
+  void GetRASBounds(double bounds[6]) override;
 
   /// Get bounding box in global RAS form (xmin,xmax, ymin,ymax, zmin,zmax).
   /// This method always returns the bounds of the untransformed object.
   /// \sa GetRASBounds()
-  virtual void GetBounds(double bounds[6]) VTK_OVERRIDE;
+  void GetBounds(double bounds[6]) override;
 
   /// Transforms bounds from the local coordinate system to the RAS (world)
   /// coordinate system. Only the corner points are used for determining the
@@ -230,15 +232,15 @@ public:
   /// bounds may not fully contain the transformed model points.
   virtual void TransformBoundsToRAS(double inputBounds_Local[6], double outputBounds_RAS[6]);
 
-  virtual bool CanApplyNonLinearTransforms()const VTK_OVERRIDE;
-  virtual void ApplyTransform(vtkAbstractTransform* transform) VTK_OVERRIDE;
+  bool CanApplyNonLinearTransforms()const override;
+  void ApplyTransform(vtkAbstractTransform* transform) override;
 
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE;
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override;
 
-  virtual std::string GetDefaultStorageNodeClassName(const char* filename /* =NULL */) VTK_OVERRIDE;
+  std::string GetDefaultStorageNodeClassName(const char* filename /* =nullptr */) override;
 
   /// Create and observe default display node
-  virtual void CreateDefaultDisplayNodes() VTK_OVERRIDE;
+  void CreateDefaultDisplayNodes() override;
 
   /// Reimplemented to take into account the modified time of the mesh.
   /// Returns true if the node (default behavior) or the mesh are modified
@@ -247,11 +249,11 @@ public:
   /// So if you invoke MeshModifiedEvent without calling Modified() on the
   /// mesh, GetModifiedSinceRead() won't return true.
   /// \sa vtkMRMLStorableNode::GetModifiedSinceRead()
-  virtual bool GetModifiedSinceRead() VTK_OVERRIDE;
+  bool GetModifiedSinceRead() override;
 
 protected:
   vtkMRMLModelNode();
-  ~vtkMRMLModelNode();
+  ~vtkMRMLModelNode() override;
   vtkMRMLModelNode(const vtkMRMLModelNode&);
   void operator=(const vtkMRMLModelNode&);
 
@@ -264,11 +266,11 @@ protected:
 
   ///
   /// Called when a node reference ID is added (list size increased).
-  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) override;
 
   ///
   /// Called when a node reference ID is modified.
-  virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceModified(vtkMRMLNodeReference *reference) override;
 
 
   /// Internal function that sets the mesh to all the display nodes.

@@ -54,10 +54,10 @@ public:
   typedef ctkSettingsPanel Superclass;
 
   /// Constructor
-  explicit qSlicerSettingsModulesPanel(QWidget* parent = 0);
+  explicit qSlicerSettingsModulesPanel(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerSettingsModulesPanel();
+  ~qSlicerSettingsModulesPanel() override;
 
   /// Get the \a modulesToAlwaysIgnore list.
   /// \sa setModulesToAlwaysIgnore(const QStringList& modulesNames)

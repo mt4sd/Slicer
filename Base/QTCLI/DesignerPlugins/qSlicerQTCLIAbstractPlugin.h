@@ -23,11 +23,7 @@
 
 // QT includes
 #include <QtGlobal>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QDesignerCustomWidgetInterface>
-#else
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
-#endif
 
 // QTCLI includes
 #include "qSlicerBaseQTCLIPluginsExport.h"
@@ -35,19 +31,17 @@
 class Q_SLICER_BASE_QTCLI_PLUGINS_EXPORT qSlicerQTCLIAbstractPlugin
   : public QDesignerCustomWidgetInterface
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
   Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface")
-#endif
   Q_INTERFACES(QDesignerCustomWidgetInterface);
 public:
 
   qSlicerQTCLIAbstractPlugin();
   // Don't reimplement this method.
-  QString group() const;
+  QString group() const override;
   // You can reimplement these methods
-  virtual QIcon icon() const;
-  virtual QString toolTip() const;
-  virtual QString whatsThis() const;
+  QIcon icon() const override;
+  QString toolTip() const override;
+  QString whatsThis() const override;
 };
 
 #endif

@@ -221,8 +221,8 @@ public:
 
 protected:
   ImageRegionMomentsCalculator();
-  virtual ~ImageRegionMomentsCalculator();
-  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  ~ImageRegionMomentsCalculator() override;
+  void PrintSelf(std::ostream& os, Indent indent) const override;
 
 private:
   ImageRegionMomentsCalculator(const Self &); // purposely not implemented

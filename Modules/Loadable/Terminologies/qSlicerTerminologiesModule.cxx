@@ -36,12 +36,6 @@
 #include "qSlicerIOManager.h"
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerTerminologiesModule, qSlicerTerminologiesModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup SlicerRt_QtModules_Terminologies
 class qSlicerTerminologiesModulePrivate
 {
@@ -54,8 +48,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerTerminologiesModulePrivate::qSlicerTerminologiesModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerTerminologiesModule methods
@@ -69,8 +62,7 @@ qSlicerTerminologiesModule::qSlicerTerminologiesModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerTerminologiesModule::~qSlicerTerminologiesModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerTerminologiesModule::helpText()const

@@ -1,10 +1,11 @@
+from __future__ import print_function
 import os
 import slicer
 import vtk
 import qt
 import EditorLib
-from EditUtil import EditUtil
-from EditUtil import UndoRedo
+from . import EditUtil
+from . import UndoRedo
 from slicer.util import VTKObservationMixin
 
 #########################################################
@@ -215,7 +216,7 @@ class EditBox(VTKObservationMixin):
         b.objectName = effect + 'ToolButton'
         b.setDefaultAction(a)
         a.setToolTip(effect)
-        if EditBox.displayNames.has_key(effect):
+        if effect in EditBox.displayNames:
           a.setToolTip(EditBox.displayNames[effect])
         hbox.addWidget(b)
 
@@ -295,7 +296,7 @@ class EditBox(VTKObservationMixin):
     self._onParameterNodeModified(EditUtil.getParameterNode())
 
   def setActiveToolLabel(self,name):
-    if EditBox.displayNames.has_key(name):
+    if name in EditBox.displayNames:
       name = EditBox.displayNames[name]
     self.toolsActiveToolName.setText(name)
 
@@ -368,7 +369,7 @@ class EditBox(VTKObservationMixin):
       self.currentOption.updateGUI()
       layoutManager = slicer.app.layoutManager()
       sliceNodeCount = slicer.mrmlScene.GetNumberOfNodesByClass('vtkMRMLSliceNode')
-      for nodeIndex in xrange(sliceNodeCount):
+      for nodeIndex in range(sliceNodeCount):
         # find the widget for each node in scene
         sliceNode = slicer.mrmlScene.GetNthNodeByClass(nodeIndex, 'vtkMRMLSliceNode')
         sliceWidget = layoutManager.sliceWidget(sliceNode.GetLayoutName())
@@ -382,7 +383,7 @@ class EditBox(VTKObservationMixin):
       try:
         options = eval("%sOptions" % effectName)
         self.currentOption = options(self.optionsFrame)
-      except NameError, AttributeError:
+      except NameError as AttributeError:
         # No options for this effect, skip it
         pass
 
@@ -424,9 +425,9 @@ class EditBox(VTKObservationMixin):
       painter = qt.QPainter()
       cursorImage.fill(0)
       painter.begin(cursorImage)
-      point = qt.QPoint(center - (baseImage.width()/2), 0)
+      point = qt.QPoint(center - int(baseImage.width()/2), 0)
       painter.drawImage(point, baseImage)
-      point.setX(center - (effectImage.width()/2))
+      point.setX(center - int(effectImage.width()/2))
       point.setY(cursorImage.height() - effectImage.height())
       painter.drawImage(point, effectImage)
       painter.end()
@@ -447,7 +448,7 @@ class EditBox(VTKObservationMixin):
     cursorPosition = qt.QCursor().pos()
     w = self.mainFrame.width
     h = self.mainFrame.height
-    self.mainFrame.pos = qt.QPoint(cursorPosition.x() - w/2, cursorPosition.y() - h/2)
+    self.mainFrame.pos = qt.QPoint(cursorPosition.x() - int(w/2), cursorPosition.y() - int(h/2))
     self.mainFrame.show()
     self.mainFrame.raise_()
     Key_Space = 0x20 # not in PythonQt

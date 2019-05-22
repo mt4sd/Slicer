@@ -44,7 +44,7 @@ public:
 
   static vtkMRMLLinearTransformsDisplayableManager3D* New();
   vtkTypeMacro(vtkMRMLLinearTransformsDisplayableManager3D,vtkMRMLAbstractThreeDViewDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// \internal
   /// For testing purposes only:
@@ -54,30 +54,30 @@ public:
 protected:
 
   vtkMRMLLinearTransformsDisplayableManager3D();
-  virtual ~vtkMRMLLinearTransformsDisplayableManager3D();
+  ~vtkMRMLLinearTransformsDisplayableManager3D() override;
 
-  virtual void UnobserveMRMLScene() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) VTK_OVERRIDE;
+  void UnobserveMRMLScene() override;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) override;
+  void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) override;
 
   /// Update Actors based on transforms in the scene
-  virtual void UpdateFromMRML() VTK_OVERRIDE;
+  void UpdateFromMRML() override;
 
-  virtual void OnMRMLSceneStartClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndClose() VTK_OVERRIDE;
+  void OnMRMLSceneStartClose() override;
+  void OnMRMLSceneEndClose() override;
 
-  virtual void OnMRMLSceneEndBatchProcess() VTK_OVERRIDE;
+  void OnMRMLSceneEndBatchProcess() override;
 
   /// Initialize the displayable manager
-  virtual void Create() VTK_OVERRIDE;
+  void Create() override;
 
-  virtual void ProcessWidgetsEvents(vtkObject* caller, unsigned long event, void* callData) VTK_OVERRIDE;
+  void ProcessWidgetsEvents(vtkObject* caller, unsigned long event, void* callData) override;
 
 private:
 
-  vtkMRMLLinearTransformsDisplayableManager3D(const vtkMRMLLinearTransformsDisplayableManager3D&); // Not implemented
-  void operator=(const vtkMRMLLinearTransformsDisplayableManager3D&);                 // Not Implemented
+  vtkMRMLLinearTransformsDisplayableManager3D(const vtkMRMLLinearTransformsDisplayableManager3D&) = delete;
+  void operator=(const vtkMRMLLinearTransformsDisplayableManager3D&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

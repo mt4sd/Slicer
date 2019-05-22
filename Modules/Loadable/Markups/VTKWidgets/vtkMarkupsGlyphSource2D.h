@@ -50,7 +50,7 @@ class VTK_SLICER_MARKUPS_MODULE_VTKWIDGETS_EXPORT vtkMarkupsGlyphSource2D : publ
 {
 public:
   vtkTypeMacro(vtkMarkupsGlyphSource2D,vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Construct a vertex glyph centered at the origin, scale 1.0, white in
   /// color, filled, with line segment passing through the point.
@@ -119,12 +119,13 @@ public:
   void SetGlyphTypeToStarBurst() {this->SetGlyphType(VTK_STARBURST_GLYPH);}
 
   void SetGlyphTypeAsString(const char* type);
+  void SetNextGlyphType();
 
 protected:
   vtkMarkupsGlyphSource2D();
-  ~vtkMarkupsGlyphSource2D() {};
+  ~vtkMarkupsGlyphSource2D() override  = default;
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
 
   double Center[3];
   double Scale;
@@ -166,8 +167,8 @@ protected:
                        vtkCellArray *polys, vtkUnsignedCharArray *colors);
 
 private:
-  vtkMarkupsGlyphSource2D(const vtkMarkupsGlyphSource2D&);  /// Not implemented.
-  void operator=(const vtkMarkupsGlyphSource2D&);  /// Not implemented.
+  vtkMarkupsGlyphSource2D(const vtkMarkupsGlyphSource2D&) = delete;
+  void operator=(const vtkMarkupsGlyphSource2D&) = delete;
 };
 
 #endif

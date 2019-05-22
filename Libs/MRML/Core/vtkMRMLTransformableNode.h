@@ -32,21 +32,21 @@ class VTK_MRML_EXPORT vtkMRMLTransformableNode : public vtkMRMLStorableNode
 {
 public:
   vtkTypeMacro(vtkMRMLTransformableNode,vtkMRMLStorableNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE = 0;
+  vtkMRMLNode* CreateNodeInstance() override = 0;
 
   ///
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE = 0;
+  const char* GetNodeTagName() override = 0;
 
   ///
   /// Set a reference to transform node
@@ -64,9 +64,9 @@ public:
 
   ///
   /// alternative method to propagate events generated in Transform nodes
-  virtual void ProcessMRMLEvents ( vtkObject * /*caller*/,
+  void ProcessMRMLEvents ( vtkObject * /*caller*/,
                                   unsigned long /*event*/,
-                                  void * /*callData*/ ) VTK_OVERRIDE;
+                                  void * /*callData*/ ) override;
 
   /// TransformModifiedEvent is send when the parent transform is modidied
   enum
@@ -113,7 +113,7 @@ public:
 
 protected:
   vtkMRMLTransformableNode();
-  ~vtkMRMLTransformableNode();
+  ~vtkMRMLTransformableNode() override;
   vtkMRMLTransformableNode(const vtkMRMLTransformableNode&);
   void operator=(const vtkMRMLTransformableNode&);
 
@@ -125,37 +125,18 @@ protected:
 
   ///
   /// Called when a node reference ID is added (list size increased).
-  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) VTK_OVERRIDE
-  {
-    Superclass::OnNodeReferenceAdded(reference);
-    if (std::string(reference->GetReferenceRole()) == this->TransformNodeReferenceRole)
-      {
-      this->InvokeCustomModifiedEvent(vtkMRMLTransformableNode::TransformModifiedEvent, reference->GetReferencedNode());
-      }
-  }
+  void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) override;
 
   ///
   /// Called when a node reference ID is modified.
-  virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference) VTK_OVERRIDE
-  {
-    Superclass::OnNodeReferenceModified(reference);
-    if (std::string(reference->GetReferenceRole()) == this->TransformNodeReferenceRole)
-    {
-      this->InvokeCustomModifiedEvent(vtkMRMLTransformableNode::TransformModifiedEvent, reference->GetReferencedNode());
-    }
-  }
+  void OnNodeReferenceModified(vtkMRMLNodeReference *reference) override;
 
   ///
   /// Called after a node reference ID is removed (list size decreased).
-  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference) VTK_OVERRIDE
-  {
-    Superclass::OnNodeReferenceRemoved(reference);
-    if (std::string(reference->GetReferenceRole()) == this->TransformNodeReferenceRole)
-    {
-      this->InvokeCustomModifiedEvent(vtkMRMLTransformableNode::TransformModifiedEvent, reference->GetReferencedNode());
-    }
-  }
+  void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference) override;
 
+  /// Called when transform node reference added/modified/removed
+  virtual void OnTransformNodeReferenceChanged(vtkMRMLTransformNode* transformNode);
 
 private:
   char* TransformNodeIDInternal;

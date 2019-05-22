@@ -52,8 +52,7 @@ qSlicerModelsReader::qSlicerModelsReader(vtkSlicerModelsLogic* _modelsLogic, QOb
 
 //-----------------------------------------------------------------------------
 qSlicerModelsReader::~qSlicerModelsReader()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerModelsReader::setModelsLogic(vtkSlicerModelsLogic* newModelsLogic)
@@ -97,7 +96,7 @@ bool qSlicerModelsReader::load(const IOProperties& properties)
   QString fileName = properties["fileName"].toString();
 
   this->setLoadedNodes(QStringList());
-  if (d->ModelsLogic.GetPointer() == 0)
+  if (d->ModelsLogic.GetPointer() == nullptr)
     {
     return false;
     }

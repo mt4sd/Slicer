@@ -58,7 +58,7 @@ public:
 qSlicerSettingsModulesPanelPrivate::qSlicerSettingsModulesPanelPrivate(qSlicerSettingsModulesPanel& object)
   :q_ptr(&object)
 {
-  this->ModulesMenu = 0;
+  this->ModulesMenu = nullptr;
 }
 
 // --------------------------------------------------------------------------
@@ -204,8 +204,7 @@ qSlicerSettingsModulesPanel::qSlicerSettingsModulesPanel(QWidget* _parent)
 
 // --------------------------------------------------------------------------
 qSlicerSettingsModulesPanel::~qSlicerSettingsModulesPanel()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerSettingsModulesPanel::setModulesToAlwaysIgnore(const QStringList& moduleNames)

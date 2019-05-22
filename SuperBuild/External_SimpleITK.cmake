@@ -35,13 +35,13 @@ ExternalProject_Execute(${proj} \"install\" \"${PYTHON_EXECUTABLE}\" Packaging/s
 
   ExternalProject_SetIfNotDefined(
     Slicer_${proj}_GIT_REPOSITORY
-    "${EP_GIT_PROTOCOL}://github.com/SimpleITK/SimpleITK.git"
+    "${EP_GIT_PROTOCOL}://github.com/Slicer/SimpleITK.git"
     QUIET
     )
 
   ExternalProject_SetIfNotDefined(
     Slicer_${proj}_GIT_TAG
-    "v1.1.0"
+    "7cc170c640e2bb4e7b3a68cdda0acabde7bda720" # slicer-v1.2.0-2019-02-27-dc5c1a1 (based of v1.2.0 release branch)
     QUIET
     )
 
@@ -67,35 +67,6 @@ ExternalProject_Execute(${proj} \"install\" \"${PYTHON_EXECUTABLE}\" Packaging/s
     NAME ${proj}
     )
 
-  set(EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS)
-
-  if(CMAKE_CXX_STANDARD EQUAL 11 OR CMAKE_CXX_STANDARD LESS 30)
-    #
-    # Since SimpleITK requires C++11 with libc++ ( vs. libstdc++ ), we let
-    # it's build system figure out the correct set of flags.
-    #
-    # From Brad:
-    #   "Compiling ITK with C++98 while compiling SimpleITK C++11,
-    #   is not ideal, but all the tests seem to pass for the wrapping.
-    #   That said, there may be a problem if the SimpleITK C++ interface
-    #   is used with this mixing of C++ standards."
-    #
-    # More details here: https://discourse.slicer.org/t/cannot-compile-slicer-on-mac-macos-sierra-clang-9-cmake-3-9-1/1104/9
-    #
-
-    if(CMAKE_VERSION VERSION_LESS "3.8.2")
-      message(FATAL_ERROR "Since SimpleITK requires CMP0067 to properly support C++11, "
-                          "CMake >= 3.8.2 is required to configure ${PROJECT_NAME}: "
-                          "Current CMake version is [${CMAKE_VERSION}]")
-    endif()
-
-    list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
-      -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
-      -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
-      -DCMAKE_CXX_EXTENSIONS:BOOL=${CMAKE_CXX_EXTENSIONS}
-      )
-  endif()
-
   ExternalProject_add(SimpleITK
     ${${proj}_EP_ARGS}
     SOURCE_DIR ${EP_SOURCE_DIR}/SuperBuild
@@ -108,6 +79,9 @@ ExternalProject_Execute(${proj} \"install\" \"${PYTHON_EXECUTABLE}\" Packaging/s
       -DCMAKE_CXX_FLAGS:STRING=${ep_common_cxx_flags}
       -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
       -DCMAKE_C_FLAGS:STRING=${ep_common_c_flags}
+      -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
+      -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
+      -DCMAKE_CXX_EXTENSIONS:BOOL=${CMAKE_CXX_EXTENSIONS}
       -DBUILD_SHARED_LIBS:BOOL=${Slicer_USE_SimpleITK_SHARED}
       -DBUILD_EXAMPLES:BOOL=OFF
       -DSimpleITK_PYTHON_THREADS:BOOL=ON
@@ -128,7 +102,6 @@ ExternalProject_Execute(${proj} \"install\" \"${PYTHON_EXECUTABLE}\" Packaging/s
       -DWRAP_PYTHON:BOOL=ON
       -DSimpleITK_BUILD_DISTRIBUTE:BOOL=ON # Shorten version and install path removing -g{GIT-HASH} suffix.
       -DExternalData_OBJECT_STORES:PATH=${ExternalData_OBJECT_STORES}
-      ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
     #
     INSTALL_COMMAND ${CMAKE_COMMAND} -P ${_install_script}
     #

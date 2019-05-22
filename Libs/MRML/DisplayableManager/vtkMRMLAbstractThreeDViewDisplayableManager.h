@@ -38,7 +38,7 @@ class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLAbstractThreeDViewDisplayableMan
 public:
 
   static vtkMRMLAbstractThreeDViewDisplayableManager *New();
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkMRMLAbstractThreeDViewDisplayableManager, vtkMRMLAbstractDisplayableManager);
 
   /// Get MRML ViewNode
@@ -50,14 +50,14 @@ public:
   virtual int Pick3D(double vtkNotUsed(ras)[3]) { return 0; }
 
   /// Get the MRML ID of the picked node, returns empty string if no pick
-  virtual const char* GetPickedNodeID() { return NULL; }
+  virtual const char* GetPickedNodeID() { return nullptr; }
 
 protected:
 
   vtkMRMLAbstractThreeDViewDisplayableManager();
-  virtual ~vtkMRMLAbstractThreeDViewDisplayableManager();
+  ~vtkMRMLAbstractThreeDViewDisplayableManager() override;
 
-  virtual void OnMRMLDisplayableNodeModifiedEvent(vtkObject* caller) VTK_OVERRIDE;
+  void OnMRMLDisplayableNodeModifiedEvent(vtkObject* caller) override;
 
   /// Could be overloaded in DisplayableManager subclass
   virtual void OnMRMLViewNodeModifiedEvent(){}
@@ -66,8 +66,8 @@ protected:
 
 private:
 
-  vtkMRMLAbstractThreeDViewDisplayableManager(const vtkMRMLAbstractThreeDViewDisplayableManager&); // Not implemented
-  void operator=(const vtkMRMLAbstractThreeDViewDisplayableManager&);                    // Not implemented
+  vtkMRMLAbstractThreeDViewDisplayableManager(const vtkMRMLAbstractThreeDViewDisplayableManager&) = delete;
+  void operator=(const vtkMRMLAbstractThreeDViewDisplayableManager&) = delete;
 };
 
 #endif

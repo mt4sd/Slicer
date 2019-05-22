@@ -39,7 +39,7 @@ follows the same intensity value back to the starting point within the current s
 
   def deactivate(self):
     # Clear draw pipelines
-    for sliceWidget, pipeline in self.levelTracingPipelines.iteritems():
+    for sliceWidget, pipeline in self.levelTracingPipelines.items():
       self.scriptedEffect.removeActor2D(sliceWidget, pipeline.actor)
     self.levelTracingPipelines = {}
     self.lastXY = None
@@ -117,7 +117,7 @@ follows the same intensity value back to the starting point within the current s
 #
 # LevelTracingPipeline
 #
-class LevelTracingPipeline:
+class LevelTracingPipeline(object):
   """ Visualization objects and pipeline for each slice view for level tracing
   """
   def __init__(self, effect, sliceWidget):
@@ -154,7 +154,7 @@ class LevelTracingPipeline:
     ijk = self.effect.xyToIjk(xy, self.sliceWidget, masterImageData)
     dimensions = masterImageData.GetDimensions()
 
-    for index in xrange(3):
+    for index in range(3):
       # TracingFilter crashes if it receives a seed point at the edge of the image,
       # so only accept the point if it is inside the image and is at least one pixel away from the edge
       if ijk[index] < 1 or ijk[index] >= dimensions[index]-1:

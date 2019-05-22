@@ -47,30 +47,30 @@ class  VTK_MRML_EXPORT vtkMRMLStreamingVolumeNode : public vtkMRMLVectorVolumeNo
 public:
   static vtkMRMLStreamingVolumeNode *New();
   vtkTypeMacro(vtkMRMLStreamingVolumeNode,vtkMRMLVectorVolumeNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
-  virtual void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
+  void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData) override;
 
   /// Set node attributes
-  virtual void ReadXMLAttributes(const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes(const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE
+  const char* GetNodeTagName() override
   {return "StreamingVolume";}
 
   /// Set/Get the observed image data object and and image data connections
   /// \sa vtkMRMLVolumeNode::SetAndObserveImageData(), vtkMRMLVolumeNode::GetImageData(), vtkMRMLVolumeNode::GetImageDataConnection()
-  virtual void SetAndObserveImageData(vtkImageData* imageData) VTK_OVERRIDE;
-  virtual vtkImageData* GetImageData() VTK_OVERRIDE;
-  virtual vtkAlgorithmOutput* GetImageDataConnection() VTK_OVERRIDE;
+  void SetAndObserveImageData(vtkImageData* imageData) override;
+  vtkImageData* GetImageData() override;
+  vtkAlgorithmOutput* GetImageDataConnection() override;
 
   /// Set and observe the frame object containing the compressed image data
   /// \param frame Object containing the compressed video frame info
@@ -115,7 +115,7 @@ public:
 
 protected:
   vtkMRMLStreamingVolumeNode();
-  ~vtkMRMLStreamingVolumeNode();
+  ~vtkMRMLStreamingVolumeNode() override;
   vtkMRMLStreamingVolumeNode(const vtkMRMLStreamingVolumeNode&);
   void operator=(const vtkMRMLStreamingVolumeNode&);
 

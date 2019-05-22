@@ -46,7 +46,7 @@ protected:
   qSlicerSubjectHierarchyDefaultPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyDefaultPluginPrivate(qSlicerSubjectHierarchyDefaultPlugin& object);
-  ~qSlicerSubjectHierarchyDefaultPluginPrivate();
+  ~qSlicerSubjectHierarchyDefaultPluginPrivate() override;
   void init();
 public:
   QIcon UnknownIcon;
@@ -66,17 +66,16 @@ public:
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyDefaultPluginPrivate::qSlicerSubjectHierarchyDefaultPluginPrivate(qSlicerSubjectHierarchyDefaultPlugin& object)
 : q_ptr(&object)
-, ToggleVisibilityAction(NULL)
-, ShowAllChildrenAction(NULL)
-, HideAllChildrenAction(NULL)
+, ToggleVisibilityAction(nullptr)
+, ShowAllChildrenAction(nullptr)
+, HideAllChildrenAction(nullptr)
 {
   this->UnknownIcon = QIcon(":Icons/Unknown.png");
 }
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyDefaultPluginPrivate::~qSlicerSubjectHierarchyDefaultPluginPrivate()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qSlicerSubjectHierarchyDefaultPluginPrivate::init()
@@ -109,8 +108,7 @@ qSlicerSubjectHierarchyDefaultPlugin::qSlicerSubjectHierarchyDefaultPlugin(QObje
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyDefaultPlugin::~qSlicerSubjectHierarchyDefaultPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void qSlicerSubjectHierarchyDefaultPlugin::setDefaultVisibilityIcons(QIcon visibleIcon, QIcon hiddenIcon, QIcon partiallyVisibleIcon)

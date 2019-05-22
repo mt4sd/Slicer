@@ -44,8 +44,8 @@ public:
   typedef ctkVTKRenderView Superclass;
 
   /// Constructors
-  explicit qMRMLThreeDView(QWidget* parent = 0);
-  virtual ~qMRMLThreeDView();
+  explicit qMRMLThreeDView(QWidget* parent = nullptr);
+  ~qMRMLThreeDView() override;
 
   /// Add a displayable manager to the view,
   /// the displayable manager is proper to the 3D view and is not shared
@@ -75,6 +75,15 @@ public:
   Q_INVOKABLE void resetCamera(bool resetRotation = true,
                                bool resetTranslation = true,
                                bool resetDistance = true);
+
+  /// Set cursor in the view area
+  Q_INVOKABLE void setViewCursor(const QCursor &);
+
+  /// Restore default cursor in the view area
+  Q_INVOKABLE void unsetViewCursor();
+
+  /// Set default cursor in the view area
+  Q_INVOKABLE void setDefaultViewCursor(const QCursor &cursor);
 
 public slots:
 

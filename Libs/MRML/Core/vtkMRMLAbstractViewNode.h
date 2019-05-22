@@ -39,24 +39,24 @@ class VTK_MRML_EXPORT vtkMRMLAbstractViewNode
 {
 public:
   vtkTypeMacro(vtkMRMLAbstractViewNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// \brief Reimplemented to preserve layout label when reset.
   /// \sa GetLayoutLabel()
-  virtual void Reset(vtkMRMLNode* defaultNode) VTK_OVERRIDE;
+  void Reset(vtkMRMLNode* defaultNode) override;
 
   /// Name of the layout. Must be unique between all the view nodes of the
   /// same type because it is used as a singleton tag.
@@ -188,7 +188,7 @@ public:
   vtkGetMacro(OrientationMarkerType, int);
 
   /// Get/Set a custom human orientation marker model.
-  /// If NULL or invalid node ID is specified then the default human model will be used.
+  /// If nullptr or invalid node ID is specified then the default human model will be used.
   /// If the node has point data array with the name "Color" and 3 scalar components then
   /// it will be used to specify RGB color for the model. If no color point data is specified
   /// then the solid color specified in the model node's first display node will be used as color.
@@ -261,7 +261,7 @@ public:
 
 protected:
   vtkMRMLAbstractViewNode();
-  ~vtkMRMLAbstractViewNode();
+  ~vtkMRMLAbstractViewNode() override;
 
   vtkMRMLAbstractViewNode(const vtkMRMLAbstractViewNode&);
   void operator=(const vtkMRMLAbstractViewNode&);

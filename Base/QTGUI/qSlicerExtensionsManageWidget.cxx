@@ -35,9 +35,7 @@
 #include <QStyledItemDelegate>
 #include <QTextBlock>
 #include <QTextDocument>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QUrlQuery>
-#endif
 
 // Slicer includes
 #include "qSlicerExtensionsManagerModel.h"
@@ -92,7 +90,7 @@ public:
 qSlicerExtensionsManageWidgetPrivate::qSlicerExtensionsManageWidgetPrivate(qSlicerExtensionsManageWidget& object)
   :q_ptr(&object)
 {
-  this->ExtensionsManagerModel = 0;
+  this->ExtensionsManagerModel = nullptr;
 }
 
 // --------------------------------------------------------------------------
@@ -104,7 +102,7 @@ class qSlicerExtensionsButtonBox : public QWidget, public Ui_qSlicerExtensionsBu
 {
 public:
   typedef QWidget Superclass;
-  qSlicerExtensionsButtonBox(QWidget* parent = 0) : Superclass(parent)
+  qSlicerExtensionsButtonBox(QWidget* parent = nullptr) : Superclass(parent)
   {
     this->setupUi(this);
   }
@@ -117,12 +115,12 @@ class qSlicerExtensionsItemDelegate : public QStyledItemDelegate
 {
 public:
   qSlicerExtensionsItemDelegate(qSlicerExtensionsManageWidget * list,
-                                QObject * parent = 0)
+                                QObject * parent = nullptr)
     : QStyledItemDelegate(parent), List(list) {}
 
   // --------------------------------------------------------------------------
-  virtual void paint(QPainter * painter, const QStyleOptionViewItem& option,
-                     const QModelIndex& index) const
+  void paint(QPainter * painter, const QStyleOptionViewItem& option,
+                     const QModelIndex& index) const override
   {
     QStyleOptionViewItem modifiedOption = option;
     QListWidgetItem * const item = this->List->itemFromIndex(index);
@@ -248,7 +246,7 @@ QListWidgetItem * qSlicerExtensionsManageWidgetPrivate::extensionItem(const QStr
     {
     return q->item(indices.first().row());
     }
-  return 0;
+  return nullptr;
 }
 
 namespace
@@ -356,7 +354,7 @@ public:
   }
 
   // --------------------------------------------------------------------------
-  virtual QSize sizeHint() const
+  QSize sizeHint() const override
   {
     QSize hint = this->Superclass::sizeHint();
     hint.setHeight(qRound(this->Text.size().height() + 0.5) +
@@ -365,7 +363,7 @@ public:
   }
 
   // --------------------------------------------------------------------------
-  virtual void paintEvent(QPaintEvent *)
+  void paintEvent(QPaintEvent *) override
   {
     QPainter painter(this);
     const QRect cr = this->contentsRect();
@@ -419,7 +417,7 @@ public:
   }
 
   // --------------------------------------------------------------------------
-  virtual void mouseMoveEvent(QMouseEvent * e)
+  void mouseMoveEvent(QMouseEvent * e) override
   {
     Superclass::mouseMoveEvent(e);
 
@@ -440,7 +438,7 @@ public:
   }
 
   // --------------------------------------------------------------------------
-  virtual void mouseReleaseEvent(QMouseEvent * e)
+  void mouseReleaseEvent(QMouseEvent * e) override
   {
     Superclass::mouseReleaseEvent(e);
 
@@ -481,7 +479,7 @@ public:
 class qSlicerExtensionsItemWidget : public QWidget
 {
 public:
-  qSlicerExtensionsItemWidget(qSlicerExtensionsDescriptionLabel * label, QWidget* parent = 0)
+  qSlicerExtensionsItemWidget(qSlicerExtensionsDescriptionLabel * label, QWidget* parent = nullptr)
     : QWidget(parent), Label(label)
   {
     QHBoxLayout * layout = new QHBoxLayout;
@@ -511,7 +509,7 @@ void qSlicerExtensionsManageWidgetPrivate::addExtensionItem(const ExtensionMetad
     qCritical() << "Missing metadata identified with 'extensionname' key";
     return;
     }
-  Q_ASSERT(this->extensionItem(extensionName) == 0);
+  Q_ASSERT(this->extensionItem(extensionName) == nullptr);
   QString description = metadata.value("description").toString();
   QString extensionSlicerRevision = metadata.value("slicer_revision").toString();
   bool enabled = QVariant::fromValue(metadata.value("enabled")).toBool();
@@ -598,8 +596,7 @@ qSlicerExtensionsManageWidget::qSlicerExtensionsManageWidget(QWidget* _parent)
 
 // --------------------------------------------------------------------------
 qSlicerExtensionsManageWidget::~qSlicerExtensionsManageWidget()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 qSlicerExtensionsManagerModel* qSlicerExtensionsManageWidget::extensionsManagerModel()const
@@ -899,17 +896,11 @@ void qSlicerExtensionsManageWidget::onLinkActivated(const QString& link)
 
   QUrl url = d->ExtensionsManagerModel->serverUrl();
   url.setPath(url.path() + "/slicerappstore/extension/view");
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  url.addQueryItem("extensionId", link.mid(7)); // remove leading "slicer:"
-  url.addQueryItem("breadcrumbs", "none");
-  url.addQueryItem("layout", "empty");
-#else
   QUrlQuery urlQuery;
   urlQuery.addQueryItem("extensionId", link.mid(7)); // remove leading "slicer:"
   urlQuery.addQueryItem("breadcrumbs", "none");
   urlQuery.addQueryItem("layout", "empty");
   url.setQuery(urlQuery);
-#endif
 
   emit this->linkActivated(url);
 }

@@ -66,7 +66,7 @@ protected:
   qSlicerSubjectHierarchyTablesPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyTablesPluginPrivate(qSlicerSubjectHierarchyTablesPlugin& object);
-  ~qSlicerSubjectHierarchyTablesPluginPrivate();
+  ~qSlicerSubjectHierarchyTablesPluginPrivate() override;
   void init();
 public:
   QIcon TableIcon;
@@ -89,8 +89,7 @@ void qSlicerSubjectHierarchyTablesPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyTablesPluginPrivate::~qSlicerSubjectHierarchyTablesPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyTablesPlugin methods
@@ -108,8 +107,7 @@ qSlicerSubjectHierarchyTablesPlugin::qSlicerSubjectHierarchyTablesPlugin(QObject
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyTablesPlugin::~qSlicerSubjectHierarchyTablesPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchyTablesPlugin::canAddNodeToSubjectHierarchy(
@@ -250,7 +248,7 @@ void qSlicerSubjectHierarchyTablesPlugin::setDisplayVisibility(vtkIdType itemID,
       vtkIdType tableItemID = shNode->GetItemByDataNode(scene->GetNodeByID(tableViewNode->GetTableNodeID()));
       if (tableItemID != vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID)
         {
-        tableViewNode->SetTableNodeID(NULL);
+        tableViewNode->SetTableNodeID(nullptr);
         shNode->ItemModified(tableItemID);
         }
       }
@@ -261,7 +259,7 @@ void qSlicerSubjectHierarchyTablesPlugin::setDisplayVisibility(vtkIdType itemID,
   else if (tableViewNode)
     {
     // Hide table
-    tableViewNode->SetTableNodeID(NULL);
+    tableViewNode->SetTableNodeID(nullptr);
     }
 
   // Trigger icon update
@@ -310,13 +308,13 @@ vtkMRMLTableViewNode* qSlicerSubjectHierarchyTablesPlugin::getTableViewNode()con
   if (!scene)
     {
     qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
-    return NULL;
+    return nullptr;
     }
 
   qMRMLLayoutManager* layoutManager = qSlicerApplication::application()->layoutManager();
   if (!layoutManager)
     {
-    return NULL;
+    return nullptr;
     }
 
   for (int i = 0; i<layoutManager->tableViewCount(); i++)
@@ -334,5 +332,5 @@ vtkMRMLTableViewNode* qSlicerSubjectHierarchyTablesPlugin::getTableViewNode()con
       }
     }
 
-  return NULL;
+  return nullptr;
 }

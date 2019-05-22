@@ -1,8 +1,9 @@
+from __future__ import print_function
 import os
 import vtk, qt, ctk, slicer
-from EditOptions import HelpButton
-from EditUtil import EditUtil
-import Effect
+from . import HelpButton
+from . import EditUtil
+from . import EffectOptions, EffectTool, EffectLogic, Effect
 
 __all__ = [
   'FastMarchingEffectOptions',
@@ -21,7 +22,7 @@ __all__ = [
 # FastMarchingEffectOptions - see EditOptions and Effect for superclasses
 #
 
-class FastMarchingEffectOptions(Effect.EffectOptions):
+class FastMarchingEffectOptions(EffectOptions):
   """ FastMarchingEffect-specfic gui
   """
 
@@ -136,7 +137,7 @@ class FastMarchingEffectOptions(Effect.EffectOptions):
     labelImage = EditUtil.getLabelImage()
     spacing = labelNode.GetSpacing()
     dim = labelImage.GetDimensions()
-    print dim
+    print(dim)
     totalVolume = spacing[0]*dim[0]+spacing[1]*dim[1]+spacing[2]*dim[2]
 
     percentVolumeStr = "%.5f" % (totalVolume*val/100.)
@@ -157,7 +158,7 @@ class FastMarchingEffectOptions(Effect.EffectOptions):
 # FastMarchingEffectTool
 #
 
-class FastMarchingEffectTool(Effect.EffectTool):
+class FastMarchingEffectTool(EffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -186,7 +187,7 @@ class FastMarchingEffectTool(Effect.EffectTool):
 # FastMarchingEffectLogic
 #
 
-class FastMarchingEffectLogic(Effect.EffectLogic):
+class FastMarchingEffectLogic(EffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an FastMarchingEffectTool
@@ -209,7 +210,7 @@ class FastMarchingEffectLogic(Effect.EffectLogic):
 
     # collect seeds
     dim = bgImage.GetDimensions()
-    print dim
+    print(dim)
     # initialize the filter
     self.fm = slicer.vtkPichonFastMarching()
     scalarRange = bgImage.GetScalarRange()
@@ -296,7 +297,7 @@ class FastMarchingEffectLogic(Effect.EffectLogic):
 # The FastMarchingEffectExtension class definition
 #
 
-class FastMarchingEffect(Effect.Effect):
+class FastMarchingEffect(Effect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

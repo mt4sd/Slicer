@@ -141,7 +141,7 @@ vtkMRMLScene* qSlicerVolumeRenderingSettingsPanelPrivate::mrmlScene()
   vtkSlicerVolumeRenderingLogic* logic = q->volumeRenderingLogic();
   if (!logic)
     {
-    return NULL;
+    return nullptr;
     }
   return logic->GetMRMLScene();
 }
@@ -152,7 +152,7 @@ vtkMRMLViewNode* qSlicerVolumeRenderingSettingsPanelPrivate::defaultMrmlViewNode
   vtkMRMLScene* scene = this->mrmlScene();
   if (!scene)
     {
-    return NULL;
+    return nullptr;
     }
 
   // Setup a default 3D view node so that the default settings are propagated to all new 3D views
@@ -179,8 +179,7 @@ qSlicerVolumeRenderingSettingsPanel::qSlicerVolumeRenderingSettingsPanel(QWidget
 
 // --------------------------------------------------------------------------
 qSlicerVolumeRenderingSettingsPanel::~qSlicerVolumeRenderingSettingsPanel()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 vtkSlicerVolumeRenderingLogic* qSlicerVolumeRenderingSettingsPanel::volumeRenderingLogic()const
@@ -225,7 +224,7 @@ void qSlicerVolumeRenderingSettingsPanel::onVolumeRenderingLogicModified()
                    this, SLOT(onDefaultRenderingMethodChanged(int)),Qt::UniqueConnection);
 
   const char* defaultRenderingMethod = d->VolumeRenderingLogic->GetDefaultRenderingMethod();
-  if (defaultRenderingMethod == 0)
+  if (defaultRenderingMethod == nullptr)
     {
     defaultRenderingMethod = "vtkMRMLCPURayCastVolumeRenderingDisplayNode";
     }
@@ -308,7 +307,7 @@ void qSlicerVolumeRenderingSettingsPanel::onDefaultRenderingMethodChanged(int in
 void qSlicerVolumeRenderingSettingsPanel::updateVolumeRenderingLogicDefaultRenderingMethod()
 {
   Q_D(qSlicerVolumeRenderingSettingsPanel);
-  if (d->VolumeRenderingLogic == NULL)
+  if (d->VolumeRenderingLogic == nullptr)
     {
     return;
     }

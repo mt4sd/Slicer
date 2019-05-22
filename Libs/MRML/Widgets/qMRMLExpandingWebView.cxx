@@ -20,9 +20,6 @@
 #include <QEvent>
 #include <QFileInfo>
 #include <QHBoxLayout>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 6, 0))
-#include <QWebFrame>
-#endif
 
 // CTK includes
 #include <ctkLogger.h>
@@ -62,13 +59,12 @@ const char *htmlPostscript =
 qMRMLExpandingWebViewPrivate::qMRMLExpandingWebViewPrivate(qMRMLExpandingWebView& object)
   : q_ptr(&object)
 {
-  this->MRMLScene = 0;
+  this->MRMLScene = nullptr;
 }
 
 //---------------------------------------------------------------------------
 qMRMLExpandingWebViewPrivate::~qMRMLExpandingWebViewPrivate()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void qMRMLExpandingWebViewPrivate::init()
@@ -140,7 +136,7 @@ qMRMLExpandingWebView::qMRMLExpandingWebView(QWidget* _parent) : Superclass(_par
 // --------------------------------------------------------------------------
 qMRMLExpandingWebView::~qMRMLExpandingWebView()
 {
-  this->setMRMLScene(0);
+  this->setMRMLScene(nullptr);
 }
 
 

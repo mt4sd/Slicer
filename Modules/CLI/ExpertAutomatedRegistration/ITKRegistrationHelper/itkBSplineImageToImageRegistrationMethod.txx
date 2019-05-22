@@ -53,14 +53,14 @@ public:
   itkSetMacro(DontShowParameters, bool);
   itkSetMacro(UpdateInterval, int);
 
-  void Execute( Object * caller, const EventObject & event ) ITK_OVERRIDE
+  void Execute( Object * caller, const EventObject & event ) override
   {
     Execute( (const Object *)caller, event );
   }
 
-  void Execute( const Object * object, const EventObject & event ) ITK_OVERRIDE
+  void Execute( const Object * object, const EventObject & event ) override
   {
-    if( typeid( event ) != typeid( IterationEvent ) || object == NULL )
+    if( typeid( event ) != typeid( IterationEvent ) || object == nullptr )
       {
       return;
       }
@@ -91,7 +91,7 @@ public:
 
   void Update()
   {
-    this->Execute( (const Object *)NULL, IterationEvent() );
+    this->Execute( (const Object *)nullptr, IterationEvent() );
   }
 
 protected:
@@ -111,7 +111,7 @@ protected:
     m_UpdateInterval = 1;
     m_DontShowParameters = false;
   }
-  ~BSplineImageRegistrationViewer()
+  ~BSplineImageRegistrationViewer() override
   {
   }
 

@@ -50,8 +50,8 @@ class Q_SLICER_BASE_QTCORE_EXPORT qSlicerCoreIOManager:public QObject
   Q_PROPERTY(QString defaultSceneFileType READ defaultSceneFileType WRITE setDefaultSceneFileType)
 
 public:
-  qSlicerCoreIOManager(QObject* parent = 0);
-  virtual ~qSlicerCoreIOManager();
+  qSlicerCoreIOManager(QObject* parent = nullptr);
+  ~qSlicerCoreIOManager() override;
 
   /// Return the file type associated with a \a file
   Q_INVOKABLE qSlicerIO::IOFileType fileType(const QString& file)const;
@@ -97,20 +97,14 @@ public:
   /// could also be called with the following parameters: LabelMap (bool), Center (bool)
   /// \note Make also sure the case of parameter name is respected
   /// \sa qSlicerIO::IOProperties, qSlicerIO::IOFileType, saveNodes()
-#if QT_VERSION < 0x040700
-  Q_INVOKABLE virtual bool loadNodes(const qSlicerIO::IOFileType& fileType,
-                                     const QVariantMap& parameters,
-                                     vtkCollection* loadedNodes = 0);
-#else
   Q_INVOKABLE virtual bool loadNodes(const qSlicerIO::IOFileType& fileType,
                                      const qSlicerIO::IOProperties& parameters,
-                                     vtkCollection* loadedNodes = 0);
-#endif
+                                     vtkCollection* loadedNodes = nullptr);
 
   /// Utility function that loads a bunch of files. The "fileType" attribute should
   /// in the parameter map for each node to load.
   virtual bool loadNodes(const QList<qSlicerIO::IOProperties>& files,
-                         vtkCollection* loadedNodes = 0);
+                         vtkCollection* loadedNodes = nullptr);
 
   /// Load a list of node corresponding to \a fileType and return the first loaded node.
   /// This function is provided for convenience and is equivalent to call loadNodes
@@ -134,13 +128,8 @@ public:
   /// For nodes: QString nodeID, bool useCompression
   /// \sa qSlicerNodeWriter, qSlicerIO::IOProperties, qSlicerIO::IOFileType,
   /// loadNodes()
-#if QT_VERSION < 0x040700
-  Q_INVOKABLE bool saveNodes(qSlicerIO::IOFileType fileType,
-                             const QVariantMap& parameters);
-#else
   Q_INVOKABLE bool saveNodes(qSlicerIO::IOFileType fileType,
                              const qSlicerIO::IOProperties& parameters);
-#endif
 
   /// Save a scene corresponding to \a fileName
   /// This function is provided for convenience and is equivalent to call

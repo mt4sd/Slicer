@@ -34,13 +34,13 @@ class QMRML_WIDGETS_EXPORT qMRMLSceneColorTableModel : public qMRMLSceneCategory
   Q_OBJECT
 
 public:
-  qMRMLSceneColorTableModel(QObject *parent=0);
-  virtual ~qMRMLSceneColorTableModel();
+  qMRMLSceneColorTableModel(QObject *parent=nullptr);
+  ~qMRMLSceneColorTableModel() override;
 
 protected:
   QScopedPointer<qMRMLSceneColorTableModelPrivate> d_ptr;
 
-  virtual void updateItemFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
+  void updateItemFromNode(QStandardItem* item, vtkMRMLNode* node, int column) override;
   bool updateGradientFromNode(vtkMRMLColorNode* node)const;
 
 private:

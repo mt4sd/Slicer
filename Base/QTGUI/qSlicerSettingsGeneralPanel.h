@@ -42,10 +42,10 @@ public:
   typedef ctkSettingsPanel Superclass;
 
   /// Constructor
-  explicit qSlicerSettingsGeneralPanel(QWidget* parent = 0);
+  explicit qSlicerSettingsGeneralPanel(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerSettingsGeneralPanel();
+  ~qSlicerSettingsGeneralPanel() override;
 
 public slots:
   void setDefaultScenePath(const QString& path);

@@ -9,14 +9,14 @@ class QMRML_WIDGETS_PLUGINS_EXPORT qMRMLVolumeThresholdWidgetPlugin : public QOb
   Q_OBJECT
 
 public:
-  qMRMLVolumeThresholdWidgetPlugin(QObject *_parent = 0);
+  qMRMLVolumeThresholdWidgetPlugin(QObject *_parent = nullptr);
 
-  QWidget *createWidget(QWidget *_parent);
-  QString  domXml() const;
-  QIcon    icon() const;
-  QString  includeFile() const;
-  bool     isContainer() const;
-  QString  name() const;
+  QWidget *createWidget(QWidget *_parent) override;
+  QString  domXml() const override;
+  QIcon    icon() const override;
+  QString  includeFile() const override;
+  bool     isContainer() const override;
+  QString  name() const override;
 
 };
 

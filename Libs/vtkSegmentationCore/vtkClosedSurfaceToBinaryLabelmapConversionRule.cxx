@@ -68,13 +68,12 @@ vtkClosedSurfaceToBinaryLabelmapConversionRule::vtkClosedSurfaceToBinaryLabelmap
 
 //----------------------------------------------------------------------------
 vtkClosedSurfaceToBinaryLabelmapConversionRule::~vtkClosedSurfaceToBinaryLabelmapConversionRule()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 unsigned int vtkClosedSurfaceToBinaryLabelmapConversionRule::GetConversionCost(
-  vtkDataObject* vtkNotUsed(sourceRepresentation)/*=NULL*/,
-  vtkDataObject* vtkNotUsed(targetRepresentation)/*=NULL*/)
+  vtkDataObject* vtkNotUsed(sourceRepresentation)/*=nullptr*/,
+  vtkDataObject* vtkNotUsed(targetRepresentation)/*=nullptr*/)
 {
   // Rough input-independent guess (ms)
   return 500;
@@ -93,7 +92,7 @@ vtkDataObject* vtkClosedSurfaceToBinaryLabelmapConversionRule::ConstructRepresen
     }
   else
     {
-    return NULL;
+    return nullptr;
     }
 }
 
@@ -110,7 +109,7 @@ vtkDataObject* vtkClosedSurfaceToBinaryLabelmapConversionRule::ConstructRepresen
     }
   else
     {
-    return NULL;
+    return nullptr;
     }
 }
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import logging
 import sys
 
@@ -41,6 +42,7 @@ class SlicerApplicationLogHandler(logging.Handler):
         logging.ERROR : ctk.ctkErrorLogLevel.Error }
     self.origin = "Python"
     self.category = "Python"
+
   def emit(self, record):
     try:
       msg = self.format(record)
@@ -101,7 +103,7 @@ initLogging(logging.getLogger())
 def getSlicerRCFileName():
   """Return slicer resource script file name '~/.slicerrc.py'"""
   import os
-  if os.environ.has_key('SLICERRC'):
+  if 'SLICERRC' in os.environ:
     rcfile = os.environ['SLICERRC']
   else:
     import os.path
@@ -112,7 +114,7 @@ def getSlicerRCFileName():
 #-----------------------------------------------------------------------------
 #
 # loadSlicerRCFile - Let's not add this function to 'slicer.util' so that
-# the global dictionary of the main context is passed to execfile().
+# the global dictionary of the main context is passed to exec().
 #
 
 def loadSlicerRCFile():
@@ -121,14 +123,14 @@ def loadSlicerRCFile():
   rcfile = getSlicerRCFileName()
   if os.path.isfile( rcfile ):
     print('Loading Slicer RC file [%s]' % ( rcfile ))
-    execfile( rcfile, globals() )
+    exec(open(rcfile).read(), globals())
 
 #-----------------------------------------------------------------------------
 #
 # Internal
 #
 
-class _Internal():
+class _Internal(object):
 
   def __init__( self ):
     import imp

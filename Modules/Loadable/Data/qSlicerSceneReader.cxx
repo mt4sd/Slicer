@@ -52,8 +52,7 @@ qSlicerSceneReader::qSlicerSceneReader(vtkSlicerCamerasModuleLogic* camerasLogic
 
 //-----------------------------------------------------------------------------
 qSlicerSceneReader::~qSlicerSceneReader()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerSceneReader::description()const
@@ -116,7 +115,7 @@ bool qSlicerSceneReader::load(const qSlicerIO::IOProperties& properties)
         std::string(this->mrmlScene()->GetLastLoadedVersion()) + " greater than Slicer4 version " +
         std::string(this->mrmlScene()->GetVersion()) + ".";
 
-      QMessageBox::warning(0, tr("Reading MRML Scene..."),
+      QMessageBox::warning(nullptr, tr("Reading MRML Scene..."),
                               tr(msg.c_str()) );
     }
 

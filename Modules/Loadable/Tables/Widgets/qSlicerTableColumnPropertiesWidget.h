@@ -45,8 +45,8 @@ qSlicerTableColumnPropertiesWidget : public qSlicerWidget
 
 public:
   typedef qSlicerWidget Superclass;
-  qSlicerTableColumnPropertiesWidget(QWidget *parent=0);
-  virtual ~qSlicerTableColumnPropertiesWidget();
+  qSlicerTableColumnPropertiesWidget(QWidget *parent=nullptr);
+  ~qSlicerTableColumnPropertiesWidget() override;
 
   /// Get the table node the columns are edited of.
   Q_INVOKABLE vtkMRMLTableNode* mrmlTableNode()const;
@@ -64,7 +64,7 @@ public:
 
 public slots:
 
-  void setMRMLScene(vtkMRMLScene* scene);
+  void setMRMLScene(vtkMRMLScene* scene) override;
 
   void setMRMLTableNode(vtkMRMLTableNode* tableNode);
   /// Utility function to simply connect signals/slots with Qt Designer

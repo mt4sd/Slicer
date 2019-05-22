@@ -39,7 +39,7 @@ class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLDisplayableManagerFactory : publ
 public:
   static vtkMRMLDisplayableManagerFactory* New();
   vtkTypeMacro(vtkMRMLDisplayableManagerFactory,vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   enum
   {
@@ -86,7 +86,7 @@ public:
 protected:
 
   vtkMRMLDisplayableManagerFactory();
-  virtual ~vtkMRMLDisplayableManagerFactory();
+  ~vtkMRMLDisplayableManagerFactory() override;
 
   class vtkInternal;
   vtkInternal* Internal;
@@ -95,8 +95,8 @@ protected:
 
 private:
 
-  vtkMRMLDisplayableManagerFactory(const vtkMRMLDisplayableManagerFactory&);
-  void operator=(const vtkMRMLDisplayableManagerFactory&);
+  vtkMRMLDisplayableManagerFactory(const vtkMRMLDisplayableManagerFactory&) = delete;
+  void operator=(const vtkMRMLDisplayableManagerFactory&) = delete;
 
 };
 

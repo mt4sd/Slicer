@@ -94,8 +94,8 @@ int qMRMLVolumeThresholdWidgetEventTranslatorPlayerTest1(int argc, char * argv [
   // Add default color nodes
   vtkNew<vtkMRMLColorLogic> colorLogic;
   colorLogic->SetMRMLScene(scene.GetPointer());
-  // need to set it back to NULL, otherwise the logic removes the nodes that it added when it is destructed
-  colorLogic->SetMRMLScene(NULL);
+  // need to set it back to nullptr, otherwise the logic removes the nodes that it added when it is destructed
+  colorLogic->SetMRMLScene(nullptr);
 
   vtkMRMLNode* node = scene->GetFirstNodeByClass("vtkMRMLScalarVolumeNode");
   vtkMRMLVolumeNode* volumeNode = vtkMRMLVolumeNode::SafeDownCast(node);

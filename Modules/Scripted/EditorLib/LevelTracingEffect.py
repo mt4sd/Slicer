@@ -4,8 +4,10 @@ import vtkITK
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import LabelEffect
+
+from . import EditUtil
+from . import HelpButton
+from . import LabelEffectOptions, LabelEffectTool, LabelEffectLogic, LabelEffect
 
 __all__ = [
   'LevelTracingEffectOptions',
@@ -32,7 +34,7 @@ comment = """
 # LevelTracingEffectOptions - see LabelEffect, EditOptions and Effect for superclasses
 #
 
-class LevelTracingEffectOptions(LabelEffect.LabelEffectOptions):
+class LevelTracingEffectOptions(LabelEffectOptions):
   """ LevelTracingEffect-specfic gui
   """
 
@@ -61,7 +63,7 @@ class LevelTracingEffectOptions(LabelEffect.LabelEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.RemoveObserver(self.parameterNodeTag)
@@ -86,7 +88,7 @@ class LevelTracingEffectOptions(LabelEffect.LabelEffectOptions):
 # LevelTracingEffectTool
 #
 
-class LevelTracingEffectTool(LabelEffect.LabelEffectTool):
+class LevelTracingEffectTool(LabelEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -162,15 +164,15 @@ class LevelTracingEffectTool(LabelEffect.LabelEffectTool):
     """calculate the current level trace view if the
     mouse is inside the volume extent"""
     self.xyPoints.Reset()
-    backgroundImage = self.editUtil.getBackgroundImage()
+    backgroundImage = EditUtil.getBackgroundImage()
     ijk = self.logic.backgroundXYToIJK( xy )
     dimensions = backgroundImage.GetDimensions()
-    for index in xrange(3):
+    for index in range(3):
       # tracingFilter crashes if it receives a seed point at the edge of the image,
       # so only accept the point if it is inside the image and is at least one pixel away from the edge
       if ijk[index] < 1 or ijk[index] >= dimensions[index]-1:
         return
-    self.tracingFilter.SetInputData( self.editUtil.getBackgroundImage() )
+    self.tracingFilter.SetInputData( EditUtil.getBackgroundImage() )
     self.tracingFilter.SetSeed( ijk )
 
     # select the plane corresponding to current slice orientation
@@ -205,7 +207,7 @@ class LevelTracingEffectTool(LabelEffect.LabelEffectTool):
 # LevelTracingEffectLogic
 #
 
-class LevelTracingEffectLogic(LabelEffect.LabelEffectLogic):
+class LevelTracingEffectLogic(LabelEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an LevelTracingEffectTool
@@ -224,7 +226,7 @@ class LevelTracingEffectLogic(LabelEffect.LabelEffectLogic):
 # The LevelTracingEffect class definition
 #
 
-class LevelTracingEffect(LabelEffect.LabelEffect):
+class LevelTracingEffect(LabelEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

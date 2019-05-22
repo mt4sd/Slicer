@@ -1,12 +1,14 @@
+from __future__ import print_function
 import os
 import vtk
 import vtkITK
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import Effect
-import IslandEffect
+
+from . import EditUtil
+from . import HelpButton
+from . import IslandEffectOptions, IslandEffectTool, IslandEffectLogic, IslandEffect
 
 __all__ = [
   'RemoveIslandsEffectOptions',
@@ -33,7 +35,7 @@ comment = """
 # RemoveIslandsEffectOptions - see Effect for superclasses
 #
 
-class RemoveIslandsEffectOptions(IslandEffect.IslandEffectOptions):
+class RemoveIslandsEffectOptions(IslandEffectOptions):
   """ RemoveIslandsEffect-specfic gui
   """
 
@@ -82,7 +84,7 @@ class RemoveIslandsEffectOptions(IslandEffect.IslandEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.RemoveObserver(self.parameterNodeTag)
@@ -102,7 +104,7 @@ class RemoveIslandsEffectOptions(IslandEffect.IslandEffectOptions):
 # RemoveIslandsEffectTool
 #
 
-class RemoveIslandsEffectTool(IslandEffect.IslandEffectTool):
+class RemoveIslandsEffectTool(IslandEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -128,7 +130,7 @@ class RemoveIslandsEffectTool(IslandEffect.IslandEffectTool):
 # RemoveIslandsEffectLogic
 #
 
-class RemoveIslandsEffectLogic(IslandEffect.IslandEffectLogic):
+class RemoveIslandsEffectLogic(IslandEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an RemoveIslandsEffectTool
@@ -149,7 +151,7 @@ class RemoveIslandsEffectLogic(IslandEffect.IslandEffectLogic):
       it may not be.  So check corners first, and then
       if can't find it, give up and use 1 (to avoid exhaustive search)
     """
-    w,h,d = map(lambda x: x-1, imageData.GetDimensions())
+    w,h,d = [x-1 for x in imageData.GetDimensions()]
 
     corners = [ [0, 0, 0], [w, 0, 0], [0, h, 0], [w, h, 0],
                   [0, 0, d], [w, 0, d], [0, h, d], [w, h, d] ]
@@ -165,11 +167,11 @@ class RemoveIslandsEffectLogic(IslandEffect.IslandEffectLogic):
     # change the label values based on the parameter node
     #
     if not self.sliceLogic:
-      self.sliceLogic = self.editUtil.getSliceLogic()
-    parameterNode = self.editUtil.getParameterNode()
+      self.sliceLogic = EditUtil.getSliceLogic()
+    parameterNode = EditUtil.getParameterNode()
     minimumSize = int(parameterNode.GetParameter("IslandEffect,minimumSize"))
     fullyConnected = bool(parameterNode.GetParameter("IslandEffect,fullyConnected"))
-    label = self.editUtil.getLabel()
+    label = EditUtil.getLabel()
 
     # first, create an inverse binary version of the image
     # so that islands inside segemented object will be detected, along
@@ -247,14 +249,14 @@ class RemoveIslandsEffectLogic(IslandEffect.IslandEffectLogic):
     a label map while preserving the original boundary in other places.
     """
     if not self.sliceLogic:
-      self.sliceLogic = self.editUtil.getSliceLogic()
-    parameterNode = self.editUtil.getParameterNode()
+      self.sliceLogic = EditUtil.getSliceLogic()
+    parameterNode = EditUtil.getParameterNode()
     self.minimumSize = int(parameterNode.GetParameter("IslandEffect,minimumSize"))
     self.fullyConnected = bool(parameterNode.GetParameter("IslandEffect,fullyConnected"))
 
     labelImage = vtk.vtkImageData()
     labelImage.DeepCopy( self.getScopedLabelInput() )
-    label = self.editUtil.getLabel()
+    label = EditUtil.getLabel()
 
     self.undoRedo.saveState()
 
@@ -379,7 +381,7 @@ class RemoveIslandsEffectLogic(IslandEffect.IslandEffectLogic):
 # The RemoveIslandsEffect class definition
 #
 
-class RemoveIslandsEffect(IslandEffect.IslandEffect):
+class RemoveIslandsEffect(IslandEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

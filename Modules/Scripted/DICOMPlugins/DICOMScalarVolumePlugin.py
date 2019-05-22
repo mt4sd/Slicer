@@ -6,6 +6,7 @@ from DICOMLib import DICOMLoadable
 from DICOMLib import DICOMUtils
 from DICOMLib import DICOMExportScalarVolume
 import logging
+from functools import cmp_to_key
 
 #
 # This is the plugin to handle translation of scalar volumes
@@ -143,7 +144,7 @@ class DICOMScalarVolumePluginClass(DICOMPlugin):
         self.cacheLoadables(files,loadablesForFiles)
 
     # sort the loadables by series number if possible
-    loadables.sort(lambda x,y: self.seriesSorter(x,y))
+    loadables.sort(key=cmp_to_key(lambda x,y: self.seriesSorter(x,y)))
 
     return loadables
 
@@ -187,11 +188,11 @@ class DICOMScalarVolumePluginClass(DICOMPlugin):
       for tag in subseriesTags:
         value = slicer.dicomDatabase.fileValue(file,self.tags[tag])
         value = value.replace(",","_") # remove commas so it can be used as an index
-        if not subseriesValues.has_key(tag):
+        if tag not in subseriesValues:
           subseriesValues[tag] = []
         if not subseriesValues[tag].__contains__(value):
           subseriesValues[tag].append(value)
-        if not subseriesFiles.has_key((tag,value)):
+        if (tag,value) not in subseriesFiles:
           subseriesFiles[tag,value] = []
         subseriesFiles[tag,value].append(file)
 
@@ -220,20 +221,22 @@ class DICOMScalarVolumePluginClass(DICOMPlugin):
     # remove any files from loadables that don't have pixel data (no point sending them to ITK for reading)
     # also remove DICOM SEG, since it is not handled by ITK readers
     newLoadables = []
-    segLoadables = []
     for loadable in loadables:
       newFiles = []
-      segLoadable = False
+      excludedLoadable = False
       for file in loadable.files:
         if slicer.dicomDatabase.fileValue(file,self.tags['pixelData'])!='':
           newFiles.append(file)
         if slicer.dicomDatabase.fileValue(file,self.tags['sopClassUID'])=='1.2.840.10008.5.1.4.1.1.66.4':
-          segLoadable = True
+          excludedLoadable = True
           logging.error('Please install Quantitative Reporting extension to enable loading of DICOM Segmentation objects')
-      if len(newFiles) > 0 and not segLoadable:
+        elif slicer.dicomDatabase.fileValue(file,self.tags['sopClassUID'])=='1.2.840.10008.5.1.4.1.1.481.3':
+          excludedLoadable = True
+          logging.error('Please install SlicerRT extension to enable loading of DICOM RT Structure Set objects')
+      if len(newFiles) > 0 and not excludedLoadable:
         loadable.files = newFiles
         newLoadables.append(loadable)
-      elif segLoadable:
+      elif excludedLoadable:
         continue
       else:
         # here all files in have no pixel data, so they might be
@@ -259,8 +262,8 @@ class DICOMScalarVolumePluginClass(DICOMPlugin):
     """
     if not (hasattr(x,'name') and hasattr(y,'name')):
         return 0
-    xName = slicer.util.unicodeify(x.name)
-    yName = slicer.util.unicodeify(y.name)
+    xName = x.name
+    yName = y.name
     try:
       xNumber = int(xName[:xName.index(':')])
       yNumber = int(yName[:yName.index(':')])
@@ -627,6 +630,11 @@ class DICOMScalarVolumePluginClass(DICOMPlugin):
       columns, rows, slices = volumeNode.GetImageData().GetDimensions()
       corners = numpy.zeros(shape=[slices,2,2,3])
       uids = volumeNode.GetAttribute('DICOM.instanceUIDs').split()
+      if len(uids) != slices:
+        # There is no uid for each slice, so most likely all frames are in a single file
+        # or maybe there is a problem with the sequence
+        logging.warning("Cannot get DICOM slice positions for volume "+volumeNode.GetName())
+        return None
       for sliceIndex in range(slices):
         uid = uids[sliceIndex]
         # get slice geometry from instance
@@ -637,11 +645,11 @@ class DICOMScalarVolumePluginClass(DICOMPlugin):
           logging.warning('No geometry information available for DICOM data, skipping corner calculations')
           return None
 
-        position = numpy.array(map(float, positionString.split('\\')))
-        orientation = map(float, orientationString.split('\\'))
+        position = numpy.array(list(map(float, positionString.split('\\'))))
+        orientation = list(map(float, orientationString.split('\\')))
         rowOrientation = numpy.array(orientation[:3])
         columnOrientation = numpy.array(orientation[3:])
-        spacing = numpy.array(map(float, spacingString.split('\\')))
+        spacing = numpy.array(list(map(float, spacingString.split('\\'))))
         # map from LPS to RAS
         lpsToRAS = numpy.array([-1,-1,1])
         position *= lpsToRAS
@@ -714,7 +722,7 @@ class DICOMScalarVolumePluginClass(DICOMPlugin):
 # DICOMScalarVolumePlugin
 #
 
-class DICOMScalarVolumePlugin:
+class DICOMScalarVolumePlugin(object):
   """
   This class is the 'hook' for slicer to detect and recognize the plugin
   as a loadable scripted module

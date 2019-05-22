@@ -95,8 +95,8 @@ class QMRML_WIDGETS_EXPORT qMRMLSceneModel : public QStandardItemModel
   Q_PROPERTY( int extraItemColumn READ extraItemColumn WRITE setExtraItemColumn)
 public:
   typedef QStandardItemModel Superclass;
-  qMRMLSceneModel(QObject *parent=0);
-  virtual ~qMRMLSceneModel();
+  qMRMLSceneModel(QObject *parent=nullptr);
+  ~qMRMLSceneModel() override;
 
   enum NodeTypes
     {
@@ -181,10 +181,10 @@ public:
 
   /// Doesn't support drop actions, scene model subclasses can support drop
   /// actions though.
-  virtual Qt::DropActions supportedDropActions()const;
-  virtual QMimeData* mimeData(const QModelIndexList& indexes)const;
-  virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action,
-                            int row, int column, const QModelIndex &parent);
+  Qt::DropActions supportedDropActions()const override;
+  QMimeData* mimeData(const QModelIndexList& indexes)const override;
+  bool dropMimeData(const QMimeData *data, Qt::DropAction action,
+                            int row, int column, const QModelIndex &parent) override;
 
   /// Returns the parent node of the node, 0 otherwise (the parent is the scene).
   /// Must be reimplemented in derived classes. If reimplemented, you might
@@ -261,7 +261,7 @@ signals:
   void sceneUpdated();
 
 protected:
-  qMRMLSceneModel(qMRMLSceneModelPrivate* pimpl, QObject *parent=0);
+  qMRMLSceneModel(qMRMLSceneModelPrivate* pimpl, QObject *parent=nullptr);
 
   virtual void updateScene();
   virtual void populateScene();

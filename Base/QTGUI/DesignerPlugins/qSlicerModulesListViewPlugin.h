@@ -29,13 +29,13 @@ class Q_SLICER_DESIGNER_PLUGINS_EXPORT qSlicerModulesListViewPlugin
 {
   Q_OBJECT
 public:
-  qSlicerModulesListViewPlugin(QObject* parent = 0);
+  qSlicerModulesListViewPlugin(QObject* parent = nullptr);
 
-  QWidget *createWidget(QWidget *_parent);
-  QString domXml() const;
-  QString includeFile() const;
-  bool isContainer() const;
-  QString name() const;
+  QWidget *createWidget(QWidget *_parent) override;
+  QString domXml() const override;
+  QString includeFile() const override;
+  bool isContainer() const override;
+  QString name() const override;
 };
 
 #endif

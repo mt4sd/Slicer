@@ -95,7 +95,7 @@ class SegmentEditorWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
   def getCompositeNode(self, layoutName):
     """ use the Red slice composite node to define the active volumes """
     count = slicer.mrmlScene.GetNumberOfNodesByClass('vtkMRMLSliceCompositeNode')
-    for n in xrange(count):
+    for n in range(count):
       compNode = slicer.mrmlScene.GetNthNodeByClass(n, 'vtkMRMLSliceCompositeNode')
       if layoutName and compNode.GetLayoutName() != layoutName:
         continue
@@ -190,6 +190,6 @@ class SegmentEditorTest(ScriptedLoadableModuleTest):
 # Class for avoiding python error that is caused by the method SegmentEditor::setup
 # http://www.na-mic.org/Bug/view.php?id=3871
 #
-class SegmentEditorFileWriter:
+class SegmentEditorFileWriter(object):
   def __init__(self, parent):
     pass

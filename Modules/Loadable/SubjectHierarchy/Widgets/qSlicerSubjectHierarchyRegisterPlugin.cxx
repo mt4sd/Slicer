@@ -64,7 +64,7 @@ protected:
   qSlicerSubjectHierarchyRegisterPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyRegisterPluginPrivate(qSlicerSubjectHierarchyRegisterPlugin& object);
-  ~qSlicerSubjectHierarchyRegisterPluginPrivate();
+  ~qSlicerSubjectHierarchyRegisterPluginPrivate() override;
   void init();
 public:
   QAction* RegisterThisAction;
@@ -79,9 +79,9 @@ public:
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyRegisterPluginPrivate::qSlicerSubjectHierarchyRegisterPluginPrivate(qSlicerSubjectHierarchyRegisterPlugin& object)
 : q_ptr(&object)
-, RegisterThisAction(NULL)
-, RegisterToAction(NULL)
-, CancelAction(NULL)
+, RegisterThisAction(nullptr)
+, RegisterToAction(nullptr)
+, CancelAction(nullptr)
 {
 }
 
@@ -122,8 +122,7 @@ void qSlicerSubjectHierarchyRegisterPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyRegisterPluginPrivate::~qSlicerSubjectHierarchyRegisterPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyRegisterPlugin methods
@@ -142,8 +141,7 @@ qSlicerSubjectHierarchyRegisterPlugin::qSlicerSubjectHierarchyRegisterPlugin(QOb
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyRegisterPlugin::~qSlicerSubjectHierarchyRegisterPlugin()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 QList<QAction*> qSlicerSubjectHierarchyRegisterPlugin::itemContextMenuActions()const

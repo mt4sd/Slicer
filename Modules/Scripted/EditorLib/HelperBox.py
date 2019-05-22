@@ -3,10 +3,12 @@ import qt
 import ctk
 import vtk
 import slicer
-from EditUtil import EditUtil
-from LabelCreateDialog import LabelCreateDialog
-from LabelStructureListWidget import LabelStructureListWidget
+
 from slicer.util import VTKObservationMixin
+
+from . import EditUtil
+from .LabelCreateDialog import LabelCreateDialog
+from .LabelStructureListWidget import LabelStructureListWidget
 
 __all__ = ['HelperBox']
 
@@ -169,13 +171,13 @@ class HelperBox(VTKObservationMixin):
 
   def setMasterVolume(self,masterVolume):
     """select merge volume"""
-    if isinstance(masterVolume, basestring):
+    if isinstance(masterVolume, str):
       masterVolume = slicer.mrmlScene.GetNodeByID(masterVolume)
     self.masterSelector.setCurrentNode( masterVolume )
 
   def setMergeVolume(self,mergeVolume=None):
     """select merge volume"""
-    if isinstance(mergeVolume, basestring):
+    if isinstance(mergeVolume, str):
       mergeVolume = slicer.mrmlScene.GetNodeByID(mergeVolume)
     if self.master:
       self.masterWhenMergeWasSet = self.master

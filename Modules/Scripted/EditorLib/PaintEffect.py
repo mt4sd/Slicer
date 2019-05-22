@@ -1,13 +1,15 @@
+from __future__ import print_function
 import os
 import vtk
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-from EditUtil import EditUtil
-import LabelEffect
+from . import HelpButton
+from . import EditUtil
+from . import LabelEffectOptions, LabelEffectTool, LabelEffectLogic, LabelEffect
 import numpy
 from math import sqrt
+from functools import reduce
 
 __all__ = [
   'PaintEffectOptions',
@@ -34,7 +36,7 @@ comment = """
 # PaintEffectOptions - see LabelEffect, EditOptions and Effect for superclasses
 #
 
-class PaintEffectOptions(LabelEffect.LabelEffectOptions):
+class PaintEffectOptions(LabelEffectOptions):
   """ PaintEffect-specfic gui
   """
 
@@ -237,12 +239,12 @@ class PaintEffectOptions(LabelEffect.LabelEffectOptions):
         spacing = labelVolume.GetSpacing()
         if self.radiusPixelMode == 'diag':
           from math import sqrt
-          diag = sqrt(reduce(lambda x,y:x+y, map(lambda x: x**2, spacing)))
+          diag = sqrt(reduce(lambda x,y:x+y, [x**2 for x in spacing]))
           mmRadius = diag * radius
         elif self.radiusPixelMode == 'min':
           mmRadius = min(spacing) * radius
         else:
-          print (self,"Unknown pixel mode - using 5mm")
+          print((self,"Unknown pixel mode - using 5mm"))
           mmRadius = 5
       else:
         mmRadius = radius
@@ -285,7 +287,7 @@ class PaintEffectOptions(LabelEffect.LabelEffectOptions):
 # PaintEffectTool
 #
 
-class PaintEffectTool(LabelEffect.LabelEffectTool):
+class PaintEffectTool(LabelEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -604,7 +606,7 @@ class PaintEffectTool(LabelEffect.LabelEffectTool):
     tr = [0,0,0]
     bl = [0,0,0]
     br = [0,0,0]
-    for i in xrange(3):
+    for i in range(3):
       tl[i] = int(round(tlIJK[i]))
       if tl[i] < 0:
         tl[i] = 0
@@ -630,7 +632,7 @@ class PaintEffectTool(LabelEffect.LabelEffectTool):
     # to make sure at least one pixel is filled on each click
     maxRowDelta = 0
     maxColumnDelta = 0
-    for i in xrange(3):
+    for i in range(3):
       d = abs(tr[i] - tl[i])
       if d > maxColumnDelta:
         maxColumnDelta = d
@@ -712,10 +714,10 @@ class PaintEffectTool(LabelEffect.LabelEffectTool):
         if distanceSpannedBy100Slices==0:
             zVoxelSize_mm=1
         else:
-            zVoxelSize_mm = distanceSpannedBy100Slices/100
+            zVoxelSize_mm = int(distanceSpannedBy100Slices / 100)
         # --
         # Compute number of slices spanned by sphere
-        nNumSlicesInEachDirection=brushRadius / zVoxelSize_mm;
+        nNumSlicesInEachDirection=int(brushRadius / zVoxelSize_mm);
         nNumSlicesInEachDirection=nNumSlicesInEachDirection-1
         sliceOffsetArray=numpy.concatenate((-1*numpy.arange(1,nNumSlicesInEachDirection+1,),  numpy.arange(1,nNumSlicesInEachDirection+1)))
         for iSliceOffset in sliceOffsetArray:
@@ -739,7 +741,7 @@ class PaintEffectTool(LabelEffect.LabelEffectTool):
             trtemp = [0,0,0]
             bltemp = [0,0,0]
             brtemp = [0,0,0]
-            for i in xrange(3):
+            for i in range(3):
               tltemp[i] = int(round(tlIJKtemp[i]))
               if tltemp[i] < 0:
                 tltemp[i] = 0
@@ -783,7 +785,7 @@ class PaintEffectTool(LabelEffect.LabelEffectTool):
 # PaintEffectLogic
 #
 
-class PaintEffectLogic(LabelEffect.LabelEffectLogic):
+class PaintEffectLogic(LabelEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an PaintEffectTool
@@ -802,7 +804,7 @@ class PaintEffectLogic(LabelEffect.LabelEffectLogic):
 # The PaintEffect class definition
 #
 
-class PaintEffect(LabelEffect.LabelEffect):
+class PaintEffect(LabelEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

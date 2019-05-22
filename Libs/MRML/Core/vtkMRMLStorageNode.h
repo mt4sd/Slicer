@@ -34,9 +34,9 @@ class VTK_MRML_EXPORT vtkMRMLStorageNode : public vtkMRMLNode
 {
 public:
   vtkTypeMacro(vtkMRMLStorageNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE = 0;
+  vtkMRMLNode* CreateNodeInstance() override = 0;
 
   /// Returns the first storable node that is associated to this storage node
   /// \sa vtkMRMLStorableNode
@@ -44,7 +44,7 @@ public:
 
   ///
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Read data from \a FileName and set it in the referenced node.
@@ -65,15 +65,15 @@ public:
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Storage, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE = 0;
+  const char* GetNodeTagName() override = 0;
 
   /// A file name or the archetype file name for a series used for read or write
   /// \sa ReadData(), WriteData()
@@ -85,7 +85,7 @@ public:
   /// if both .nrrd and .seg.nrrd are matched), including dot.
   /// If filename is not specified then the current FileName will be used
   /// If there is no match then empty is returned.
-  virtual std::string GetSupportedFileExtension(const char* fileName = NULL, bool includeReadable = true, bool includeWriteable = true);
+  virtual std::string GetSupportedFileExtension(const char* fileName = nullptr, bool includeReadable = true, bool includeWriteable = true);
 
   ///
   /// return the nth file name, null if doesn't exist
@@ -107,7 +107,7 @@ public:
 
   ///
   /// Propagate Progress Event generated in ReadData
-  virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) VTK_OVERRIDE;
+  void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) override;
 
   ///
   /// Possible Read and Write states
@@ -306,7 +306,7 @@ public:
 
   /// Remove supported extension from filename.
   /// If filename is not specified then the current FileName will be used.
-  std::string GetFileNameWithoutExtension(const char* fileName = NULL);
+  std::string GetFileNameWithoutExtension(const char* fileName = nullptr);
 
   /// Compression parameter that is used to save the node
   vtkSetMacro(CompressionParameter, std::string);
@@ -329,8 +329,7 @@ public:
   struct CompressionPreset
   {
     CompressionPreset()
-    {
-    }
+     = default;
 
     CompressionPreset(const std::string &parameter, const std::string &name)
       : CompressionParameter(parameter)
@@ -347,7 +346,7 @@ public:
 
 protected:
   vtkMRMLStorageNode();
-  ~vtkMRMLStorageNode();
+  ~vtkMRMLStorageNode() override;
   vtkMRMLStorageNode(const vtkMRMLStorageNode&);
   void operator=(const vtkMRMLStorageNode&);
 

@@ -44,8 +44,8 @@ class QMRML_WIDGETS_EXPORT qMRMLUtils : public QObject
   Q_OBJECT;
 public:
   typedef qMRMLUtils Self;
-  qMRMLUtils(QObject* parent = 0);
-  virtual ~qMRMLUtils();
+  qMRMLUtils(QObject* parent = nullptr);
+  ~qMRMLUtils() override;
 
   ///
   /// Convert a vtkMatrix to a QVector

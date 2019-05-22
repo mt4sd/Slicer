@@ -29,13 +29,11 @@ vtkStandardNewMacro(vtkMRMLDisplayableHierarchyLogic);
 
 //----------------------------------------------------------------------------
 vtkMRMLDisplayableHierarchyLogic::vtkMRMLDisplayableHierarchyLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkMRMLDisplayableHierarchyLogic::~vtkMRMLDisplayableHierarchyLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLDisplayableHierarchyLogic::SetMRMLSceneInternal(vtkMRMLScene* newScene)
@@ -68,7 +66,7 @@ void vtkMRMLDisplayableHierarchyLogic::OnMRMLSceneNodeRemoved(vtkMRMLNode* node)
 //----------------------------------------------------------------------------
 char *vtkMRMLDisplayableHierarchyLogic::AddDisplayableHierarchyNodeForNode(vtkMRMLDisplayableNode *node)
 {
-  char *hierarchyNodeID = NULL;
+  char *hierarchyNodeID = nullptr;
 
   if (!node)
     {
@@ -80,7 +78,7 @@ char *vtkMRMLDisplayableHierarchyLogic::AddDisplayableHierarchyNodeForNode(vtkMR
     vtkErrorMacro("AddDisplayableHierarchyNodeForNode: node isn't in a scene!");
     return hierarchyNodeID;
     }
-  vtkMRMLDisplayableHierarchyNode *hierarchyNode = NULL;
+  vtkMRMLDisplayableHierarchyNode *hierarchyNode = nullptr;
   hierarchyNode = vtkMRMLDisplayableHierarchyNode::New();
   // it's a stealth node:
   hierarchyNode->HideFromEditorsOn();
@@ -131,7 +129,7 @@ bool vtkMRMLDisplayableHierarchyLogic::AddChildToParent(vtkMRMLDisplayableNode *
     }
 
   // does the parent already have a hierarchy node associated with it?
-  char *parentHierarchyNodeID = NULL;
+  char *parentHierarchyNodeID = nullptr;
   vtkMRMLDisplayableHierarchyNode *hierarchyNode = vtkMRMLDisplayableHierarchyNode::SafeDownCast(
     vtkMRMLHierarchyNode::GetAssociatedHierarchyNode(parent->GetScene(), parent->GetID()) );
   if (!hierarchyNode)

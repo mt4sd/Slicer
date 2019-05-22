@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import time
 import unittest
@@ -51,8 +52,8 @@ class AddManyMarkupsFiducialTestWidget(ScriptedLoadableModuleWidget):
     self.numToAddSliderWidget = ctk.ctkSliderWidget()
     self.numToAddSliderWidget.singleStep = 1.0
     self.numToAddSliderWidget.minimum = 0.0
-    self.numToAddSliderWidget.maximum = 1000.0
-    self.numToAddSliderWidget.value = 100.0
+    self.numToAddSliderWidget.maximum = 10000.0
+    self.numToAddSliderWidget.value = 500.0
     self.numToAddSliderWidget.toolTip = "Set the number of fiducials to add."
     parametersFormLayout.addRow("Number of Fiducials to Add", self.numToAddSliderWidget)
 
@@ -101,7 +102,7 @@ class AddManyMarkupsFiducialTestLogic(ScriptedLoadableModuleLogic):
     """
     print('Running test to add %s fidicuals' % (numToAdd,))
     print('Index\tTime to add fid\tDelta between adds')
-    print "%(index)04s\t" % {'index': "i"}, "t\tdt'"
+    print("%(index)04s\t" % {'index': "i"}, "t\tdt'")
     r = rOffset
     a = 0
     s = 0
@@ -120,8 +121,10 @@ class AddManyMarkupsFiducialTestLogic(ScriptedLoadableModuleLogic):
     fidNode.SetAndObserveDisplayNodeID(displayNode.GetID())
 
     if usefewerModifyCalls == 1:
-      print "Start modify"
+      print("Start modify")
       mod = fidNode.StartModify()
+
+    import random
 
     # iterate over the number of fiducials to add
     for i in range(numToAdd):
@@ -131,10 +134,10 @@ class AddManyMarkupsFiducialTestLogic(ScriptedLoadableModuleLogic):
       t2 = time.clock()
       timeToAddThisFid = t2 - t1
       dt = timeToAddThisFid - timeToAddLastFid
-      print '%(index)04d\t' % {'index': i}, timeToAddThisFid, "\t", dt
-      r = r + 1.0
-      a = a + 1.0
-      s = s + 1.0
+      #print '%(index)04d\t' % {'index': i}, timeToAddThisFid, "\t", dt
+      r = float(i)/numToAdd * 100.0 - 50.0 + random.uniform(-20.0, 20.0)
+      a = float(i)/numToAdd * 100.0 - 50.0 + random.uniform(-20.0, 20.0)
+      s = random.uniform(-20.0, 20.0)
       timeToAddLastFid = timeToAddThisFid
 
     if usefewerModifyCalls == 1:
@@ -142,7 +145,7 @@ class AddManyMarkupsFiducialTestLogic(ScriptedLoadableModuleLogic):
 
     testEndTime = time.clock()
     testTime = testEndTime - testStartTime
-    print "Total time to add ",numToAdd," = ", testTime
+    print("Total time to add ",numToAdd," = ", testTime)
 
     return True
 

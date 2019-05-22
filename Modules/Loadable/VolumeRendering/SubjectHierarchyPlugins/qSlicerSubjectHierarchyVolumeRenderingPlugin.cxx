@@ -57,7 +57,7 @@ protected:
   qSlicerSubjectHierarchyVolumeRenderingPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyVolumeRenderingPluginPrivate(qSlicerSubjectHierarchyVolumeRenderingPlugin& object);
-  ~qSlicerSubjectHierarchyVolumeRenderingPluginPrivate();
+  ~qSlicerSubjectHierarchyVolumeRenderingPluginPrivate() override;
   void init();
 public:
   vtkWeakPointer<vtkSlicerVolumeRenderingLogic> VolumeRenderingLogic;
@@ -72,8 +72,8 @@ public:
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyVolumeRenderingPluginPrivate::qSlicerSubjectHierarchyVolumeRenderingPluginPrivate(qSlicerSubjectHierarchyVolumeRenderingPlugin& object)
 : q_ptr(&object)
-, ToggleVolumeRenderingAction(NULL)
-, VolumeRenderingOptionsAction(NULL)
+, ToggleVolumeRenderingAction(nullptr)
+, VolumeRenderingOptionsAction(nullptr)
 {
 }
 
@@ -94,8 +94,7 @@ void qSlicerSubjectHierarchyVolumeRenderingPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyVolumeRenderingPluginPrivate::~qSlicerSubjectHierarchyVolumeRenderingPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyVolumeRenderingPlugin methods
@@ -113,8 +112,7 @@ qSlicerSubjectHierarchyVolumeRenderingPlugin::qSlicerSubjectHierarchyVolumeRende
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyVolumeRenderingPlugin::~qSlicerSubjectHierarchyVolumeRenderingPlugin()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerSubjectHierarchyVolumeRenderingPlugin::setVolumeRenderingLogic(vtkSlicerVolumeRenderingLogic* volumeRenderingLogic)
@@ -154,7 +152,7 @@ void qSlicerSubjectHierarchyVolumeRenderingPlugin::showVisibilityContextMenuActi
   if (qSlicerSubjectHierarchyPluginHandler::instance()->pluginByName("Volumes")->canOwnSubjectHierarchyItem(itemID))
     {
     vtkMRMLScalarVolumeNode* volumeNode = vtkMRMLScalarVolumeNode::SafeDownCast(shNode->GetItemDataNode(itemID));
-    vtkMRMLVolumeRenderingDisplayNode* displayNode = NULL;
+    vtkMRMLVolumeRenderingDisplayNode* displayNode = nullptr;
     if (!volumeNode)
       {
       qCritical() << Q_FUNC_INFO << ": Failed to find scalar volume node associated to subject hierarchy item " << itemID;

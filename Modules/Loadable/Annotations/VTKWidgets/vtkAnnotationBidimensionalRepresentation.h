@@ -30,7 +30,7 @@ public:
 
   static vtkAnnotationBidimensionalRepresentation *New();
   vtkTypeMacro(vtkAnnotationBidimensionalRepresentation, vtkBiDimensionalRepresentation2D);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void SetDistance1(double distance);
   void SetDistance2(double distance);
@@ -38,14 +38,14 @@ public:
 protected:
 
   vtkAnnotationBidimensionalRepresentation();
-  virtual ~vtkAnnotationBidimensionalRepresentation();
+  ~vtkAnnotationBidimensionalRepresentation() override;
 
-  virtual void BuildRepresentation() VTK_OVERRIDE;
+  void BuildRepresentation() override;
 
 private:
 
-  vtkAnnotationBidimensionalRepresentation(const vtkAnnotationBidimensionalRepresentation&); /// Not implemented
-  void operator=(const vtkAnnotationBidimensionalRepresentation&); /// Not Implemented
+  vtkAnnotationBidimensionalRepresentation(const vtkAnnotationBidimensionalRepresentation&) = delete;
+  void operator=(const vtkAnnotationBidimensionalRepresentation&) = delete;
 
   double m_Distance1;
   double m_Distance2;

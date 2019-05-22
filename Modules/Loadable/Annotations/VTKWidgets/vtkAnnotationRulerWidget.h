@@ -29,9 +29,9 @@ public:
 
   static vtkAnnotationRulerWidget *New();
   vtkTypeMacro(vtkAnnotationRulerWidget, vtkDistanceWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual void CreateDefaultRepresentation() VTK_OVERRIDE;
+  void CreateDefaultRepresentation() override;
 
   /// Return True if the widget will build its 2D representation
   bool GetIs2DWidget();
@@ -42,14 +42,14 @@ public:
 protected:
 
   vtkAnnotationRulerWidget();
-  virtual ~vtkAnnotationRulerWidget();
+  ~vtkAnnotationRulerWidget() override;
 
   bool Is2DWidget;
 
 private:
 
-  vtkAnnotationRulerWidget(const vtkAnnotationRulerWidget&); /// Not implemented
-  void operator=(const vtkAnnotationRulerWidget&); /// Not Implemented
+  vtkAnnotationRulerWidget(const vtkAnnotationRulerWidget&) = delete;
+  void operator=(const vtkAnnotationRulerWidget&) = delete;
 
 };
 

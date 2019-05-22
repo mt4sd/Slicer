@@ -42,8 +42,8 @@ public:
   typedef qMRMLWidget Superclass;
 
   /// Constructors
-  explicit qMRMLPlotChartPropertiesWidget(QWidget* parent = 0);
-  virtual ~qMRMLPlotChartPropertiesWidget();
+  explicit qMRMLPlotChartPropertiesWidget(QWidget* parent = nullptr);
+  ~qMRMLPlotChartPropertiesWidget() override;
 
   /// Get \a PlotViewNode
   vtkMRMLPlotChartNode* mrmlPlotChartNode()const;
@@ -51,7 +51,7 @@ public:
 public slots:
 
   /// Set the scene.
-  virtual void setMRMLScene(vtkMRMLScene* newScene);
+  void setMRMLScene(vtkMRMLScene* newScene) override;
 
   /// Set a new PlotViewNode.
   void setMRMLPlotChartNode(vtkMRMLNode* node);

@@ -41,8 +41,7 @@ qSlicerModelsDialogPrivate::qSlicerModelsDialogPrivate(qSlicerModelsDialog& obje
 
 //-----------------------------------------------------------------------------
 qSlicerModelsDialogPrivate::~qSlicerModelsDialogPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerModelsDialogPrivate::init()
@@ -91,7 +90,7 @@ void qSlicerModelsDialogPrivate::openAddModelDirectoryDialog()
 //-----------------------------------------------------------------------------
 qSlicerModelsDialog::qSlicerModelsDialog(QObject* _parent)
   : qSlicerFileDialog(_parent)
-  , d_ptr(new qSlicerModelsDialogPrivate(*this, 0))
+  , d_ptr(new qSlicerModelsDialogPrivate(*this, nullptr))
 {
   // FIXME give qSlicerModelsDialog as a parent of qSlicerModelsDialogPrivate;
   Q_D(qSlicerModelsDialog);
@@ -100,8 +99,7 @@ qSlicerModelsDialog::qSlicerModelsDialog(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerModelsDialog::~qSlicerModelsDialog()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 qSlicerIO::IOFileType qSlicerModelsDialog::fileType()const

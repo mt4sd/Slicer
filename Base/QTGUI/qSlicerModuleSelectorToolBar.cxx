@@ -31,6 +31,7 @@
 #include "qSlicerAbstractModule.h"
 #include "qSlicerApplication.h"
 #include "qSlicerModuleManager.h"
+#include "ctkComboBox.h"
 #include "ctkMenuComboBox.h"
 
 // SlicerQt includes
@@ -66,14 +67,14 @@ public:
 qSlicerModuleSelectorToolBarPrivate::qSlicerModuleSelectorToolBarPrivate(qSlicerModuleSelectorToolBar& object)
   : q_ptr(&object)
 {
-  this->ModulesMenu = 0;
-  this->ModulesComboBox = 0;
-  this->HistoryMenu = 0;
-  this->HistoryButton = 0;
-  this->PreviousButton = 0;
-  this->PreviousHistoryMenu = 0;
-  this->NextButton = 0;
-  this->NextHistoryMenu = 0;
+  this->ModulesMenu = nullptr;
+  this->ModulesComboBox = nullptr;
+  this->HistoryMenu = nullptr;
+  this->HistoryButton = nullptr;
+  this->PreviousButton = nullptr;
+  this->PreviousHistoryMenu = nullptr;
+  this->NextButton = nullptr;
+  this->NextHistoryMenu = nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -190,14 +191,20 @@ qSlicerModuleSelectorToolBar::qSlicerModuleSelectorToolBar(QWidget* parentWidget
 
 //---------------------------------------------------------------------------
 qSlicerModuleSelectorToolBar::~qSlicerModuleSelectorToolBar()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 qSlicerModulesMenu* qSlicerModuleSelectorToolBar::modulesMenu()const
 {
   Q_D(const qSlicerModuleSelectorToolBar);
   return d->ModulesMenu;
+}
+
+//---------------------------------------------------------------------------
+ctkMenuComboBox* qSlicerModuleSelectorToolBar::modulesMenuComboBox() const
+{
+  Q_D(const qSlicerModuleSelectorToolBar);
+  return d->ModulesComboBox;
 }
 
 //---------------------------------------------------------------------------
@@ -309,7 +316,7 @@ void qSlicerModuleSelectorToolBar::actionSelected(QAction* action)
     {
     d->insertActionOnTop(action, d->HistoryMenu);
     }
-  if (action == 0)
+  if (action == nullptr)
     {
     // Because the NoModuleAction is not observed by ctkMenuComboBox, the
     // toolbar shall clear the text of the current action manually.

@@ -36,17 +36,17 @@ class qSlicerModelsReader
   Q_OBJECT
 public:
   typedef qSlicerFileReader Superclass;
-  qSlicerModelsReader(vtkSlicerModelsLogic* modelsLogic = 0, QObject* parent = 0);
-  virtual ~qSlicerModelsReader();
+  qSlicerModelsReader(vtkSlicerModelsLogic* modelsLogic = nullptr, QObject* parent = nullptr);
+  ~qSlicerModelsReader() override;
 
   void setModelsLogic(vtkSlicerModelsLogic* modelsLogic);
   vtkSlicerModelsLogic* modelsLogic()const;
 
-  virtual QString description()const;
-  virtual IOFileType fileType()const;
-  virtual QStringList extensions()const;
+  QString description()const override;
+  IOFileType fileType()const override;
+  QStringList extensions()const override;
 
-  virtual bool load(const IOProperties& properties);
+  bool load(const IOProperties& properties) override;
 
 protected:
   QScopedPointer<qSlicerModelsReaderPrivate> d_ptr;

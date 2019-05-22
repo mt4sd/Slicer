@@ -49,8 +49,7 @@ vtkMRMLTableViewNode::vtkMRMLTableViewNode()
 
 //----------------------------------------------------------------------------
 vtkMRMLTableViewNode::~vtkMRMLTableViewNode()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 const char* vtkMRMLTableViewNode::GetNodeTagName()
@@ -73,7 +72,7 @@ void vtkMRMLTableViewNode::ReadXMLAttributes(const char** atts)
   Superclass::ReadXMLAttributes(atts);
   const char* attName;
   const char* attValue;
-  while (*atts != NULL)
+  while (*atts != nullptr)
     {
     attName = *(atts++);
     attValue = *(atts++);

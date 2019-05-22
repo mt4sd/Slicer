@@ -61,8 +61,8 @@ public:
 qMRMLAnnotationTreeViewPrivate::qMRMLAnnotationTreeViewPrivate(qMRMLAnnotationTreeView& object)
   : q_ptr(&object)
 {
-  this->SceneModel = 0;
-  this->SortFilterModel = 0;
+  this->SceneModel = nullptr;
+  this->SortFilterModel = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -111,8 +111,7 @@ qMRMLAnnotationTreeView::qMRMLAnnotationTreeView(QWidget *_parent)
 
 //------------------------------------------------------------------------------
 qMRMLAnnotationTreeView::~qMRMLAnnotationTreeView()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 //
@@ -129,7 +128,7 @@ void qMRMLAnnotationTreeView::onSelectionChanged(const QItemSelection & selected
   // if the user clicked on a hierarchy, set this as the active one
   // this means, new annotations or new user-created hierarchies will be created
   // as children of this one
-  vtkMRMLNode* newCurrentNode = 0;
+  vtkMRMLNode* newCurrentNode = nullptr;
   if (selected.indexes().count() > 0)
     {
     newCurrentNode = d->SortFilterModel->mrmlNodeFromIndex(selected.indexes()[0]);
@@ -137,7 +136,7 @@ void qMRMLAnnotationTreeView::onSelectionChanged(const QItemSelection & selected
   vtkMRMLNode* newActiveNode =
     this->annotationModel()->activeHierarchyNode(newCurrentNode);
   this->m_Logic->SetActiveHierarchyNodeID(
-    newActiveNode ? newActiveNode->GetID() : 0);
+    newActiveNode ? newActiveNode->GetID() : nullptr);
 
   this->Superclass::onSelectionChanged(selected, deselected);
 }
@@ -191,7 +190,7 @@ const char* qMRMLAnnotationTreeView::firstSelectedNode()
   // first, check if we selected anything
   if (selected.isEmpty())
     {
-    return 0;
+    return nullptr;
     }
 
   // now get the first selected item
@@ -200,7 +199,7 @@ const char* qMRMLAnnotationTreeView::firstSelectedNode()
   // check if it is a valid node
   if (!d->SortFilterModel->mrmlNodeFromIndex(index))
     {
-    return 0;
+    return nullptr;
     }
 
   return d->SortFilterModel->mrmlNodeFromIndex(index)->GetID();
@@ -365,7 +364,7 @@ void qMRMLAnnotationTreeView::deleteSelected()
     }
   this->mrmlScene()->EndState(vtkMRMLScene::BatchProcessState);
 
-  this->m_Logic->SetActiveHierarchyNodeID(NULL);
+  this->m_Logic->SetActiveHierarchyNodeID(nullptr);
 
 }
 
@@ -471,11 +470,7 @@ void qMRMLAnnotationTreeView::hideScene()
   // set the column widths
   for (int i = 0; i < this->header()->count(); ++i)
     {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    this->header()->setResizeMode(i, QHeaderView::ResizeToContents);
-#else
     this->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
-#endif
     }
 }
 

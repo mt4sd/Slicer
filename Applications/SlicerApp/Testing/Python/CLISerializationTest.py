@@ -17,6 +17,7 @@
 #  This file was originally developed by Johan Andruejol, Kitware Inc.
 #
 
+from __future__ import print_function
 import argparse
 import csv
 import json
@@ -223,7 +224,7 @@ if __name__ == '__main__':
     os.remove(serializeSeedsOutFile)
     os.remove(deserializeSeedsOutFile)
     os.remove(json_file)
-  except AttributeError, OSError:
+  except AttributeError as OSError:
     pass
 
   print("\n=> ok")

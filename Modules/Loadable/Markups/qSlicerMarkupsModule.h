@@ -24,53 +24,57 @@
 #include "qSlicerMarkupsModuleExport.h"
 
 class qSlicerMarkupsModulePrivate;
+class vtkMRMLMarkupsDisplayNode;
 
 /// \ingroup Slicer_QtModules_Markups
 class Q_SLICER_QTMODULES_MARKUPS_EXPORT qSlicerMarkupsModule :
   public qSlicerLoadableModule
 {
   Q_OBJECT
-#ifdef Slicer_HAVE_QT5
   Q_PLUGIN_METADATA(IID "org.slicer.modules.loadable.qSlicerLoadableModule/1.0");
-#endif
   Q_INTERFACES(qSlicerLoadableModule);
 
 public:
 
   typedef qSlicerLoadableModule Superclass;
-  explicit qSlicerMarkupsModule(QObject *parent=0);
-  virtual ~qSlicerMarkupsModule();
+  explicit qSlicerMarkupsModule(QObject *parent=nullptr);
+  ~qSlicerMarkupsModule() override;
 
   qSlicerGetTitleMacro(QTMODULE_TITLE);
 
   /// Help to use the module
-  virtual QString helpText()const;
+  QString helpText()const override;
 
   /// Return acknowledgements
-  virtual QString acknowledgementText()const;
+  QString acknowledgementText()const override;
 
   /// Return the authors of the module
-  virtual QStringList  contributors()const;
+  QStringList  contributors()const override;
 
   /// Return a custom icon for the module
-  virtual QIcon icon()const;
+  QIcon icon()const override;
 
   /// Return the categories for the module
-  virtual QStringList categories()const;
+  QStringList categories()const override;
 
   /// Specify editable node types
-  virtual QStringList associatedNodeTypes()const;
+  QStringList associatedNodeTypes()const override;
+
+  void setMRMLScene(vtkMRMLScene* scene) override;
+
+  static void readDefaultMarkupsDisplaySettings(vtkMRMLMarkupsDisplayNode* markupsDisplayNode);
+  static void writeDefaultMarkupsDisplaySettings(vtkMRMLMarkupsDisplayNode* markupsDisplayNode);
 
 protected:
 
   /// Initialize the module. Register the volumes reader/writer
-  virtual void setup();
+  void setup() override;
 
   /// Create and return the widget representation associated to this module
-  virtual qSlicerAbstractModuleRepresentation * createWidgetRepresentation();
+  qSlicerAbstractModuleRepresentation * createWidgetRepresentation() override;
 
   /// Create and return the logic associated to this module
-  virtual vtkMRMLAbstractLogic* createLogic();
+  vtkMRMLAbstractLogic* createLogic() override;
 
   QScopedPointer<qSlicerMarkupsModulePrivate> d_ptr;
 

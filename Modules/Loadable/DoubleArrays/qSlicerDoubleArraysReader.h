@@ -34,19 +34,19 @@ class qSlicerDoubleArraysReader
   Q_OBJECT
 public:
   typedef qSlicerFileReader Superclass;
-  qSlicerDoubleArraysReader(QObject* parent = 0);
+  qSlicerDoubleArraysReader(QObject* parent = nullptr);
   qSlicerDoubleArraysReader(vtkSlicerDoubleArraysLogic* logic,
-                       QObject* parent = 0);
-  virtual ~qSlicerDoubleArraysReader();
+                       QObject* parent = nullptr);
+  ~qSlicerDoubleArraysReader() override;
 
   vtkSlicerDoubleArraysLogic* logic()const;
   void setLogic(vtkSlicerDoubleArraysLogic* logic);
 
-  virtual QString description()const;
-  virtual IOFileType fileType()const;
-  virtual QStringList extensions()const;
+  QString description()const override;
+  IOFileType fileType()const override;
+  QStringList extensions()const override;
 
-  virtual bool load(const IOProperties& properties);
+  bool load(const IOProperties& properties) override;
 protected:
   QScopedPointer<qSlicerDoubleArraysReaderPrivate> d_ptr;
 

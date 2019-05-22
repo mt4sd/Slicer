@@ -48,8 +48,7 @@ qSlicerTerminologiesReader::qSlicerTerminologiesReader(vtkSlicerTerminologiesMod
 
 //-----------------------------------------------------------------------------
 qSlicerTerminologiesReader::~qSlicerTerminologiesReader()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerTerminologiesReader::setTerminologiesLogic(vtkSlicerTerminologiesModuleLogic* newTerminologiesLogic)
@@ -91,7 +90,7 @@ bool qSlicerTerminologiesReader::load(const IOProperties& properties)
   QString fileName = properties["fileName"].toString();
 
   this->setLoadedNodes(QStringList());
-  if (d->TerminologiesLogic.GetPointer() == 0)
+  if (d->TerminologiesLogic.GetPointer() == nullptr)
     {
     return false;
     }

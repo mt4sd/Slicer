@@ -1,9 +1,10 @@
+from __future__ import print_function
 import os, copy
 import qt
 import vtk
 import logging
 
-from packaging import version
+from functools import cmp_to_key
 
 from ctk import ctkDICOMObjectListWidget, ctkDICOMDatabase, ctkDICOMIndexer, ctkDICOMBrowser, ctkPopupWidget, ctkExpandButton
 import slicer
@@ -38,9 +39,8 @@ def setDatabasePrecacheTags(dicomBrowser=None):
   tagsToPrecache = list(slicer.dicomDatabase.tagsToPrecache)
   for pluginClass in slicer.modules.dicomPlugins:
     plugin = slicer.modules.dicomPlugins[pluginClass]()
-    tagsToPrecache += plugin.tags.values()
-  tagsToPrecache = list(set(tagsToPrecache))  # remove duplicates
-  tagsToPrecache.sort()
+    tagsToPrecache += list(plugin.tags.values())
+  tagsToPrecache = sorted(set(tagsToPrecache))  # remove duplicates
   slicer.dicomDatabase.tagsToPrecache = tagsToPrecache
   if dicomBrowser:
     dicomBrowser.tagsToPrecache = tagsToPrecache
@@ -63,7 +63,7 @@ class SizePositionSettingsMixin(object):
     self.resize(self.settings.value("size",
                                     qt.QSize(int(parent.width*3/4), int(parent.height*3/4))))
     self.move(self.settings.value("pos",
-                                  qt.QPoint(screenPos.x() + (parent.width - self.width)/2, screenPos.y())))
+                                  qt.QPoint(int(screenPos.x() + (parent.width - self.width)/2), screenPos.y())))
     self.settings.endGroup()
 
     # If window position is no longer valid (for example because the window was
@@ -414,6 +414,9 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
     """The dicom browser will emit multiple directoryImported
     signals during the same operation, so we collapse them
     into a single check for compatible extensions."""
+    if not hasattr(slicer.app, 'extensionsManagerModel'):
+      # Slicer may not be built with extension manager support
+      return
     if not self.extensionCheckPending:
       self.extensionCheckPending = True
       def timerCallback():
@@ -527,14 +530,8 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
       try:
         os.makedirs(databaseDirectory)
       except OSError:
-        try:
-          # Qt4
-          documentsLocation = qt.QDesktopServices.DocumentsLocation
-          documents = qt.QDesktopServices.storageLocation(documentsLocation)
-        except AttributeError:
-          # Qt5
-          documentsLocation = qt.QStandardPaths.DocumentsLocation
-          documents = qt.QStandardPaths.writableLocation(documentsLocation)
+        documentsLocation = qt.QStandardPaths.DocumentsLocation
+        documents = qt.QStandardPaths.writableLocation(documentsLocation)
         databaseDirectory = os.path.join(documents, slicer.app.applicationName+"DICOMDatabase")
         if not os.path.exists(databaseDirectory):
           os.makedirs(databaseDirectory)
@@ -623,7 +620,7 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
     for plugin in self.loadablesByPlugin:
       for loadable in self.loadablesByPlugin[plugin]:
         seriesUID = slicer.dicomDatabase.fileValue(loadable.files[0], seriesUIDTag)
-        if not loadablesBySeries.has_key(seriesUID):
+        if seriesUID not in loadablesBySeries:
           loadablesBySeries[seriesUID] = [loadable]
         else:
           loadablesBySeries[seriesUID].append(loadable)
@@ -697,7 +694,7 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
     """
     loadablesByPlugin = {}
     loadEnabled = False
-    if not type(fileLists) is list or len(fileLists) == 0 or not type(fileLists[0]) in [tuple, list]:
+    if not isinstance(fileLists, list) or len(fileLists) == 0 or not type(fileLists[0]) in [tuple, list]:
       logging.error('File lists must contain a non-empty list of tuples/lists')
       return loadablesByPlugin, loadEnabled
 
@@ -720,7 +717,7 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
     progress = slicer.util.createProgressDialog(parent=self, value=0, maximum=len(plugins))
 
     for step, pluginClass in enumerate(plugins):
-      if not self.pluginInstances.has_key(pluginClass):
+      if pluginClass not in self.pluginInstances:
         self.pluginInstances[pluginClass] = slicer.modules.dicomPlugins[pluginClass]()
       plugin = self.pluginInstances[pluginClass]
       if progress.wasCanceled:
@@ -736,12 +733,12 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
         if not loadablesByPlugin[plugin]:
           loadablesByPlugin[plugin] = plugin.examine(fileLists)
         loadEnabled = loadEnabled or loadablesByPlugin[plugin] != []
-      except Exception, e:
+      except Exception as e:
         import traceback
         traceback.print_exc()
         slicer.util.warningDisplay("Warning: Plugin failed: %s\n\nSee python console for error message." % pluginClass,
                                    windowTitle="DICOM", parent=self)
-        print "DICOM Plugin failed: %s" % str(e)
+        print("DICOM Plugin failed: %s" % str(e))
 
     progress.close()
 
@@ -762,7 +759,7 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
         isEqual = True
         for pair in zip(inputFileListCopy, loadableFileListCopy):
           if pair[0] != pair[1]:
-            print "{} != {}".format(pair[0], pair[1])
+            print("{} != {}".format(pair[0], pair[1]))
             isEqual = False
             break
         if not isEqual:
@@ -859,7 +856,7 @@ class DICOMDetailsBase(VTKObservationMixin, SizePositionSettingsMixin):
 
     self.addObserver(slicer.mrmlScene, slicer.vtkMRMLScene.NodeAddedEvent, onNodeAdded)
 
-    for step, (loadable, plugin) in enumerate(selectedLoadables.iteritems(), start=1):
+    for step, (loadable, plugin) in enumerate(selectedLoadables.items(), start=1):
       if progress.wasCanceled:
         break
       updateProgress(value=step, text='\nLoading %s' % loadable.name)
@@ -1086,7 +1083,7 @@ class DICOMPluginSelector(qt.QWidget):
       size = settings.beginReadArray('DICOM/disabledPlugins')
       disabledPlugins = []
 
-      for i in xrange(size):
+      for i in range(size):
         settings.setArrayIndex(i)
         disabledPlugins.append(str(settings.allKeys()[0]))
       settings.endArray()
@@ -1112,13 +1109,6 @@ class DICOMPluginSelector(qt.QWidget):
     return selectedPlugins
 
 
-def _setSectionResizeMode(header, *args, **kwargs):
-  if version.parse(qt.Qt.qVersion()) < version.parse("5.0.0"):
-    header.setResizeMode(*args, **kwargs)
-  else:
-    header.setSectionResizeMode(*args, **kwargs)
-
-
 class DICOMLoadableTable(qt.QTableWidget):
   """Implement the Qt code for a table of
   selectable slicer data to be made from
@@ -1135,16 +1125,16 @@ class DICOMLoadableTable(qt.QTableWidget):
     slicer.app.connect('aboutToQuit()', self.deleteLater)
 
   def getNumberOfCheckedItems(self):
-    return sum(1 for row in xrange(self.rowCount) if self.item(row, 0).checkState() == qt.Qt.Checked)
+    return sum(1 for row in range(self.rowCount) if self.item(row, 0).checkState() == qt.Qt.Checked)
 
   def configure(self):
     self.setColumnCount(3)
     self.setHorizontalHeaderLabels(['DICOM Data', 'Reader', 'Warnings'])
     self.setSelectionBehavior(qt.QTableView.SelectRows)
-    _setSectionResizeMode(self.horizontalHeader(), qt.QHeaderView.Stretch)
-    _setSectionResizeMode(self.horizontalHeader(), 0, qt.QHeaderView.ResizeToContents)
-    _setSectionResizeMode(self.horizontalHeader(), 1, qt.QHeaderView.Stretch)
-    _setSectionResizeMode(self.horizontalHeader(), 2, qt.QHeaderView.Stretch)
+    self.horizontalHeader().setSectionResizeMode(qt.QHeaderView.Stretch)
+    self.horizontalHeader().setSectionResizeMode(0, qt.QHeaderView.ResizeToContents)
+    self.horizontalHeader().setSectionResizeMode(1, qt.QHeaderView.Stretch)
+    self.horizontalHeader().setSectionResizeMode(2, qt.QHeaderView.Stretch)
 
   def addLoadableRow(self, loadable, row, reader):
     self.insertRow(row)
@@ -1186,8 +1176,8 @@ class DICOMLoadableTable(qt.QTableWidget):
     # For each plugin, keep only a single loadable selected for the same file set
     # to prevent loading same data multiple times.
     for plugin in loadablesByPlugin:
-      for thisLoadableId in xrange(len(loadablesByPlugin[plugin])):
-        for prevLoadableId in xrange(0, thisLoadableId):
+      for thisLoadableId in range(len(loadablesByPlugin[plugin])):
+        for prevLoadableId in range(0, thisLoadableId):
           thisLoadable = loadablesByPlugin[plugin][thisLoadableId]
           prevLoadable = loadablesByPlugin[plugin][prevLoadableId]
           # fileDifferences will contain all the files that only present in one or the other list (or tuple)
@@ -1207,12 +1197,12 @@ class DICOMLoadableTable(qt.QTableWidget):
     self.setVerticalHeaderLabels(row * [""])
 
   def uncheckAll(self):
-    for row in xrange(self.rowCount):
+    for row in range(self.rowCount):
       item = self.item(row, 0)
       item.setCheckState(False)
 
   def updateSelectedFromCheckstate(self):
-    for row in xrange(self.rowCount):
+    for row in range(self.rowCount):
       item = self.item(row, 0)
       self.loadables[row].selected = (item.checkState() != 0)
       # updating the names
@@ -1235,9 +1225,9 @@ class DICOMHeaderWidget(qt.QTableWidget):
   def configure(self):
     self.setColumnCount(2)
     self.setHorizontalHeaderLabels(['Tag', 'Value'])
-    _setSectionResizeMode(self.horizontalHeader(), qt.QHeaderView.Stretch)
-    _setSectionResizeMode(self.horizontalHeader(), 0, qt.QHeaderView.Stretch)
-    _setSectionResizeMode(self.horizontalHeader(), 1, qt.QHeaderView.Stretch)
+    self.horizontalHeader().setSectionResizeMode(qt.QHeaderView.Stretch)
+    self.horizontalHeader().setSectionResizeMode(0, qt.QHeaderView.Stretch)
+    self.horizontalHeader().setSectionResizeMode(1, qt.QHeaderView.Stretch)
 
   def setHeader(self, dcmFile=None):
     #TODO: this method never gets called. Should be called when clicking on items from the SeriesTable
@@ -1309,7 +1299,8 @@ class DICOMRecentActivityWidget(qt.QWidget):
       self.insertDateTime = insertDateTime
       self.text = text
 
-  def compareSeriesTimes(self, a, b):
+  @staticmethod
+  def compareSeriesTimes(a, b):
     if a.elapsedSinceInsert > b.elapsedSinceInsert:
       return 1
     else:
@@ -1350,7 +1341,7 @@ class DICOMRecentActivityWidget(qt.QWidget):
             if timeNote:
               text = "%s: %s for %s" % (timeNote, seriesDescription, patientName)
               recentSeries.append(self.seriesWithTime(series, elapsed, seriesTime, text))
-    recentSeries.sort(self.compareSeriesTimes)
+    recentSeries.sort(key=cmp_to_key(self.compareSeriesTimes))
     return recentSeries
 
   def update(self):
@@ -1370,8 +1361,8 @@ class DICOMRecentActivityWidget(qt.QWidget):
       slicer.util.showStatusMessage(statusMessage, 10000)
 
   def onActivated(self, modelIndex):
-    print 'selected row %d' % modelIndex.row()
-    print self.recentSeries[modelIndex.row()].text
+    print('selected row %d' % modelIndex.row())
+    print(self.recentSeries[modelIndex.row()].text)
     series = self.recentSeries[modelIndex.row()]
     if self.detailsPopup:
       self.detailsPopup.open()
@@ -1455,8 +1446,8 @@ class DICOMSendDialog(qt.QDialog):
   def centerProgress(self):
     mainWindow = slicer.util.mainWindow()
     screenMainPos = mainWindow.pos
-    x = screenMainPos.x() + (mainWindow.width - self.progress.width)/2
-    y = screenMainPos.y() + (mainWindow.height - self.progress.height)/2
+    x = screenMainPos.x() + int((mainWindow.width - self.progress.width)/2)
+    y = screenMainPos.y() + int((mainWindow.height - self.progress.height)/2)
     self.progress.move(x,y)
 
 

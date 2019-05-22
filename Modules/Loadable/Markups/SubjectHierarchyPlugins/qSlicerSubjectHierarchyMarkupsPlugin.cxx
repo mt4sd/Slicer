@@ -65,10 +65,8 @@ protected:
   qSlicerSubjectHierarchyMarkupsPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyMarkupsPluginPrivate(qSlicerSubjectHierarchyMarkupsPlugin& object);
-  ~qSlicerSubjectHierarchyMarkupsPluginPrivate();
+  ~qSlicerSubjectHierarchyMarkupsPluginPrivate() override;
   void init();
-public:
-  QIcon MarkupIcon;
 };
 
 //-----------------------------------------------------------------------------
@@ -78,7 +76,6 @@ public:
 qSlicerSubjectHierarchyMarkupsPluginPrivate::qSlicerSubjectHierarchyMarkupsPluginPrivate(qSlicerSubjectHierarchyMarkupsPlugin& object)
 : q_ptr(&object)
 {
-  this->MarkupIcon = QIcon(":Icons/Markup.png");
 }
 
 //------------------------------------------------------------------------------
@@ -88,8 +85,7 @@ void qSlicerSubjectHierarchyMarkupsPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyMarkupsPluginPrivate::~qSlicerSubjectHierarchyMarkupsPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyMarkupsPlugin methods
@@ -107,8 +103,7 @@ qSlicerSubjectHierarchyMarkupsPlugin::qSlicerSubjectHierarchyMarkupsPlugin(QObje
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyMarkupsPlugin::~qSlicerSubjectHierarchyMarkupsPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchyMarkupsPlugin::canAddNodeToSubjectHierarchy(
@@ -120,9 +115,14 @@ double qSlicerSubjectHierarchyMarkupsPlugin::canAddNodeToSubjectHierarchy(
     qCritical() << Q_FUNC_INFO << ": Input node is NULL";
     return 0.0;
     }
-  else if (node->IsA("vtkMRMLMarkupsFiducialNode"))
+  else if (node->IsA("vtkMRMLMarkupsFiducialNode") ||
+           node->IsA("vtkMRMLMarkupsLineNode") ||
+           node->IsA("vtkMRMLMarkupsAngleNode") ||
+           node->IsA("vtkMRMLMarkupsCurveNode") ||
+           node->IsA("vtkMRMLMarkupsClosedCurveNode")
+           )
     {
-    // Item is a markup fiducial
+    // Item is a markup
     return 0.5;
     }
   return 0.0;
@@ -145,9 +145,14 @@ double qSlicerSubjectHierarchyMarkupsPlugin::canOwnSubjectHierarchyItem(vtkIdTyp
 
   // Markup
   vtkMRMLNode* associatedNode = shNode->GetItemDataNode(itemID);
-  if (associatedNode && associatedNode->IsA("vtkMRMLMarkupsFiducialNode"))
+  if (associatedNode &&
+      (associatedNode->IsA("vtkMRMLMarkupsFiducialNode") ||
+       associatedNode->IsA("vtkMRMLMarkupsLineNode") ||
+       associatedNode->IsA("vtkMRMLMarkupsAngleNode") ||
+       associatedNode->IsA("vtkMRMLMarkupsCurveNode") ||
+       associatedNode->IsA("vtkMRMLMarkupsClosedCurveNode")))
     {
-    // Item is a markup fiducial
+    // Item is a markup
     return 0.5;
     }
 
@@ -171,12 +176,42 @@ QIcon qSlicerSubjectHierarchyMarkupsPlugin::icon(vtkIdType itemID)
 
   Q_D(qSlicerSubjectHierarchyMarkupsPlugin);
 
-  if (this->canOwnSubjectHierarchyItem(itemID))
+  if (!this->canOwnSubjectHierarchyItem(itemID))
     {
-    return d->MarkupIcon;
+    // Item unknown by plugin
+    return QIcon();
     }
-
-  // Item unknown by plugin
+  vtkMRMLSubjectHierarchyNode* shNode = qSlicerSubjectHierarchyPluginHandler::instance()->subjectHierarchyNode();
+  if (!shNode)
+    {
+    return QIcon();
+    }
+  vtkMRMLNode* node = shNode->GetItemDataNode(itemID);
+  if (!node)
+    {
+    return QIcon();
+    }
+  if (node->IsA("vtkMRMLMarkupsFiducialNode"))
+    {
+    return QIcon(":Icons/MarkupsFiducial.png");
+    }
+  else if (node->IsA("vtkMRMLMarkupsLineNode"))
+    {
+    return QIcon(":Icons/MarkupsLine.png");
+    }
+  else if (node->IsA("vtkMRMLMarkupsAngleNode"))
+    {
+    return QIcon(":Icons/MarkupsAngle.png");
+    }
+  else if (node->IsA("vtkMRMLMarkupsClosedCurveNode"))
+    {
+    // closed curve is a child class of curve node,
+    return QIcon(":Icons/MarkupsClosedCurve.png");
+    }
+  else if (node->IsA("vtkMRMLMarkupsCurveNode"))
+    {
+    return QIcon(":Icons/MarkupsOpenCurve.png");
+    }
   return QIcon();
 }
 

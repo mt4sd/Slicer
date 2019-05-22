@@ -44,10 +44,10 @@ public:
   typedef ctkSettingsPanel Superclass;
 
   /// Constructor
-  explicit qSlicerMarkupsSettingsPanel(QWidget* parent = 0);
+  explicit qSlicerMarkupsSettingsPanel(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerMarkupsSettingsPanel();
+  ~qSlicerMarkupsSettingsPanel() override;
 
   /// Markups logic is synchronized with the settings.
   /// \sa vtkSlicerMarkupsLogic::SetDefaultMarkupsDisplayNodeGlyphType

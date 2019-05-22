@@ -47,9 +47,9 @@ public:
   static vtkAnnotationTextWidgetCallback *New()
   { return new vtkAnnotationTextWidgetCallback; }
 
-  vtkAnnotationTextWidgetCallback(){}
+  vtkAnnotationTextWidgetCallback() = default;
 
-  virtual void Execute (vtkObject *vtkNotUsed(caller), unsigned long event, void*)
+  void Execute (vtkObject *vtkNotUsed(caller), unsigned long event, void*) override
   {
     if ((event == vtkCommand::EndInteractionEvent) || (event == vtkCommand::InteractionEvent))
       {
@@ -142,7 +142,7 @@ vtkAbstractWidget * vtkMRMLAnnotationTextDisplayableManager::CreateWidget(vtkMRM
   if (!node)
     {
     vtkErrorMacro("CreateWidget: Node not set!")
-    return 0;
+    return nullptr;
     }
 
   vtkMRMLAnnotationTextNode* textNode = vtkMRMLAnnotationTextNode::SafeDownCast(node);
@@ -150,7 +150,7 @@ vtkAbstractWidget * vtkMRMLAnnotationTextDisplayableManager::CreateWidget(vtkMRM
   if (!textNode)
     {
     vtkErrorMacro("CreateWidget: Could not get text node!")
-    return 0;
+    return nullptr;
     }
 
   vtkCaptionWidget* captionWidget = vtkCaptionWidget::New();

@@ -117,7 +117,7 @@ def loadPatient(uid=None, name=None, patientID=None):
 def loadSeriesByUID(seriesUIDs):
   """ Load multiple series by UID from DICOM database
   """
-  if not type(seriesUIDs) is list:
+  if not isinstance(seriesUIDs, list):
     logging.error('SeriesUIDs must contain a list')
     return False
   if not hasattr(slicer, 'dicomDatabase') or not hasattr(slicer.modules, 'dicom'):
@@ -127,7 +127,7 @@ def loadSeriesByUID(seriesUIDs):
 
   dicomWidget.detailsPopup.offerLoadables(seriesUIDs, 'SeriesUIDList')
   if len(dicomWidget.detailsPopup.fileLists)==0 or \
-      not type(dicomWidget.detailsPopup.fileLists[0]) is tuple:
+      not isinstance(dicomWidget.detailsPopup.fileLists[0], tuple):
     logging.error('Failed to offer loadables for DICOM series list')
     return False
 
@@ -224,7 +224,7 @@ def closeTemporaryDatabase(originalDatabaseDir, cleanup=True):
   return True
 
 #------------------------------------------------------------------------------
-class TemporaryDICOMDatabase:
+class TemporaryDICOMDatabase(object):
   """Context manager to conveniently use temporary DICOM databases
   """
   def __init__(self, directory=None):
@@ -251,7 +251,7 @@ def importDicom(dicomDataDir, dicomDatabase=None):
       dicomDatabase = slicer.dicomDatabase
     indexer.addDirectory( dicomDatabase, dicomDataDir )
     indexer.waitForImportFinished()
-  except Exception, e:
+  except Exception as e:
     import traceback
     traceback.print_exc()
     logging.error('Failed to import DICOM folder ' + dicomDataDir)
@@ -288,13 +288,13 @@ def loadSeriesWithVerification(seriesUIDs, selectedPlugins=None, loadedNodes=Non
     for plugin in loadablesByPlugin:
       for loadable in loadablesByPlugin[plugin]:
         if loadable.selected:
-          if actualSelectedPlugins.has_key(plugin.loadType):
+          if plugin.loadType in actualSelectedPlugins:
             count = int(actualSelectedPlugins[plugin.loadType])
             actualSelectedPlugins[plugin.loadType] = count+1
           else:
             actualSelectedPlugins[plugin.loadType] = 1
     for pluginName in selectedPlugins.keys():
-      if not actualSelectedPlugins.has_key(pluginName):
+      if pluginName not in actualSelectedPlugins:
         logging.error("Expected DICOM plugin '%s' was not selected" % (pluginName))
         success = False
       elif actualSelectedPlugins[pluginName] != selectedPlugins[pluginName]:
@@ -355,7 +355,7 @@ def seriesUIDsForFiles(files):
   return seriesUIDs
 
 #------------------------------------------------------------------------------
-class LoadDICOMFilesToDatabase:
+class LoadDICOMFilesToDatabase(object):
   """Context manager to conveniently load DICOM files downloaded zipped from the internet
   """
   def __init__( self, url, archiveFilePath=None, dicomDataDir=None, \

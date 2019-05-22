@@ -3,8 +3,10 @@ import vtk
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import LabelEffect
+
+from . import EditUtil
+from . import HelpButton
+from . import LabelEffectOptions, LabelEffectTool, LabelEffectLogic, LabelEffect
 
 __all__ = [
   'WandEffectOptions',
@@ -21,7 +23,7 @@ __all__ = [
 # WandEffectOptions - see LabelEffect, EditOptions and Effect for superclasses
 #
 
-class WandEffectOptions(LabelEffect.LabelEffectOptions):
+class WandEffectOptions(LabelEffectOptions):
   """ WandEffect-specfic gui
   """
 
@@ -107,7 +109,7 @@ class WandEffectOptions(LabelEffect.LabelEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.RemoveObserver(self.parameterNodeTag)
@@ -177,7 +179,7 @@ class WandEffectOptions(LabelEffect.LabelEffectOptions):
 # WandEffectTool
 #
 
-class WandEffectTool(LabelEffect.LabelEffectTool):
+class WandEffectTool(LabelEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -217,7 +219,7 @@ class WandEffectTool(LabelEffect.LabelEffectTool):
 # WandEffectLogic
 #
 
-class WandEffectLogic(LabelEffect.LabelEffectLogic):
+class WandEffectLogic(LabelEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an WandEffectTool
@@ -237,7 +239,7 @@ class WandEffectLogic(LabelEffect.LabelEffectLogic):
     #
     # get the parameters from MRML
     #
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     tolerance = float(node.GetParameter("WandEffect,tolerance"))
     maxPixels = float(node.GetParameter("WandEffect,maxPixels"))
     self.fillMode = node.GetParameter("WandEffect,fillMode")
@@ -311,7 +313,7 @@ class WandEffectLogic(LabelEffect.LabelEffectLogic):
     #
     self.undoRedo.saveState()
     value = backgroundDrawArray[ijk]
-    label = self.editUtil.getLabel()
+    label = EditUtil.getLabel()
     if paintThreshold:
       lo = thresholdMin
       hi = thresholdMax
@@ -371,13 +373,13 @@ class WandEffectLogic(LabelEffect.LabelEffectLogic):
           toVisit.append((location[0]    , location[1]    , location[2] + 1))
 
     # signal to slicer that the label needs to be updated
-    self.editUtil.markVolumeNodeAsModified(labelNode)
+    EditUtil.markVolumeNodeAsModified(labelNode)
 
 #
 # The WandEffect class definition
 #
 
-class WandEffect(LabelEffect.LabelEffect):
+class WandEffect(LabelEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

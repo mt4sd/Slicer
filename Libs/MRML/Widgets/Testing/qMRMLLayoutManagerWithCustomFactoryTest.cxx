@@ -42,6 +42,7 @@
 #include <vtkMRMLScene.h>
 #include <vtkMRMLSliceLogic.h>
 #include <vtkMRMLSliceNode.h>
+#include <vtkMRMLSliceViewDisplayableManagerFactory.h>
 
 // VTK includes
 #include <vtkCollection.h>
@@ -62,22 +63,21 @@ public:
   typedef qMRMLLayoutSliceViewFactory Superclass;
   qSlicerLayoutCustomSliceViewFactory(QObject* parent):Superclass(parent)
   {
-    this->LastNode = 0;
+    this->LastNode = nullptr;
   }
 
-  virtual ~qSlicerLayoutCustomSliceViewFactory()
-  {
-  }
+  ~qSlicerLayoutCustomSliceViewFactory() override
+   = default;
 
   vtkWeakPointer<vtkMRMLSliceNode> LastNode;
 
 protected:
-  virtual QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode)
+  QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode) override
   {
     if (!this->layoutManager() || !viewNode)
       {// can't create a slice widget if there is no parent widget
       Q_ASSERT(viewNode);
-      return 0;
+      return nullptr;
       }
 
     // there is a unique slice widget per node
@@ -130,17 +130,17 @@ public:
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE
+  const char* GetNodeTagName() override
   {
     return "CustomView";
   }
 
 protected:
-  vtkMRMLCustomViewNode(){}
-  ~vtkMRMLCustomViewNode(){}
+  vtkMRMLCustomViewNode() = default;
+  ~vtkMRMLCustomViewNode() override = default;
   vtkMRMLCustomViewNode(const vtkMRMLCustomViewNode&);
   void operator=(const vtkMRMLCustomViewNode&);
 };
@@ -157,11 +157,11 @@ public:
   typedef qMRMLLayoutViewFactory Superclass;
   qMRMLLayoutCustomViewFactory(QObject* parent) : Superclass(parent)
   {
-    this->LastNode = 0;
+    this->LastNode = nullptr;
   }
-  virtual ~qMRMLLayoutCustomViewFactory(){}
+  ~qMRMLLayoutCustomViewFactory() override = default;
 
-  virtual QString viewClassName()const
+  QString viewClassName()const override
   {
     return "vtkMRMLCustomViewNode";
   }
@@ -170,12 +170,12 @@ public:
 
 protected:
 
-  virtual QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode)
+  QWidget* createViewFromNode(vtkMRMLAbstractViewNode* viewNode) override
   {
     if (!viewNode || !this->layoutManager() || !this->layoutManager()->viewport())
       {
       Q_ASSERT(viewNode);
-      return 0;
+      return nullptr;
       }
 
     // There must be a unique Custom widget per node
@@ -207,6 +207,9 @@ int qMRMLLayoutManagerWithCustomFactoryTest(int argc, char * argv[] )
   QSurfaceFormat::setDefaultFormat(format);
 #endif
 
+  // Enables resource sharing between the OpenGL contexts used by classes like QOpenGLWidget and QQuickWidget
+  QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
   QApplication app(argc, argv);
 
   QWidget w;
@@ -215,6 +218,7 @@ int qMRMLLayoutManagerWithCustomFactoryTest(int argc, char * argv[] )
   qMRMLLayoutManager layoutManager(&w, &w);
 
   vtkNew<vtkMRMLApplicationLogic> applicationLogic;
+  vtkMRMLSliceViewDisplayableManagerFactory::GetInstance()->SetMRMLApplicationLogic(applicationLogic);
 
   vtkNew<vtkMRMLScene> scene;
   vtkNew<vtkMRMLLayoutNode> layoutNode;

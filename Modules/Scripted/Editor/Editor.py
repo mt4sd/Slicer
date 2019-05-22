@@ -76,7 +76,7 @@ class EditorWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     layoutManager = slicer.app.layoutManager()
     if layoutManager is not None:
       sliceLogics = layoutManager.mrmlSliceLogics()
-      for i in xrange(sliceLogics.GetNumberOfItems()):
+      for i in range(sliceLogics.GetNumberOfItems()):
         sliceLogic = sliceLogics.GetItemAsObject(i)
         if sliceLogic:
           sliceNode = sliceLogic.GetSliceNode()
@@ -263,7 +263,7 @@ class EditorWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self.layout.addStretch(1)
 
   def cleanup(self):
-    if type(self.parent) is slicer.qMRMLWidget:
+    if isinstance(self.parent, slicer.qMRMLWidget):
       self.parent.setMRMLScene(None)
 
   # creates the frame for the effect options

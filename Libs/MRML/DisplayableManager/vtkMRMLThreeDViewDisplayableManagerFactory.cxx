@@ -34,7 +34,7 @@
 vtkMRMLThreeDViewDisplayableManagerFactory* vtkMRMLThreeDViewDisplayableManagerFactory::New()
 {
   vtkMRMLThreeDViewDisplayableManagerFactory* instance = Self::GetInstance();
-  instance->Register(0);
+  instance->Register(nullptr);
   return instance;
 }
 
@@ -68,8 +68,7 @@ vtkMRMLThreeDViewDisplayableManagerFactory::
 
 //----------------------------------------------------------------------------
 vtkMRMLThreeDViewDisplayableManagerFactory::~vtkMRMLThreeDViewDisplayableManagerFactory()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLThreeDViewDisplayableManagerFactory::PrintSelf(ostream& os, vtkIndent indent)

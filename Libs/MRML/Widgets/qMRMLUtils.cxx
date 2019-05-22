@@ -44,8 +44,7 @@ qMRMLUtils::qMRMLUtils(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qMRMLUtils::~qMRMLUtils()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qMRMLUtils::vtkMatrixToQVector(vtkMatrix4x4* matrix, QVector<double> & vector)
@@ -152,7 +151,7 @@ QPixmap qMRMLUtils::createColorPixmap(QStyle * style, const QColor &color)
 //---------------------------------------------------------------------------
 bool qMRMLUtils::qImageToVtkImageData(const QImage& qImage, vtkImageData* vtkimage)
 {
-  if (vtkimage == 0)
+  if (vtkimage == nullptr)
     {
     return false;
     }

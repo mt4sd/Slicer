@@ -33,8 +33,8 @@ class Q_SLICER_APP_EXPORT qSlicerAppMainWindow : public qSlicerMainWindow
 public:
   typedef qSlicerMainWindow Superclass;
 
-  qSlicerAppMainWindow(QWidget *parent=0);
-  virtual ~qSlicerAppMainWindow();
+  qSlicerAppMainWindow(QWidget *parent=nullptr);
+  ~qSlicerAppMainWindow() override;
 
 public slots:
   void on_HelpKeyboardShortcutsAction_triggered();

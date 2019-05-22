@@ -37,7 +37,7 @@
 #include <vtkMRMLCrosshairDisplayableManager.h>
 #include <vtkMRMLDisplayableManagerGroup.h>
 #include <vtkMRMLThreeDViewDisplayableManagerFactory.h>
-#include <vtkThreeDViewInteractorStyle.h>
+#include <vtkMRMLThreeDViewInteractorStyle.h>
 
 // MRML includes
 #include <vtkMRMLViewNode.h>
@@ -60,9 +60,9 @@
 qMRMLThreeDViewPrivate::qMRMLThreeDViewPrivate(qMRMLThreeDView& object)
   : q_ptr(&object)
 {
-  this->DisplayableManagerGroup = 0;
-  this->MRMLScene = 0;
-  this->MRMLViewNode = 0;
+  this->DisplayableManagerGroup = nullptr;
+  this->MRMLScene = nullptr;
+  this->MRMLViewNode = nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -78,9 +78,9 @@ qMRMLThreeDViewPrivate::~qMRMLThreeDViewPrivate()
 void qMRMLThreeDViewPrivate::init()
 {
   Q_Q(qMRMLThreeDView);
-  q->setRenderEnabled(this->MRMLScene != 0);
+  q->setRenderEnabled(this->MRMLScene != nullptr);
 
-  vtkNew<vtkThreeDViewInteractorStyle> interactorStyle;
+  vtkNew<vtkMRMLThreeDViewInteractorStyle> interactorStyle;
   q->interactor()->SetInteractorStyle(interactorStyle.GetPointer());
 
   // Set default background color
@@ -101,6 +101,7 @@ void qMRMLThreeDViewPrivate::init()
   q->setYawDirection(ctkVTKRenderView::YawLeft);
 
   this->initDisplayableManagers();
+  interactorStyle->SetDisplayableManagers(this->DisplayableManagerGroup);
 }
 
 //---------------------------------------------------------------------------
@@ -152,7 +153,7 @@ void qMRMLThreeDViewPrivate::setMRMLScene(vtkMRMLScene* newScene)
 
   this->MRMLScene = newScene;
   q->setRenderEnabled(
-    this->MRMLScene != 0 && !this->MRMLScene->IsBatchProcessing());
+    this->MRMLScene != nullptr && !this->MRMLScene->IsBatchProcessing());
 }
 
 //---------------------------------------------------------------------------
@@ -232,8 +233,8 @@ void ClickCallbackFunction (
   vtkRenderWindowInteractor *iren =
      static_cast<vtkRenderWindowInteractor*>(caller);
 
-  vtkThreeDViewInteractorStyle* style = vtkThreeDViewInteractorStyle::SafeDownCast
-    (iren ? iren->GetInteractorStyle() : 0);
+  vtkMRMLThreeDViewInteractorStyle* style = vtkMRMLThreeDViewInteractorStyle::SafeDownCast
+    (iren ? iren->GetInteractorStyle() : nullptr);
   if (!style)
     {
     qCritical() << "qMRMLThreeDView::mouseMoveEvent: no valid interactor style.";
@@ -294,8 +295,7 @@ qMRMLThreeDView::qMRMLThreeDView(QWidget* _parent) : Superclass(_parent)
 
 // --------------------------------------------------------------------------
 qMRMLThreeDView::~qMRMLThreeDView()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qMRMLThreeDView::addDisplayableManager(const QString& displayableManagerName)
@@ -311,8 +311,8 @@ void qMRMLThreeDView::addDisplayableManager(const QString& displayableManagerNam
 //------------------------------------------------------------------------------
 void qMRMLThreeDView::rotateToViewAxis(unsigned int axisId)
 {
-  vtkThreeDViewInteractorStyle* style =
-    vtkThreeDViewInteractorStyle::SafeDownCast(this->interactorStyle());
+  vtkMRMLThreeDViewInteractorStyle* style =
+    vtkMRMLThreeDViewInteractorStyle::SafeDownCast(this->interactorStyle());
   if (!style)
     {
     qCritical() << "qMRMLThreeDView::rotateToViewAxis: no valid interactor style.";
@@ -380,8 +380,8 @@ void qMRMLThreeDView::rotateToViewAxis(const std::string& axisLabel)
 void qMRMLThreeDView
 ::resetCamera(bool resetRotation, bool resetTranslation, bool resetDistance)
 {
-  vtkThreeDViewInteractorStyle* style =
-    vtkThreeDViewInteractorStyle::SafeDownCast(this->interactorStyle());
+  vtkMRMLThreeDViewInteractorStyle* style =
+    vtkMRMLThreeDViewInteractorStyle::SafeDownCast(this->interactorStyle());
   if (!style)
     {
     qCritical() << "qMRMLThreeDView::resetCamera: no valid interactor style.";
@@ -406,7 +406,7 @@ void qMRMLThreeDView::setMRMLScene(vtkMRMLScene* newScene)
 
   if (d->MRMLViewNode && newScene != d->MRMLViewNode->GetScene())
     {
-    this->setMRMLViewNode(0);
+    this->setMRMLViewNode(nullptr);
     }
 }
 
@@ -428,7 +428,7 @@ void qMRMLThreeDView::setMRMLViewNode(vtkMRMLViewNode* newViewNode)
 
   d->updateWidgetFromMRML();
   // Enable/disable widget
-  this->setEnabled(newViewNode != 0);
+  this->setEnabled(newViewNode != nullptr);
 }
 
 //---------------------------------------------------------------------------
@@ -522,4 +522,41 @@ void qMRMLThreeDView::getDisplayableManagers(vtkCollection *displayableManagers)
     {
     displayableManagers->AddItem(d->DisplayableManagerGroup->GetNthDisplayableManager(n));
     }
+}
+
+// --------------------------------------------------------------------------
+void qMRMLThreeDView::setViewCursor(const QCursor &cursor)
+{
+  this->setCursor(cursor);
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2)
+  if (this->VTKWidget() != nullptr)
+   {
+    this->VTKWidget()->setQVTKCursor(cursor);
+    }
+#endif
+}
+
+// --------------------------------------------------------------------------
+void qMRMLThreeDView::unsetViewCursor()
+{
+  this->unsetCursor();
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2)
+  if (this->VTKWidget() != nullptr)
+    {
+    // TODO: it would be better to restore default cursor, but QVTKOpenGLNativeWidget
+    // API does not have an accessor method to the default cursor.
+    this->VTKWidget()->setQVTKCursor(QCursor(Qt::ArrowCursor));
+    }
+#endif
+}
+
+// --------------------------------------------------------------------------
+void qMRMLThreeDView::setDefaultViewCursor(const QCursor &cursor)
+{
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2)
+  if (this->VTKWidget() != nullptr)
+    {
+    this->VTKWidget()->setDefaultQVTKCursor(cursor);
+    }
+#endif
 }

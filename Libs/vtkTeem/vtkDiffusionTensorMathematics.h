@@ -39,7 +39,7 @@ class VTK_Teem_EXPORT vtkDiffusionTensorMathematics : public vtkThreadedImageAlg
 public:
   static vtkDiffusionTensorMathematics *New();
   vtkTypeMacro(vtkDiffusionTensorMathematics,vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Operation options.
   enum
@@ -272,7 +272,7 @@ public:
 
 protected:
   vtkDiffusionTensorMathematics();
-  ~vtkDiffusionTensorMathematics();
+  ~vtkDiffusionTensorMathematics() override;
 
   int Operation; /// math operation to perform
   double ScaleFactor; /// Scale factor for output scalars
@@ -285,26 +285,26 @@ protected:
   vtkMatrix4x4 *TensorRotationMatrix;
   int FixNegativeEigenvalues;
 
-  virtual int RequestInformation (vtkInformation*,
+  int RequestInformation (vtkInformation*,
                                   vtkInformationVector**,
-                                  vtkInformationVector*) VTK_OVERRIDE;
+                                  vtkInformationVector*) override;
 
-  virtual void ThreadedRequestData(vtkInformation *request,
+  void ThreadedRequestData(vtkInformation *request,
                                    vtkInformationVector **inputVector,
                                    vtkInformationVector *outputVector,
                                    vtkImageData ***inData,
                                    vtkImageData **outData,
-                                   int extent[6], int threadId) VTK_OVERRIDE;
+                                   int extent[6], int threadId) override;
 
-  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
   // Reimplemented to delete the tensor array of the output.
-  virtual int RequestData(vtkInformation* request,
+  int RequestData(vtkInformation* request,
                           vtkInformationVector** inputVector,
-                          vtkInformationVector* outputVector) VTK_OVERRIDE;
+                          vtkInformationVector* outputVector) override;
 private:
-  vtkDiffusionTensorMathematics(const vtkDiffusionTensorMathematics&);
-  void operator=(const vtkDiffusionTensorMathematics&);
+  vtkDiffusionTensorMathematics(const vtkDiffusionTensorMathematics&) = delete;
+  void operator=(const vtkDiffusionTensorMathematics&) = delete;
 };
 
 #endif

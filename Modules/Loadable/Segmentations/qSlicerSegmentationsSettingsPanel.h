@@ -44,14 +44,14 @@ public:
   typedef ctkSettingsPanel Superclass;
 
   /// Constructor
-  explicit qSlicerSegmentationsSettingsPanel(QWidget* parent = 0);
+  explicit qSlicerSegmentationsSettingsPanel(QWidget* parent = nullptr);
 
   /// Segmentations logic is used for configuring default settings
   void setSegmentationsLogic(vtkSlicerSegmentationsModuleLogic* logic);
   vtkSlicerSegmentationsModuleLogic* segmentationsLogic()const;
 
   /// Destructor
-  virtual ~qSlicerSegmentationsSettingsPanel();
+  ~qSlicerSegmentationsSettingsPanel() override;
 
 public slots:
 

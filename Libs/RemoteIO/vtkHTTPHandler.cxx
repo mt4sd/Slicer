@@ -30,14 +30,14 @@ public:
 //----------------------------------------------------------------------------
 vtkHTTPHandler::vtkInternal::vtkInternal(vtkHTTPHandler* external):External(external)
 {
-  this->CurlHandle = NULL;
+  this->CurlHandle = nullptr;
   this->ForbidReuse = 0;
 }
 
 //-----------------------------------------------------------------------------
 vtkHTTPHandler::vtkInternal::~vtkInternal()
 {
-  this->CurlHandle = NULL;
+  this->CurlHandle = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ size_t read_callback(void *ptr, size_t size, size_t nmemb, FILE *stream)
 //----------------------------------------------------------------------------
 size_t write_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-  if (stream == NULL)
+  if (stream == nullptr)
     {
     std::cerr << "write_callback: can't write, stream is null. size = " << size << std::endl;
     return 0;
@@ -168,7 +168,7 @@ void vtkHTTPHandler::InitTransfer( )
   curl_global_init(CURL_GLOBAL_ALL);
   vtkDebugMacro("vtkHTTPHandler: InitTransfer: initialising CurlHandle");
   this->Internal->CurlHandle = curl_easy_init();
-  if (this->Internal->CurlHandle == NULL)
+  if (this->Internal->CurlHandle == nullptr)
     {
     vtkErrorMacro("InitTransfer: unable to initialise");
     }
@@ -185,7 +185,7 @@ int vtkHTTPHandler::CloseTransfer( )
 //----------------------------------------------------------------------------
 void vtkHTTPHandler::StageFileRead(const char * source, const char * destination)
 {
-  if (source == NULL || destination == NULL)
+  if (source == nullptr || destination == nullptr)
     {
     vtkErrorMacro("StageFileRead: source or dest is null!");
     return;
@@ -195,7 +195,7 @@ void vtkHTTPHandler::StageFileRead(const char * source, const char * destination
     {
     this->LocalFile->close();
     delete this->LocalFile;
-    this->LocalFile = NULL;
+    this->LocalFile = nullptr;
     }
   this->LocalFile = new std::ofstream(destination, std::ios::binary);
   */
@@ -211,11 +211,11 @@ void vtkHTTPHandler::StageFileRead(const char * source, const char * destination
 //  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_NOPROGRESS, false);
   curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_FOLLOWLOCATION, true);
   // use the default curl write call back
-  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_WRITEFUNCTION, NULL); // write_callback);
+  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_WRITEFUNCTION, nullptr); // write_callback);
   this->LocalFile = fopen(destination, "wb");
   // output goes into LocalFile, must be  FILE*
   curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_WRITEDATA, this->LocalFile);
-//  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_PROGRESSDATA, NULL);
+//  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_PROGRESSDATA, nullptr);
 //  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_PROGRESSFUNCTION, ProgressCallback);
 
   // quick timeout during connection phase if URL is not accessible (e.g. blocked by a firewall)
@@ -244,7 +244,7 @@ void vtkHTTPHandler::StageFileRead(const char * source, const char * destination
     //--- the reason the read command failed,
     //--- reset the 'remember check' in the permissions
     //--- prompter so that new login info  will be prompted.
-    if ( this->GetPermissionPrompter() != NULL )
+    if ( this->GetPermissionPrompter() != nullptr )
       {
       this->GetPermissionPrompter()->SetRemember ( 0 );
       }
@@ -254,7 +254,7 @@ void vtkHTTPHandler::StageFileRead(const char * source, const char * destination
   /*
   this->LocalFile->close();
   delete this->LocalFile;
-  this->LocalFile = NULL;
+  this->LocalFile = nullptr;
   */
   if (this->LocalFile)
     {
@@ -272,7 +272,7 @@ void vtkHTTPHandler::StageFileWrite(const char * source, const char * destinatio
     {
     this->LocalFile->close();
     delete this->LocalFile;
-    this->LocalFile = NULL;
+    this->LocalFile = nullptr;
     }
   this->LocalFile = new std::ofstream(destination, std::ios::binary);
   */
@@ -286,7 +286,7 @@ void vtkHTTPHandler::StageFileWrite(const char * source, const char * destinatio
   curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_FOLLOWLOCATION, true);
   curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_READFUNCTION, read_callback);
   curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_READDATA, this->LocalFile);
-//  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_PROGRESSDATA, NULL);
+//  curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_PROGRESSDATA, nullptr);
   //curl_easy_setopt(this->Internal->CurlHandle, CURLOPT_PROGRESSFUNCTION, ProgressCallback);
   CURLcode retval = curl_easy_perform(this->Internal->CurlHandle);
 
@@ -302,7 +302,7 @@ void vtkHTTPHandler::StageFileWrite(const char * source, const char * destinatio
     //--- the reason the read command failed,
     //--- reset the 'remember check' in the permissions
     //--- prompter so that new login info  will be prompted.
-    if ( this->GetPermissionPrompter() != NULL )
+    if ( this->GetPermissionPrompter() != nullptr )
       {
       this->GetPermissionPrompter()->SetRemember ( 0 );
       }
@@ -314,6 +314,6 @@ void vtkHTTPHandler::StageFileWrite(const char * source, const char * destinatio
   /*
   this->LocalFile->close();
   delete this->LocalFile;
-  this->LocalFile = NULL;
+  this->LocalFile = nullptr;
   */
 }

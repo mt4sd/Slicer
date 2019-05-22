@@ -48,13 +48,13 @@ qSlicerSimpleMarkupsWidget : public qSlicerWidget
 
 public:
   typedef qSlicerWidget Superclass;
-  qSlicerSimpleMarkupsWidget(QWidget *parent=0);
-  virtual ~qSlicerSimpleMarkupsWidget();
+  qSlicerSimpleMarkupsWidget(QWidget *parent=nullptr);
+  ~qSlicerSimpleMarkupsWidget() override;
 
   /// Get the currently selected markups node.
   Q_INVOKABLE vtkMRMLNode* currentNode() const;
 
-  /// Deprecated. Use currentNode() instead.
+  /// \deprecated Use currentNode() instead.
   Q_INVOKABLE vtkMRMLNode* getCurrentNode();
 
   /// Get interaction node.
@@ -98,7 +98,7 @@ public:
 
 public slots:
 
-  void setMRMLScene(vtkMRMLScene* scene);
+  void setMRMLScene(vtkMRMLScene* scene) override;
 
   /// Set the currently selected markups node.
   void setCurrentNode(vtkMRMLNode* currentNode);
@@ -154,6 +154,9 @@ protected slots:
 
   /// Update the GUI to reflect the currently selected markups node.
   void updateWidget();
+
+  /// Update the GUI to reflect the currently selected markups node.
+  void onPointAdded();
 
 signals:
 

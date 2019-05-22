@@ -37,13 +37,11 @@ vtkStandardNewMacro(vtkSlicerDoubleArraysLogic);
 
 //----------------------------------------------------------------------------
 vtkSlicerDoubleArraysLogic::vtkSlicerDoubleArraysLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkSlicerDoubleArraysLogic::~vtkSlicerDoubleArraysLogic()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkSlicerDoubleArraysLogic::PrintSelf(ostream& os, vtkIndent indent)
@@ -57,15 +55,15 @@ vtkMRMLDoubleArrayNode* vtkSlicerDoubleArraysLogic
 {
   if (!fileName)
     {
-    return 0;
+    return nullptr;
     }
   if (fileName[0] == '\0')
     {
-    return 0;
+    return nullptr;
     }
-  if (this->GetMRMLScene() == 0)
+  if (this->GetMRMLScene() == nullptr)
     {
-    return 0;
+    return nullptr;
     }
 
   // Storage node
@@ -83,7 +81,7 @@ vtkMRMLDoubleArrayNode* vtkSlicerDoubleArraysLogic
     {
     this->GetMRMLScene()->RemoveNode(doubleArrayStorageNode.GetPointer());
     this->GetMRMLScene()->RemoveNode(doubleArrayNode.GetPointer());
-    return 0;
+    return nullptr;
     }
   if (name)
     {

@@ -163,7 +163,8 @@ class ScreenCaptureWidget(ScriptedLoadableModuleWidget):
 
     # Number of steps value
     self.numberOfStepsSliderWidget = ctk.ctkSliderWidget()
-    self.numberOfStepsSliderWidget.singleStep = 10
+    self.numberOfStepsSliderWidget.singleStep = 1
+    self.numberOfStepsSliderWidget.pageStep = 10
     self.numberOfStepsSliderWidget.minimum = 1
     self.numberOfStepsSliderWidget.maximum = 600
     self.numberOfStepsSliderWidget.value = 31
@@ -597,7 +598,7 @@ class ScreenCaptureWidget(ScriptedLoadableModuleWidget):
         fileIndex = numberOfSteps
         for repeatIndex in range(numberOfRepeats):
           if forwardBackward:
-            for step in reversed(xrange(1, numberOfSteps-1)):
+            for step in reversed(range(1, numberOfSteps-1)):
               sourceFilename = filePathPattern % step
               destinationFilename = filePathPattern % fileIndex
               self.logic.addLog("Copy to "+destinationFilename)
@@ -620,14 +621,14 @@ class ScreenCaptureWidget(ScriptedLoadableModuleWidget):
             outputDir, imageFileNamePattern, self.videoFileNameWidget.text)
         except Exception as e:
           self.logic.deleteTemporaryFiles(outputDir, imageFileNamePattern, numberOfSteps)
-          raise ValueError(e)
+          raise
         self.logic.deleteTemporaryFiles(outputDir, imageFileNamePattern, numberOfSteps)
 
       self.addLog("Done.")
       self.createdOutputFile = os.path.join(outputDir, self.videoFileNameWidget.text) if videoOutputRequested else outputDir
       self.showCreatedOutputFileButton.enabled = True
     except Exception as e:
-      self.addLog("Error: {0}".format(e.message))
+      self.addLog("Error: {0}".format(str(e)))
       import traceback
       traceback.print_exc()
       self.showCreatedOutputFileButton.enabled = False
@@ -770,9 +771,9 @@ class ScreenCaptureLogic(ScriptedLoadableModuleLogic):
       success = True
       try:
         logging.info('Requesting download ffmpeg from %s...' % url)
-        import urllib2
-        req = urllib2.Request(url, headers={ 'User-Agent': 'Mozilla/5.0' })
-        data = urllib2.urlopen(req).read()
+        import urllib.request, urllib.error, urllib.parse
+        req = urllib.request.Request(url, headers={ 'User-Agent': 'Mozilla/5.0' })
+        data = urllib.request.urlopen(req).read()
         with open(filePath, "wb") as f:
           f.write(data)
 
@@ -851,7 +852,7 @@ class ScreenCaptureLogic(ScriptedLoadableModuleLogic):
       # no view is specified, capture the entire view layout
 
       # Simply using grabwidget on the view layout frame would grab the screen without background:
-      # img = qt.QPixmap.grabWidget(slicer.app.layoutManager().viewport())
+      # img = ctk.ctkWidgetsUtils.grabWidget(slicer.app.layoutManager().viewport())
 
       # Grab the main window and use only the viewport's area
       allViews = slicer.app.layoutManager().viewport()
@@ -869,7 +870,7 @@ class ScreenCaptureLogic(ScriptedLoadableModuleLogic):
       if (imageSize.y() & 1 == 1):
         imageSize.setY(imageSize.y()-1)
 
-      img = qt.QPixmap.grabWidget(slicer.util.mainWindow(), topLeft.x(), topLeft.y(), imageSize.x(), imageSize.y())
+      img = ctk.ctkWidgetsUtils.grabWidget(slicer.util.mainWindow(), qt.QRect(topLeft.x(), topLeft.y(), imageSize.x(), imageSize.y()))
       img.save(filename)
       return
 
@@ -970,7 +971,7 @@ class ScreenCaptureLogic(ScriptedLoadableModuleLogic):
                         outputFilenamePattern, captureAllViews = None, transparentBackground = False):
 
     self.cancelRequested = False
-    
+
     if not captureAllViews and not sliceNode.IsMappedInLayout():
       raise ValueError('Selected slice view is not visible in the current layout.')
 
@@ -1106,21 +1107,21 @@ class ScreenCaptureLogic(ScriptedLoadableModuleLogic):
                     "-r", str(frameRate),
                     "-start_number", "0",
                     "-i", str(filePathPattern)]
-    ffmpegParams += filter(None, extraOptions.split(' '))
+    ffmpegParams += [_f for _f in extraOptions.split(' ') if _f]
     ffmpegParams.append(outputVideoFilePath)
 
     self.addLog("Start ffmpeg:\n"+' '.join(ffmpegParams))
 
     import subprocess
     p = subprocess.Popen(ffmpegParams, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=outputDir)
-    output = p.communicate()
+    stdout, stderr = p.communicate()
     if p.returncode != 0:
-      self.addLog("ffmpeg error output: " + output[1])
+      self.addLog("ffmpeg error output: " + stderr.decode())
       raise ValueError("ffmpeg returned with error")
     else:
       self.addLog("Video export succeeded to file: "+outputVideoFilePath)
-      logging.debug("ffmpeg standard output: " + output[0])
-      logging.debug("ffmpeg error output: " + output[1])
+      logging.debug("ffmpeg standard output: " + stdout.decode())
+      logging.debug("ffmpeg error output: " + stderr.decode())
 
   def deleteTemporaryFiles(self, outputDir, imageFileNamePattern, numberOfImages):
     """

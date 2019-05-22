@@ -107,15 +107,15 @@ public:
    *
    * \sa MatrixOffsetTransformBase::SetMatrix() */
   using itk::Rigid3DTransform<TScalarType>::SetMatrix;
-  virtual void SetMatrix(const MatrixType & matrix) ITK_OVERRIDE;
+  void SetMatrix(const MatrixType & matrix) override;
 
   /** Set the transformation from a container of parameters This is typically
    * used by optimizers.  There are 7 parameters. The first three represent the
    * versor, the next three represent the translation and the last one
    * represents the scaling factor. */
-  void SetParameters( const ParametersType & parameters ) ITK_OVERRIDE;
+  void SetParameters( const ParametersType & parameters ) override;
 
-  virtual const ParametersType & GetParameters(void) const ITK_OVERRIDE;
+  const ParametersType & GetParameters(void) const override;
 
   /** Set/Get the value of the isotropic scaling factor */
   void SetScale( ScaleType scale );
@@ -128,24 +128,24 @@ public:
    * given point or vector, returning the transformed point or
    * vector. The rank of the Jacobian will also indicate if the
    * transform is invertible at this point. */
-  virtual void ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const ITK_OVERRIDE;
+  void ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
 
 protected:
   AnisotropicSimilarity3DTransform(const MatrixType & matrix, const OutputVectorType & offset);
   AnisotropicSimilarity3DTransform(unsigned int paramDim);
   AnisotropicSimilarity3DTransform();
-  ~AnisotropicSimilarity3DTransform()
+  ~AnisotropicSimilarity3DTransform() override
   {
   };
 
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** Recomputes the matrix by calling the Superclass::ComputeMatrix() and then
    * applying the scale factor. */
-  void ComputeMatrix() ITK_OVERRIDE;
+  void ComputeMatrix() override;
 
   /** Computes the parameters from an input matrix. */
-  void ComputeMatrixParameters() ITK_OVERRIDE;
+  void ComputeMatrixParameters() override;
 
 private:
   AnisotropicSimilarity3DTransform(const Self &); // purposely not implemented

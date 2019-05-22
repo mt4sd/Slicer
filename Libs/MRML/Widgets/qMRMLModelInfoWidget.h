@@ -41,8 +41,8 @@ class QMRML_WIDGETS_EXPORT qMRMLModelInfoWidget
   QVTK_OBJECT
 
 public:
-  qMRMLModelInfoWidget(QWidget *parent=0);
-  virtual ~qMRMLModelInfoWidget();
+  qMRMLModelInfoWidget(QWidget *parent=nullptr);
+  ~qMRMLModelInfoWidget() override;
 
   vtkMRMLModelNode* mrmlModelNode()const;
 
@@ -56,7 +56,7 @@ protected slots:
   void updateWidgetFromMRML();
 
 protected:
-  virtual void showEvent(QShowEvent *);
+  void showEvent(QShowEvent *) override;
   QScopedPointer<qMRMLModelInfoWidgetPrivate> d_ptr;
 
 private:

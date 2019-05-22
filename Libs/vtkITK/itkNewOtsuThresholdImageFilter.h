@@ -105,15 +105,15 @@ public:
 
 protected:
   NewOtsuThresholdImageFilter();
-  ~NewOtsuThresholdImageFilter(){}
-  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  ~NewOtsuThresholdImageFilter() override = default;
+  void PrintSelf(std::ostream& os, Indent indent) const override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
-  void GenerateData () ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
+  void GenerateData () override;
 
 private:
-  NewOtsuThresholdImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  NewOtsuThresholdImageFilter(const Self&) = delete;
+  void operator=(const Self&) = delete;
 
   InputPixelType      m_Threshold;
   OutputPixelType     m_InsideValue;

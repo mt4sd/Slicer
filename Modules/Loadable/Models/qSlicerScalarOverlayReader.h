@@ -35,18 +35,18 @@ class qSlicerScalarOverlayReader
   Q_OBJECT
 public:
   typedef qSlicerFileReader Superclass;
-  qSlicerScalarOverlayReader(vtkSlicerModelsLogic* modelsLogic, QObject* parent = 0);
-  virtual ~qSlicerScalarOverlayReader();
+  qSlicerScalarOverlayReader(vtkSlicerModelsLogic* modelsLogic, QObject* parent = nullptr);
+  ~qSlicerScalarOverlayReader() override;
 
   void setModelsLogic(vtkSlicerModelsLogic* modelsLogic);
   vtkSlicerModelsLogic* modelsLogic()const;
 
-  virtual QString description()const;
-  virtual IOFileType fileType()const;
-  virtual QStringList extensions()const;
-  virtual qSlicerIOOptions* options()const;
+  QString description()const override;
+  IOFileType fileType()const override;
+  QStringList extensions()const override;
+  qSlicerIOOptions* options()const override;
 
-  virtual bool load(const IOProperties& properties);
+  bool load(const IOProperties& properties) override;
 
 protected:
   QScopedPointer<qSlicerScalarOverlayReaderPrivate> d_ptr;

@@ -35,7 +35,11 @@
 #include "vtkSlicerMarkupsModuleLogicExport.h"
 
 class vtkMRMLMarkupsNode;
+class vtkMRMLMarkupsClosedCurveNode;
 class vtkMRMLMarkupsDisplayNode;
+class vtkPlane;
+class vtkPoints;
+class vtkPolyData;
 
 /// \ingroup Slicer_QtModules_Markups
 class VTK_SLICER_MARKUPS_MODULE_LOGIC_EXPORT vtkSlicerMarkupsLogic :
@@ -45,11 +49,11 @@ public:
 
   static vtkSlicerMarkupsLogic *New();
   vtkTypeMacro(vtkSlicerMarkupsLogic,vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual void ProcessMRMLNodesEvents(vtkObject *caller,
+  void ProcessMRMLNodesEvents(vtkObject *caller,
                                       unsigned long event,
-                                      void *callData ) VTK_OVERRIDE;
+                                      void *callData ) override;
 
   /// Utility method to return the id of the selection node. Checks
   /// the mrml application logic if set, otherwise checks the scene
@@ -80,7 +84,7 @@ public:
   /// class, and also make it the active on on the selection node, otherwise
   /// add to the passed scene.
   /// On success, return the id, on failure return an empty string.
-  std::string AddNewFiducialNode(const char *name = "F", vtkMRMLScene *scene = NULL);
+  std::string AddNewFiducialNode(const char *name = "F", vtkMRMLScene *scene = nullptr);
 
   /// Add a new fiducial to the currently active list at the given RAS
   /// coordinates (default 0,0,0). Will create a list is one is not active.
@@ -91,10 +95,10 @@ public:
   /// jump the slice windows to the given coordinate
   /// If viewGroup is -1 then all all slice views are updated, otherwise only those views
   /// that are in the specified group.
-  void JumpSlicesToLocation(double x, double y, double z, bool centered, int viewGroup = -1);
+  void JumpSlicesToLocation(double x, double y, double z, bool centered, int viewGroup = -1, vtkMRMLSliceNode* exclude = nullptr);
   /// jump the slice windows to the nth markup with the mrml id id
   /// \sa JumpSlicesToLocation
-  void JumpSlicesToNthPointInMarkup(const char *id, int n, bool centered = false, int viewGroup = -1);
+  void JumpSlicesToNthPointInMarkup(const char *id, int n, bool centered = false, int viewGroup = -1, vtkMRMLSliceNode* exclude = nullptr);
   /// refocus all of the 3D cameras to the nth markup with the mrml id id
   /// \sa FocusCameraOnNthPointInMarkup
   void FocusCamerasOnNthPointInMarkup(const char *id, int n);
@@ -103,7 +107,7 @@ public:
   /// \sa FocusCamerasOnNthPointInMarkup
   void FocusCameraOnNthPointInMarkup(const char *cameraNodeID, const char *markupNodeID, int n);
 
-  /// Load a markups fiducial list from fileName, return NULL on error, node ID string
+  /// Load a markups fiducial list from fileName, return nullptr on error, node ID string
   /// otherwise. Adds the appropriate storage and display nodes to the scene
   /// as well.
   char *LoadMarkupsFiducials(const char *fileName, const char *fidsName);
@@ -116,58 +120,42 @@ public:
   void SetAllMarkupsSelected(vtkMRMLMarkupsNode *node, bool flag);
   void ToggleAllMarkupsSelected(vtkMRMLMarkupsNode *node);
 
-  /// set/get the default markups display node settings
-  int GetDefaultMarkupsDisplayNodeGlyphType();
-  void SetDefaultMarkupsDisplayNodeGlyphType(int glyphType);
-  void SetDefaultMarkupsDisplayNodeGlyphTypeFromString(const char *glyphType);
-  std::string GetDefaultMarkupsDisplayNodeGlyphTypeAsString();
-
-  double GetDefaultMarkupsDisplayNodeGlyphScale();
-  void SetDefaultMarkupsDisplayNodeGlyphScale(double scale);
-
-  double GetDefaultMarkupsDisplayNodeTextScale();
-  void SetDefaultMarkupsDisplayNodeTextScale(double scale);
-
-  double GetDefaultMarkupsDisplayNodeOpacity();
-  void SetDefaultMarkupsDisplayNodeOpacity(double opacity);
-
-  double *GetDefaultMarkupsDisplayNodeColor();
-  void SetDefaultMarkupsDisplayNodeColor(double *color);
-  void SetDefaultMarkupsDisplayNodeColor(double r, double g, double b);
-
-  double *GetDefaultMarkupsDisplayNodeSelectedColor();
-  void SetDefaultMarkupsDisplayNodeSelectedColor(double *color);
-  void SetDefaultMarkupsDisplayNodeSelectedColor(double r, double g, double b);
-
-  int GetDefaultMarkupsDisplayNodeSliceProjection();
-  void SetDefaultMarkupsDisplayNodeSliceProjection(int projection);
-
-  double *GetDefaultMarkupsDisplayNodeSliceProjectionColor();
-  void SetDefaultMarkupsDisplayNodeSliceProjectionColor(double *color);
-  void SetDefaultMarkupsDisplayNodeSliceProjectionColor(double r, double g, double b);
-
-  double GetDefaultMarkupsDisplayNodeSliceProjectionOpacity();
-  void SetDefaultMarkupsDisplayNodeSliceProjectionOpacity(double opacity);
-
   /// utility method to set up a display node from the defaults
   void SetDisplayNodeToDefaults(vtkMRMLMarkupsDisplayNode *displayNode);
 
-  /// utility method to copy a markup from one list to another, adding it
+  /// utility method to set defaults from display node
+  void SetDisplayDefaultsFromNode(vtkMRMLMarkupsDisplayNode *displayNode);
+
+  /// utility method to copy a control point from one list to another, adding it
   /// to the end of the new list
-  /// \sa vtkMRMLMarkupsNode::AddMarkup
+  /// \sa vtkMRMLMarkupsNode::AddControlPoint
   /// Returns true on success, false on failure
-  bool CopyNthMarkupToNewList(int n, vtkMRMLMarkupsNode *markupsNode,
+  bool CopyNthControlPointToNewList(int n, vtkMRMLMarkupsNode *markupsNode,
                               vtkMRMLMarkupsNode *newMarkupsNode);
 
-  /// utility method to move a markup from one list to another, trying to
+  /// \deprecated Use CopyNthControlPointToNewList instead.
+  bool CopyNthMarkupToNewList(int n, vtkMRMLMarkupsNode *markupsNode,
+                              vtkMRMLMarkupsNode *newMarkupsNode)
+    {
+    return this->CopyNthControlPointToNewList(n, markupsNode, newMarkupsNode);
+    }
+
+  /// utility method to move a control point from one list to another, trying to
   /// insert it at the given new index. If the new index is larger than the
-  /// number of markups in the list, adds it to the end. If new index is
+  /// number of control points in the list, adds it to the end. If new index is
   /// smaller than 0, adds it at the beginning. Otherwise inserts at
   /// that index.
-  /// \sa vtkMRMLMarkupsNode::InsertMarkup
+  /// \sa vtkMRMLMarkupsNode::InsertControlPoint
   /// Returns true on success, false on failure
-  bool MoveNthMarkupToNewListAtIndex(int n, vtkMRMLMarkupsNode *markupsNode,
+  bool MoveNthControlPointToNewListAtIndex(int n, vtkMRMLMarkupsNode *markupsNode,
                                    vtkMRMLMarkupsNode *newMarkupsNode, int newIndex);
+
+  /// \deprecated Use MoveNthControlPointToNewList instead.
+  bool MoveNthMarkupToNewList(int n, vtkMRMLMarkupsNode *markupsNode,
+                              vtkMRMLMarkupsNode *newMarkupsNode, int newIndex)
+    {
+    return this->MoveNthControlPointToNewListAtIndex(n, markupsNode, newMarkupsNode, newIndex);
+    }
 
   /// Searches the scene for annotation fidicual nodes, collecting a list
   /// of annotation hierarchy nodes. Then iterates through those hierarchy nodes
@@ -187,7 +175,7 @@ public:
   /// Return true on successfully going into place mode, false otherwise.
   /// By default, the default interaction node is updated.
   /// \sa SetActiveIDList
-  bool StartPlaceMode(bool persistent, vtkMRMLInteractionNode* interactionNode = NULL);
+  bool StartPlaceMode(bool persistent, vtkMRMLInteractionNode* interactionNode = nullptr);
 
   /// Inspect all the slice composite nodes in the scene. Return 1 if all have
   /// SliceIntersectionVisibility set to true, 0 if all have it set to false,
@@ -197,28 +185,54 @@ public:
   /// in the scene
   void SetSliceIntersectionsVisibility(bool flag);
 
+  vtkSetMacro(AutoCreateDisplayNodes, bool);
+  vtkGetMacro(AutoCreateDisplayNodes, bool);
+  vtkBooleanMacro(AutoCreateDisplayNodes, bool);
+
+  vtkMRMLMarkupsDisplayNode* GetDefaultMarkupsDisplayNode();
+
+  /// Copies basic display properties between markups display nodes. This is used
+  /// for updating a display node to defaults.
+  void CopyBasicDisplayProperties(vtkMRMLMarkupsDisplayNode *sourceDisplayNode, vtkMRMLMarkupsDisplayNode *targetDisplayNode);
+
+  /// Measure surface area of the smooth surface that fits on the closed curve in world coordinate system.
+  /// \param curveNode points to fit the surface to
+  /// \param surface if not nullptr then the generated surface is saved into that
+  static double GetClosedCurveSurfaceArea(vtkMRMLMarkupsClosedCurveNode* curveNode, vtkPolyData* surface = nullptr);
+
+  /// Create a "soap bubble" surface that fits on the provided point list
+  /// \param curvePoints: points to fit the surface to
+  /// \param radiusScalingFactor size of the surface.Value of 1.0 (default) means the surface edge fits on the points.
+  /// Larger values increase the generated soap bubble outer radius, which may be useful to avoid coincident points
+  /// when using this surface for cutting another surface.
+  static bool CreateSoapBubblePolyDataFromCircumferencePoints(vtkPoints* curvePoints, vtkPolyData* surface, double radiusScalingFactor = 1.0);
+
+  /// Get best fit plane for a markup
+  static bool GetBestFitPlane(vtkMRMLMarkupsNode* curveNode, vtkPlane* plane);
+
+  /// Compute least squares best fit plane
+  static bool FitPlaneToPoints(vtkPoints* curvePoints, vtkPlane* plane);
+
 protected:
   vtkSlicerMarkupsLogic();
-  virtual ~vtkSlicerMarkupsLogic();
+  ~vtkSlicerMarkupsLogic() override;
 
   /// Initialize listening to MRML events
-  virtual void SetMRMLSceneInternal(vtkMRMLScene * newScene) VTK_OVERRIDE;
-  virtual void ObserveMRMLScene() VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene * newScene) override;
+  void ObserveMRMLScene() override;
 
   /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
-  virtual void RegisterNodes() VTK_OVERRIDE;
-  virtual void UpdateFromMRMLScene() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) VTK_OVERRIDE;
+  void RegisterNodes() override;
+  void UpdateFromMRMLScene() override;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) override;
 
 private:
 
-  vtkSlicerMarkupsLogic(const vtkSlicerMarkupsLogic&); // Not implemented
-  void operator=(const vtkSlicerMarkupsLogic&);               // Not implemented
+  vtkSlicerMarkupsLogic(const vtkSlicerMarkupsLogic&) = delete;
+  void operator=(const vtkSlicerMarkupsLogic&) = delete;
 
-  /// keep a markups display node with default values that can be updated from
-  /// the application settings
-  vtkMRMLMarkupsDisplayNode *DefaultMarkupsDisplayNode;
+  bool AutoCreateDisplayNodes;
 };
 
 #endif

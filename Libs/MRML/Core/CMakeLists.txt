@@ -1,7 +1,7 @@
 project(MRMLCore)
 
 #-----------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13.4)
 #-----------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------
@@ -105,6 +105,7 @@ set(MRMLCore_SRCS
   vtkEventBroker.cxx
   vtkImageBimodalAnalysis.cxx
   vtkDataFileFormatHelper.cxx
+  vtkMRMLMeasurement.cxx
   vtkMRMLLogic.cxx
   vtkMRMLAbstractLayoutNode.cxx
   vtkMRMLAbstractViewNode.cxx

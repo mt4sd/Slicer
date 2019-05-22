@@ -65,7 +65,7 @@ public:
 
   vtkTypeMacro(vtkITKImageToImageFilter, vtkImageAlgorithm);
 
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE
+  void PrintSelf(ostream& os, vtkIndent indent) override
   {
     Superclass::PrintSelf ( os, indent );
     this->vtkExporter->PrintSelf ( os, indent );
@@ -75,7 +75,7 @@ public:
   ///
   /// This method considers the sub filters MTimes when computing this objects
   /// modified time.
-  vtkMTimeType GetMTime() VTK_OVERRIDE
+  vtkMTimeType GetMTime() override
   {
     vtkMTimeType t1, t2;
 
@@ -95,7 +95,7 @@ public:
 
   ///
   /// Pass modified message to itk filter
-  void Modified() VTK_OVERRIDE
+  void Modified() override
   {
     this->Superclass::Modified();
     if (this->m_Process)
@@ -106,14 +106,14 @@ public:
 
   ///
   /// Pass DebugOn.
-  void DebugOn() VTK_OVERRIDE
+  void DebugOn() override
   {
     this->m_Process->DebugOn();
   };
 
   ///
   /// Pass DebugOff.
-  void DebugOff() VTK_OVERRIDE
+  void DebugOff() override
   {
     this->m_Process->DebugOff();
   };
@@ -122,20 +122,20 @@ public:
   /// Pass SetNumberOfThreads.
   void SetNumberOfThreads(int val)
   {
-    this->m_Process->SetNumberOfThreads(val);
+    this->m_Process->SetNumberOfWorkUnits(val);
   };
 
   ///
   /// Pass SetNumberOfThreads.
   int GetNumberOfThreads()
   {
-    return this->m_Process->GetNumberOfThreads();
+    return this->m_Process->GetNumberOfWorkUnits();
   };
 
   ///
   /// This method returns the cache to make a connection
   /// It justs feeds the request to the sub filter.
-  virtual void SetOutput ( vtkDataObject* d ) VTK_OVERRIDE { this->vtkImporter->SetOutput ( d ); };
+  void SetOutput ( vtkDataObject* d ) override { this->vtkImporter->SetOutput ( d ); };
   virtual vtkImageData *GetOutput() { return this->vtkImporter->GetOutput(); };
   virtual vtkImageData *GetOutput(int idx)
   {
@@ -149,12 +149,12 @@ public:
     this->vtkCast->SetInputData(Input);
   };
 
-  virtual void SetInputConnection(vtkAlgorithmOutput* input) VTK_OVERRIDE
+  void SetInputConnection(vtkAlgorithmOutput* input) override
   {
     this->vtkCast->SetInputConnection(input);
   };
 
-  virtual void SetInputConnection(int port, vtkAlgorithmOutput* input) VTK_OVERRIDE
+  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
   {
     this->vtkCast->SetInputConnection(port, input);
   };
@@ -169,12 +169,12 @@ public:
   ///  Override vtkSource's Update so that we can access
   /// this class's GetOutput(). vtkSource's GetOutput is not virtual.
   using vtkAlgorithm::Update;
-  virtual void Update() VTK_OVERRIDE
+  void Update() override
     {
       this->vtkCast->Update();
       this->vtkImporter->Update();
     }
-  virtual void Update(int port) VTK_OVERRIDE
+  void Update(int port) override
     {
       this->vtkCast->Update();
       this->vtkImporter->Update(port);
@@ -188,11 +188,11 @@ public:
   };
   void HandleStartEvent ()
   {
-    this->InvokeEvent(vtkCommand::StartEvent,NULL);
+    this->InvokeEvent(vtkCommand::StartEvent,nullptr);
   };
   void HandleEndEvent ()
   {
-    this->InvokeEvent(vtkCommand::EndEvent,NULL);
+    this->InvokeEvent(vtkCommand::EndEvent,nullptr);
   };
   /// ETX
 
@@ -200,7 +200,7 @@ public:
 
   /// BTX
   /// Dummy ExecuteData
-  void ExecuteData (vtkDataObject *) VTK_OVERRIDE
+  void ExecuteData (vtkDataObject *) override
   {
     vtkWarningMacro(<< "This filter does not respond to Update(). Doing a GetOutput->Update() instead.");
   }
@@ -213,7 +213,7 @@ public:
     this->vtkExporter = vtkImageExport::New();
     this->vtkImporter = vtkImageImport::New();
     this->vtkExporter->SetInputConnection( this->vtkCast->GetOutputPort() );
-    this->m_Process = NULL;
+    this->m_Process = nullptr;
     this->m_ProgressCommand = MemberCommand::New();
     this->m_ProgressCommand->SetCallbackFunction ( this, &vtkITKImageToImageFilter::HandleProgressEvent );
     this->m_StartEventCommand = MemberCommand::New();
@@ -221,7 +221,7 @@ public:
     this->m_EndEventCommand = MemberCommand::New();
     this->m_EndEventCommand->SetCallbackFunction ( this, &vtkITKImageToImageFilter::HandleEndEvent );
   };
-  ~vtkITKImageToImageFilter()
+  ~vtkITKImageToImageFilter() override
   {
     vtkDebugMacro ("Destructing vtkITKImageToImageFilter");
     this->vtkExporter->Delete();
@@ -256,8 +256,8 @@ public:
   vtkImageExport* vtkExporter;
 
 private:
-  vtkITKImageToImageFilter(const vtkITKImageToImageFilter&);  /// Not implemented.
-  void operator=(const vtkITKImageToImageFilter&);  /// Not implemented.
+  vtkITKImageToImageFilter(const vtkITKImageToImageFilter&) = delete;
+  void operator=(const vtkITKImageToImageFilter&) = delete;
 };
 
 #endif

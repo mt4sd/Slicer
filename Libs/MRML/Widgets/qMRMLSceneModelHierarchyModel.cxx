@@ -42,7 +42,7 @@ public:
   typedef qMRMLSceneDisplayableModelPrivate Superclass;
   qMRMLSceneModelHierarchyModelPrivate(qMRMLSceneModelHierarchyModel& object);
 
-  virtual vtkMRMLHierarchyNode* CreateHierarchyNode()const;
+  vtkMRMLHierarchyNode* CreateHierarchyNode()const override;
 
 };
 
@@ -71,8 +71,7 @@ qMRMLSceneModelHierarchyModel::qMRMLSceneModelHierarchyModel(QObject *vparent)
 
 //------------------------------------------------------------------------------
 qMRMLSceneModelHierarchyModel::~qMRMLSceneModelHierarchyModel()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 vtkMRMLNode* qMRMLSceneModelHierarchyModel::parentNode(vtkMRMLNode* node)const
@@ -95,7 +94,7 @@ bool qMRMLSceneModelHierarchyModel::canBeAChild(vtkMRMLNode* node)const
 bool qMRMLSceneModelHierarchyModel::canBeAParent(vtkMRMLNode* node)const
 {
   vtkMRMLModelHierarchyNode* hnode = vtkMRMLModelHierarchyNode::SafeDownCast(node);
-  if (hnode && hnode->GetModelNodeID() == 0)
+  if (hnode && hnode->GetModelNodeID() == nullptr)
     {
     return true;
     }

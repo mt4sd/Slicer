@@ -44,13 +44,6 @@
 VTK_MODULE_INIT(vtkSlicerTransformsModuleMRMLDisplayableManager)
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerTransformsModule, qSlicerTransformsModule);
-#endif
-
-
-//-----------------------------------------------------------------------------
 class qSlicerTransformsModulePrivate
 {
 public:
@@ -65,8 +58,7 @@ qSlicerTransformsModule::qSlicerTransformsModule(QObject* _parentObject)
 
 //-----------------------------------------------------------------------------
 qSlicerTransformsModule::~qSlicerTransformsModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QIcon qSlicerTransformsModule::icon()const

@@ -110,16 +110,16 @@ int ExerciseBasicTransformMRMLMethods(vtkMRMLTransformNode* node);
 /// If inputScene is provided then that scene will be used for testing scene loading. It is
 /// needed when custom node registration is necessary in the scene.
 VTK_MRML_EXPORT
-int ExerciseSceneLoadingMethods(const char * sceneFilePath, vtkMRMLScene* inputScene = NULL);
+int ExerciseSceneLoadingMethods(const char * sceneFilePath, vtkMRMLScene* inputScene = nullptr);
 
 //---------------------------------------------------------------------------
 class VTK_MRML_EXPORT vtkMRMLNodeCallback : public vtkCallbackCommand
 {
 public:
   static vtkMRMLNodeCallback *New() {return new vtkMRMLNodeCallback;}
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual void Execute(vtkObject* caller, unsigned long eid, void *callData);
+  void Execute(vtkObject* caller, unsigned long eid, void *callData) override;
   virtual void ResetNumberOfEvents();
 
   void SetMRMLNode(vtkMRMLNode*);
@@ -135,7 +135,7 @@ public:
 
 protected:
   vtkMRMLNodeCallback();
-  ~vtkMRMLNodeCallback();
+  ~vtkMRMLNodeCallback() override;
 
   void SetErrorString(const char* error);
 

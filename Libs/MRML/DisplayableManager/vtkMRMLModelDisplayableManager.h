@@ -68,7 +68,7 @@ class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLModelDisplayableManager
 public:
   static vtkMRMLModelDisplayableManager* New();
   vtkTypeMacro(vtkMRMLModelDisplayableManager,vtkMRMLAbstractThreeDViewDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Get/Set the ClipModels Node
@@ -105,7 +105,7 @@ public:
 
   /// Convert a RAS location to a MRML node, point ID, cell ID,
   /// as appropriate depending what's found under the position.
-  virtual int Pick3D(double ras[3]) VTK_OVERRIDE;
+  int Pick3D(double ras[3]) override;
 
   /// Get/Set tolerance for Pick() method.
   /// it will call vtkCellPicker.Get/SetTolerance()
@@ -114,7 +114,7 @@ public:
 
   ///
   /// Get the MRML ID of the picked node, returns empty string if no pick
-  virtual const char* GetPickedNodeID() VTK_OVERRIDE;
+  const char* GetPickedNodeID() override;
 
   ///
   /// Get/Set the picked RAS point, returns 0,0,0 if no pick
@@ -152,37 +152,37 @@ public:
   /// \return True if attribute location in display node is vtkAssignAttribute::CELL_DATA
   ///   or active cell scalar name in the model node is vtkDataSetAttributes::SCALARS.
   ///   False otherwise.
-  static bool IsCellScalarsActive(vtkMRMLDisplayNode* displayNode, vtkMRMLModelNode* model = 0);
+  static bool IsCellScalarsActive(vtkMRMLDisplayNode* displayNode, vtkMRMLModelNode* model = nullptr);
 
 protected:
 
   vtkMRMLModelDisplayableManager();
-  virtual ~vtkMRMLModelDisplayableManager();
+  ~vtkMRMLModelDisplayableManager() override;
 
-  virtual void AdditionalInitializeStep() VTK_OVERRIDE;
-  virtual int ActiveInteractionModes() VTK_OVERRIDE;
+  void AdditionalInitializeStep() override;
+  int ActiveInteractionModes() override;
 
-  virtual void UnobserveMRMLScene() VTK_OVERRIDE;
+  void UnobserveMRMLScene() override;
 
-  virtual void OnMRMLSceneStartClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndClose() VTK_OVERRIDE;
-  virtual void UpdateFromMRMLScene() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) VTK_OVERRIDE;
+  void OnMRMLSceneStartClose() override;
+  void OnMRMLSceneEndClose() override;
+  void UpdateFromMRMLScene() override;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) override;
 
-  virtual void OnInteractorStyleEvent(int eventId) VTK_OVERRIDE;
-  virtual void ProcessMRMLNodesEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
+  void OnInteractorStyleEvent(int eventId) override;
+  void ProcessMRMLNodesEvents(vtkObject *caller, unsigned long event, void *callData) override;
 
   /// Returns true if something visible in modelNode has changed and would
   /// require a refresh.
   bool OnMRMLDisplayableModelNodeModifiedEvent(vtkMRMLDisplayableNode * modelNode);
 
   /// Updates Actors based on models in the scene
-  virtual void UpdateFromMRML() VTK_OVERRIDE;
+  void UpdateFromMRML() override;
 
-  virtual void RemoveMRMLObservers() VTK_OVERRIDE;
+  void RemoveMRMLObservers() override;
 
-  friend class vtkThreeDViewInteractorStyle; // Access to RequestRender();
+  friend class vtkMRMLThreeDViewInteractorStyle; // Access to RequestRender();
 
   void RemoveModelProps();
   void RemoveModelObservers(int clearCache);
@@ -198,7 +198,7 @@ protected:
   int GetDisplayedModelsVisibility(vtkMRMLDisplayNode *model);
 
   const char* GetActiveScalarName(vtkMRMLDisplayNode* displayNode,
-                                  vtkMRMLModelNode* model = 0);
+                                  vtkMRMLModelNode* model = nullptr);
 
   /// Returns not null if modified
   int UpdateClipSlicesFromMRML();
@@ -219,8 +219,8 @@ protected:
 
 private:
 
-  vtkMRMLModelDisplayableManager(const vtkMRMLModelDisplayableManager&); // Not implemented
-  void operator=(const vtkMRMLModelDisplayableManager&);                 // Not Implemented
+  vtkMRMLModelDisplayableManager(const vtkMRMLModelDisplayableManager&) = delete;
+  void operator=(const vtkMRMLModelDisplayableManager&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

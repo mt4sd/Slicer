@@ -58,9 +58,9 @@ public:
   typedef qMRMLWidget Superclass;
 
   /// Constructor
-  explicit qMRMLSegmentSelectorWidget(QWidget* parent = 0);
+  explicit qMRMLSegmentSelectorWidget(QWidget* parent = nullptr);
   /// Destructor
-  virtual ~qMRMLSegmentSelectorWidget();
+  ~qMRMLSegmentSelectorWidget() override;
 
   /// Get currently selected segmentation MRML node
   Q_INVOKABLE vtkMRMLNode* currentNode();

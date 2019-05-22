@@ -26,12 +26,6 @@
 VTK_MODULE_INIT(vtkSlicerAnnotationsModuleMRMLDisplayableManager)
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerAnnotationsModule, qSlicerAnnotationsModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_Annotation
 class qSlicerAnnotationsModulePrivate
 {
@@ -47,8 +41,7 @@ qSlicerAnnotationsModule::qSlicerAnnotationsModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerAnnotationsModule::~qSlicerAnnotationsModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerAnnotationsModule::setup()

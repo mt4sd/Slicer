@@ -41,7 +41,7 @@ public:
   qMRMLMatrixWidgetPrivate()
     {
     this->CoordinateReference = qMRMLMatrixWidget::GLOBAL;
-    this->MRMLTransformNode = 0;
+    this->MRMLTransformNode = nullptr;
     this->UserUpdates = true;
     }
 
@@ -65,8 +65,7 @@ qMRMLMatrixWidget::qMRMLMatrixWidget(QWidget* _parent)
 
 // --------------------------------------------------------------------------
 qMRMLMatrixWidget::~qMRMLMatrixWidget()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLMatrixWidget::setCoordinateReference(CoordinateReferenceType _coordinateReference)
@@ -128,10 +127,10 @@ void qMRMLMatrixWidget::updateMatrix()
 {
   Q_D(qMRMLMatrixWidget);
 
-  if (d->MRMLTransformNode == 0)
+  if (d->MRMLTransformNode == nullptr)
     {
-    this->setMatrixInternal(0);
-    d->Transform = 0;
+    this->setMatrixInternal(nullptr);
+    d->Transform = nullptr;
     return;
     }
 
@@ -162,7 +161,7 @@ void qMRMLMatrixWidget::updateMatrix()
 void qMRMLMatrixWidget::updateTransformNode()
 {
   Q_D(qMRMLMatrixWidget);
-  if (d->MRMLTransformNode == 0 ||
+  if (d->MRMLTransformNode == nullptr ||
       !d->UserUpdates)
     {
     return;

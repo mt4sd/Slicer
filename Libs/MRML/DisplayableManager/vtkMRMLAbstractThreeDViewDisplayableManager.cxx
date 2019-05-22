@@ -22,8 +22,8 @@
 #include "vtkMRMLAbstractThreeDViewDisplayableManager.h"
 
 // MRML includes
+#include "vtkMRMLThreeDViewInteractorStyle.h"
 #include <vtkMRMLViewNode.h>
-#include "vtkThreeDViewInteractorStyle.h"
 
 // VTK includes
 #include <vtkObjectFactory.h>
@@ -40,13 +40,11 @@ vtkStandardNewMacro(vtkMRMLAbstractThreeDViewDisplayableManager);
 
 //----------------------------------------------------------------------------
 vtkMRMLAbstractThreeDViewDisplayableManager::vtkMRMLAbstractThreeDViewDisplayableManager()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkMRMLAbstractThreeDViewDisplayableManager::~vtkMRMLAbstractThreeDViewDisplayableManager()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLAbstractThreeDViewDisplayableManager::PrintSelf(ostream& os, vtkIndent indent)
@@ -74,7 +72,7 @@ vtkMRMLViewNode * vtkMRMLAbstractThreeDViewDisplayableManager::GetMRMLViewNode()
 //---------------------------------------------------------------------------
 void vtkMRMLAbstractThreeDViewDisplayableManager::PassThroughInteractorStyleEvent(int eventid)
 {
-  vtkThreeDViewInteractorStyle* interactorStyle = vtkThreeDViewInteractorStyle::SafeDownCast(
+  vtkMRMLThreeDViewInteractorStyle* interactorStyle = vtkMRMLThreeDViewInteractorStyle::SafeDownCast(
               this->GetInteractor()->GetInteractorStyle());
 
   if (interactorStyle)
@@ -153,13 +151,13 @@ void vtkMRMLAbstractThreeDViewDisplayableManager::PassThroughInteractorStyleEven
       break;
 
     case vtkCommand::DeleteEvent:
-      interactorStyle->SetInteractor(0);
+      interactorStyle->SetInteractor(nullptr);
       break;
 
     case vtkCommand::TDxMotionEvent:
     case vtkCommand::TDxButtonPressEvent:
     case vtkCommand::TDxButtonReleaseEvent:
-      interactorStyle->DelegateTDxEvent(eventid,0);
+      interactorStyle->DelegateTDxEvent(eventid,nullptr);
       break;
     }
 

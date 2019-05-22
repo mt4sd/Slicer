@@ -79,9 +79,9 @@ class Q_SLICER_MODULE_SEGMENTATIONS_WIDGETS_EXPORT qMRMLSegmentEditorWidget : pu
 public:
   typedef qMRMLWidget Superclass;
   /// Constructor
-  explicit qMRMLSegmentEditorWidget(QWidget* parent = 0);
+  explicit qMRMLSegmentEditorWidget(QWidget* parent = nullptr);
   /// Destructor
-  virtual ~qMRMLSegmentEditorWidget();
+  ~qMRMLSegmentEditorWidget() override;
 
   /// Get the segment editor parameter set node
   Q_INVOKABLE vtkMRMLSegmentEditorNode* mrmlSegmentEditorNode()const;
@@ -98,7 +98,7 @@ public:
   /// Get segment ID of selected segment
   Q_INVOKABLE QString currentSegmentID()const;
 
-  /// Return active effect if selected, NULL otherwise
+  /// Return active effect if selected, nullptr otherwise
   /// \sa m_ActiveEffect, setActiveEffect()
   Q_INVOKABLE qSlicerSegmentEditorAbstractEffect* activeEffect()const;
   /// Set active effect
@@ -106,7 +106,7 @@ public:
   Q_INVOKABLE void setActiveEffect(qSlicerSegmentEditorAbstractEffect* effect);
 
   /// Get an effect object by name
-  /// \return The effect instance if exists, NULL otherwise
+  /// \return The effect instance if exists, nullptr otherwise
   Q_INVOKABLE qSlicerSegmentEditorAbstractEffect* effectByName(QString name);
 
   /// Get list of all registered effect names that can be displayed in the widget.
@@ -135,7 +135,7 @@ public:
   Q_INVOKABLE int effectCount();
 
   /// Get n-th effect shown in the widget. n>=0 and n<effectCount().
-  /// \return The effect instance if exists, NULL otherwise
+  /// \return The effect instance if exists, nullptr otherwise
   Q_INVOKABLE qSlicerSegmentEditorAbstractEffect* effectByIndex(int index);
 
   /// Create observations between slice view interactor and the widget.
@@ -196,7 +196,7 @@ public:
 
 public slots:
   /// Set the MRML \a scene associated with the widget
-  virtual void setMRMLScene(vtkMRMLScene* newScene);
+  void setMRMLScene(vtkMRMLScene* newScene) override;
 
   /// Set the segment editor parameter set node
   void setMRMLSegmentEditorNode(vtkMRMLSegmentEditorNode* newSegmentEditorNode);
@@ -256,7 +256,7 @@ public slots:
   /// Install keyboard shortcuts to allow quick selection of effects and segments.
   /// If parent is not specified then the main window will be used as parent.
   /// Previous keyboard shortcuts will be uninstalled.
-  void installKeyboardShortcuts(QWidget* parent = NULL);
+  void installKeyboardShortcuts(QWidget* parent = nullptr);
 
   /// Uninstall previously installed keyboard shortcuts.
   void uninstallKeyboardShortcuts();

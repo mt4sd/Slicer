@@ -91,16 +91,15 @@ public:
 qSlicerSegmentationsModuleWidgetPrivate::qSlicerSegmentationsModuleWidgetPrivate(qSlicerSegmentationsModuleWidget& object)
   : q_ptr(&object)
   , ModuleWindowInitialized(false)
-  , TerminologiesLogic(NULL)
-  , ImportExportOperationButtonGroup(NULL)
-  , ImportExportTypeButtonGroup(NULL)
+  , TerminologiesLogic(nullptr)
+  , ImportExportOperationButtonGroup(nullptr)
+  , ImportExportTypeButtonGroup(nullptr)
 {
 }
 
 //-----------------------------------------------------------------------------
 qSlicerSegmentationsModuleWidgetPrivate::~qSlicerSegmentationsModuleWidgetPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 vtkSlicerSegmentationsModuleLogic*
@@ -140,8 +139,7 @@ qSlicerSegmentationsModuleWidget::qSlicerSegmentationsModuleWidget(QWidget* _par
 
 //-----------------------------------------------------------------------------
 qSlicerSegmentationsModuleWidget::~qSlicerSegmentationsModuleWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerSegmentationsModuleWidget::enter()
@@ -202,7 +200,7 @@ vtkMRMLSegmentationDisplayNode* qSlicerSegmentationsModuleWidget::segmentationDi
     d->MRMLNodeComboBox_Segmentation->currentNode() );
   if (!segmentationNode)
     {
-    return NULL;
+    return nullptr;
     }
 
   vtkMRMLSegmentationDisplayNode* displayNode =
@@ -409,7 +407,7 @@ void qSlicerSegmentationsModuleWidget::onSegmentSelectionChanged(const QItemSele
   Q_UNUSED(deselected);
   Q_D(qSlicerSegmentationsModuleWidget);
 
-  d->pushButton_AddSegment->setEnabled(d->SegmentationNode != NULL);
+  d->pushButton_AddSegment->setEnabled(d->SegmentationNode != nullptr);
 
   QStringList selectedSegmentIds = d->SegmentsTableView->selectedSegmentIDs();
   d->pushButton_EditSelected->setEnabled(selectedSegmentIds.count() == 1);
@@ -650,7 +648,7 @@ bool qSlicerSegmentationsModuleWidget::copySegmentBetweenSegmentations(
       .arg(fromSegmentation->GetMasterRepresentationName().c_str())
       .arg(toSegmentation->GetMasterRepresentationName().c_str()).arg(segmentId).arg(fromNode->GetName()).arg(toNode->GetName());
     QMessageBox::StandardButton answer =
-      QMessageBox::question(NULL, tr("Failed to copy segment"), message,
+      QMessageBox::question(nullptr, tr("Failed to copy segment"), message,
       QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
     if (answer == QMessageBox::Yes)
       {
@@ -659,7 +657,7 @@ bool qSlicerSegmentationsModuleWidget::copySegmentBetweenSegmentations(
       if (!successfulConversion)
         {
         QString message = QString("Failed to convert %1 to %2!").arg(toNode->GetName()).arg(fromSegmentation->GetMasterRepresentationName().c_str());
-        QMessageBox::warning(NULL, tr("Conversion failed"), message);
+        QMessageBox::warning(nullptr, tr("Conversion failed"), message);
         return false;
         }
 
@@ -700,8 +698,8 @@ bool qSlicerSegmentationsModuleWidget::copySegmentsBetweenSegmentations(bool cop
 
   // Get source and target segmentation
   QStringList selectedSegmentIds;
-  vtkSegmentation* sourceSegmentation = NULL;
-  vtkSegmentation* targetSegmentation = NULL;
+  vtkSegmentation* sourceSegmentation = nullptr;
+  vtkSegmentation* targetSegmentation = nullptr;
   if (copyFromCurrentSegmentation)
     {
     sourceSegmentation = currentSegmentationNode->GetSegmentation();
@@ -747,6 +745,20 @@ bool qSlicerSegmentationsModuleWidget::exportFromCurrentSegmentation()
     return false;
     }
 
+  // Get IDs of segments to be exported
+  std::vector<std::string> segmentIDs;
+  if (d->ComboBox_ExportedSegments->currentIndex() == 0)
+    {
+    // All segments
+    currentSegmentationNode->GetSegmentation()->GetSegmentIDs(segmentIDs);
+    }
+  else
+    {
+    // Visible segments
+    vtkMRMLSegmentationDisplayNode* displayNode = vtkMRMLSegmentationDisplayNode::SafeDownCast(currentSegmentationNode->GetDisplayNode());
+    displayNode->GetVisibleSegmentIDs(segmentIDs);
+    }
+
   // If existing node was not selected then create a new one that we will export into
   vtkMRMLNode* otherRepresentationNode = d->MRMLNodeComboBox_ImportExportNode->currentNode();
   if (!otherRepresentationNode)
@@ -760,7 +772,12 @@ bool qSlicerSegmentationsModuleWidget::exportFromCurrentSegmentation()
         currentSegmentationNode->GetScene()->AddNode(newNode));
       newLabelmapNode->CreateDefaultDisplayNodes();
       otherRepresentationNode = newLabelmapNode;
-      namePostfix = "-label";
+      // Add segment name if only one segment is exported
+      if (segmentIDs.size() == 1)
+        {
+        namePostfix += "-" + std::string(currentSegmentationNode->GetSegmentation()->GetSegment(segmentIDs[0])->GetName());
+        }
+      namePostfix += "-label";
       }
     else
       {
@@ -775,20 +792,6 @@ bool qSlicerSegmentationsModuleWidget::exportFromCurrentSegmentation()
     exportedNodeName = currentSegmentationNode->GetScene()->GetUniqueNameByString(exportedNodeName.c_str());
     otherRepresentationNode->SetName(exportedNodeName.c_str());
     d->MRMLNodeComboBox_ImportExportNode->setCurrentNode(otherRepresentationNode);
-    }
-
-  // Get IDs of segments to be exported
-  std::vector<std::string> segmentIDs;
-  if (d->ComboBox_ExportedSegments->currentIndex() == 0)
-    {
-    // All segments
-    currentSegmentationNode->GetSegmentation()->GetSegmentIDs(segmentIDs);
-    }
-  else
-    {
-    // Visible segments
-    vtkMRMLSegmentationDisplayNode* displayNode = vtkMRMLSegmentationDisplayNode::SafeDownCast(currentSegmentationNode->GetDisplayNode());
-    displayNode->GetVisibleSegmentIDs(segmentIDs);
     }
 
   vtkMRMLLabelMapVolumeNode* labelmapNode = vtkMRMLLabelMapVolumeNode::SafeDownCast(otherRepresentationNode);
@@ -806,7 +809,7 @@ bool qSlicerSegmentationsModuleWidget::exportFromCurrentSegmentation()
         "Most probably the segment cannot be converted into binary labelmap representation.").
         arg(currentSegmentationNode->GetName()).arg(labelmapNode->GetName());
       qCritical() << Q_FUNC_INFO << ": " << message;
-      QMessageBox::warning(NULL, tr("Failed to export segments to labelmap"), message);
+      QMessageBox::warning(nullptr, tr("Failed to export segments to labelmap"), message);
       return false;
       }
     }
@@ -822,7 +825,7 @@ bool qSlicerSegmentationsModuleWidget::exportFromCurrentSegmentation()
         "Most probably the segment cannot be converted into closed surface representation.").
         arg(currentSegmentationNode->GetName()).arg(modelHierarchyNode->GetName());
       qCritical() << Q_FUNC_INFO << ": " << message;
-      QMessageBox::warning(NULL, tr("Failed to export segments to models"), message);
+      QMessageBox::warning(nullptr, tr("Failed to export segments to models"), message);
       return false;
       }
     }
@@ -866,7 +869,7 @@ bool qSlicerSegmentationsModuleWidget::importToCurrentSegmentation()
       {
       QString message = QString("Failed to copy labels from labelmap volume node %1!").arg(labelmapNode->GetName());
       qCritical() << Q_FUNC_INFO << ": " << message;
-      QMessageBox::warning(NULL, tr("Failed to import from labelmap volume"), message);
+      QMessageBox::warning(nullptr, tr("Failed to import from labelmap volume"), message);
       return false;
       }
     }
@@ -883,7 +886,7 @@ bool qSlicerSegmentationsModuleWidget::importToCurrentSegmentation()
       modelHierarchyNode->GetChildrenModelNodes(modelNodes.GetPointer());
       }
     QString errorMessage;
-    vtkObject* object = NULL;
+    vtkObject* object = nullptr;
     vtkCollectionSimpleIterator it;
     for (modelNodes->InitTraversal(it); (object = modelNodes->GetNextItemAsObject(it));)
       {
@@ -906,7 +909,7 @@ bool qSlicerSegmentationsModuleWidget::importToCurrentSegmentation()
     if (!errorMessage.isEmpty())
       {
       qCritical() << Q_FUNC_INFO << ": " << errorMessage;
-      QMessageBox::warning(NULL, tr("Failed to import model node"), errorMessage);
+      QMessageBox::warning(nullptr, tr("Failed to import model node"), errorMessage);
       }
     QApplication::restoreOverrideCursor();
     }
@@ -1002,7 +1005,7 @@ void qSlicerSegmentationsModuleWidget::onSegmentationNodeReferenceChanged()
     {
     d->label_ReferenceVolumeText->setVisible(false);
     d->label_ReferenceVolumeName->setVisible(false);
-    d->MRMLNodeComboBox_ExportLabelmapReferenceVolume->setCurrentNode(NULL);
+    d->MRMLNodeComboBox_ExportLabelmapReferenceVolume->setCurrentNode(nullptr);
     return;
     }
 

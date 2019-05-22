@@ -80,7 +80,7 @@
 qSlicerSegmentEditorAbstractEffectPrivate::qSlicerSegmentEditorAbstractEffectPrivate(qSlicerSegmentEditorAbstractEffect& object)
   : q_ptr(&object)
   , SavedCursor(QCursor(Qt::ArrowCursor))
-  , OptionsFrame(NULL)
+  , OptionsFrame(nullptr)
 {
   this->OptionsFrame = new QFrame();
   this->OptionsFrame->setFrameShape(QFrame::NoFrame);
@@ -96,7 +96,7 @@ qSlicerSegmentEditorAbstractEffectPrivate::~qSlicerSegmentEditorAbstractEffectPr
   if (this->OptionsFrame)
     {
     delete this->OptionsFrame;
-    this->OptionsFrame = NULL;
+    this->OptionsFrame = nullptr;
     }
 }
 
@@ -122,8 +122,7 @@ qSlicerSegmentEditorAbstractEffect::qSlicerSegmentEditorAbstractEffect(QObject* 
 
 //----------------------------------------------------------------------------
 qSlicerSegmentEditorAbstractEffect::~qSlicerSegmentEditorAbstractEffect()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerSegmentEditorAbstractEffect::name()const
@@ -331,7 +330,7 @@ void qSlicerSegmentEditorAbstractEffect::modifySelectedSegmentByLabelmap(vtkOrie
   if (extent[0]>extent[1] || extent[2]>extent[3] || extent[4]>extent[5])
     {
     // invalid extent, it means we have to work with the entire modifier labelmap
-    extent = NULL;
+    extent = nullptr;
     }
 
   // TODO: composite modifierLabelmap with threshold mask
@@ -515,7 +514,16 @@ void qSlicerSegmentEditorAbstractEffect::cursorOff(qMRMLWidget* viewWidget)
   Q_D(qSlicerSegmentEditorAbstractEffect);
 
   d->SavedCursor = QCursor(viewWidget->cursor());
-  viewWidget->setCursor(QCursor(Qt::BlankCursor));
+  qMRMLSliceWidget* sliceWidget = qobject_cast<qMRMLSliceWidget*>(viewWidget);
+  qMRMLThreeDWidget* threeDWidget = qobject_cast<qMRMLThreeDWidget*>(viewWidget);
+  if (sliceWidget && sliceWidget->sliceView())
+    {
+    sliceWidget->sliceView()->setDefaultViewCursor(QCursor(Qt::BlankCursor));
+    }
+  else if (threeDWidget && threeDWidget->threeDView())
+    {
+    threeDWidget->threeDView()->setDefaultViewCursor(QCursor(Qt::BlankCursor));
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -523,7 +531,16 @@ void qSlicerSegmentEditorAbstractEffect::cursorOn(qMRMLWidget* viewWidget)
 {
   Q_D(qSlicerSegmentEditorAbstractEffect);
 
-  viewWidget->setCursor(d->SavedCursor);
+  qMRMLSliceWidget* sliceWidget = qobject_cast<qMRMLSliceWidget*>(viewWidget);
+  qMRMLThreeDWidget* threeDWidget = qobject_cast<qMRMLThreeDWidget*>(viewWidget);
+  if (sliceWidget && sliceWidget->sliceView())
+    {
+    sliceWidget->sliceView()->setDefaultViewCursor(d->SavedCursor);
+    }
+  else if (threeDWidget && threeDWidget->threeDView())
+    {
+    threeDWidget->threeDView()->setDefaultViewCursor(d->SavedCursor);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -633,7 +650,7 @@ QWidget* qSlicerSegmentEditorAbstractEffect::addLabeledOptionsWidget(QString lab
 QWidget* qSlicerSegmentEditorAbstractEffect::addLabeledOptionsWidget(QString label, QLayout* newOptionsWidget)
 {
   QLabel* labelWidget = new QLabel(label);
-  if (dynamic_cast<QHBoxLayout*>(newOptionsWidget) == NULL)
+  if (dynamic_cast<QHBoxLayout*>(newOptionsWidget) == nullptr)
     {
     // for multiline layouts, align label to the top
     labelWidget->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -649,7 +666,7 @@ vtkMRMLScene* qSlicerSegmentEditorAbstractEffect::scene()
 
   if (!d->ParameterSetNode)
     {
-    return NULL;
+    return nullptr;
     }
 
   return d->ParameterSetNode->GetScene();
@@ -770,7 +787,7 @@ bool qSlicerSegmentEditorAbstractEffect::commonParameterDefined(QString name)
     return false;
     }
   const char* existingValue = d->ParameterSetNode->GetAttribute(name.toLatin1().constData());
-  return (existingValue != NULL && strlen(existingValue) > 0);
+  return (existingValue != nullptr && strlen(existingValue) > 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -794,7 +811,7 @@ void qSlicerSegmentEditorAbstractEffect::setCommonParameter(QString name, QStrin
     }
 
   const char* oldValue = d->ParameterSetNode->GetAttribute(name.toLatin1().constData());
-  if (oldValue == NULL && value.isEmpty())
+  if (oldValue == nullptr && value.isEmpty())
     {
     // no change
     return;
@@ -916,7 +933,7 @@ vtkOrientedImageData* qSlicerSegmentEditorAbstractEffect::defaultModifierLabelma
   emit d->updateVolumeSignal(d->ModifierLabelmap.GetPointer(), success); // this resets the labelmap and cleares it
   if (!success)
     {
-    return NULL;
+    return nullptr;
     }
   return d->ModifierLabelmap;
 }
@@ -936,7 +953,7 @@ vtkOrientedImageData* qSlicerSegmentEditorAbstractEffect::maskLabelmap()
   emit d->updateVolumeSignal(d->MaskLabelmap.GetPointer(), success);
   if (!success)
     {
-    return NULL;
+    return nullptr;
     }
   return d->MaskLabelmap;
 }
@@ -949,7 +966,7 @@ vtkOrientedImageData* qSlicerSegmentEditorAbstractEffect::masterVolumeImageData(
   emit d->updateVolumeSignal(d->AlignedMasterVolume.GetPointer(), success);
   if (!success)
     {
-    return NULL;
+    return nullptr;
     }
   return d->AlignedMasterVolume;
 }
@@ -962,7 +979,7 @@ vtkOrientedImageData* qSlicerSegmentEditorAbstractEffect::selectedSegmentLabelma
   emit d->updateVolumeSignal(d->SelectedSegmentLabelmap.GetPointer(), success);
   if (!success)
     {
-    return NULL;
+    return nullptr;
     }
   return d->SelectedSegmentLabelmap;
 }
@@ -975,7 +992,7 @@ vtkOrientedImageData* qSlicerSegmentEditorAbstractEffect::referenceGeometryImage
   emit d->updateVolumeSignal(d->ReferenceGeometryImage.GetPointer(), success); // this resets the labelmap and clears it
   if (!success)
     {
-    return NULL;
+    return nullptr;
     }
   return d->ReferenceGeometryImage;
 }
@@ -992,7 +1009,7 @@ vtkRenderWindow* qSlicerSegmentEditorAbstractEffect::renderWindow(qMRMLWidget* v
 {
   if (!viewWidget)
     {
-    return NULL;
+    return nullptr;
     }
 
   qMRMLSliceWidget* sliceWidget = qobject_cast<qMRMLSliceWidget*>(viewWidget);
@@ -1002,7 +1019,7 @@ vtkRenderWindow* qSlicerSegmentEditorAbstractEffect::renderWindow(qMRMLWidget* v
     if (!sliceWidget->sliceView())
       {
       // probably the application is closing
-      return NULL;
+      return nullptr;
       }
     return sliceWidget->sliceView()->renderWindow();
     }
@@ -1011,13 +1028,13 @@ vtkRenderWindow* qSlicerSegmentEditorAbstractEffect::renderWindow(qMRMLWidget* v
     if (!threeDWidget->threeDView())
       {
       // probably the application is closing
-      return NULL;
+      return nullptr;
       }
       return threeDWidget->threeDView()->renderWindow();
     }
 
   qCritical() << Q_FUNC_INFO << ": Unsupported view widget type!";
-  return NULL;
+  return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1026,7 +1043,7 @@ vtkRenderer* qSlicerSegmentEditorAbstractEffect::renderer(qMRMLWidget* viewWidge
   vtkRenderWindow* renderWindow = qSlicerSegmentEditorAbstractEffect::renderWindow(viewWidget);
   if (!renderWindow)
     {
-    return NULL;
+    return nullptr;
     }
 
   return vtkRenderer::SafeDownCast(renderWindow->GetRenderers()->GetItemAsObject(0));
@@ -1037,7 +1054,7 @@ vtkMRMLAbstractViewNode* qSlicerSegmentEditorAbstractEffect::viewNode(qMRMLWidge
 {
   if (!viewWidget)
     {
-    return NULL;
+    return nullptr;
     }
 
   qMRMLSliceWidget* sliceWidget = qobject_cast<qMRMLSliceWidget*>(viewWidget);
@@ -1052,7 +1069,7 @@ vtkMRMLAbstractViewNode* qSlicerSegmentEditorAbstractEffect::viewNode(qMRMLWidge
     }
 
   qCritical() << Q_FUNC_INFO << ": Unsupported view widget type!";
-  return NULL;
+  return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1244,7 +1261,7 @@ void qSlicerSegmentEditorAbstractEffect::scheduleRender(qMRMLWidget* viewWidget)
 //----------------------------------------------------------------------------
 double qSlicerSegmentEditorAbstractEffect::sliceSpacing(qMRMLSliceWidget* sliceWidget)
 {
-  // Implementation copied from vtkSliceViewInteractorStyle::GetSliceSpacing()
+  // Implementation copied from vtkMRMLSliceViewInteractorStyle::GetSliceSpacing()
   vtkMRMLSliceNode *sliceNode = sliceWidget->sliceLogic()->GetSliceNode();
   double spacing = 1.0;
   if (sliceNode->GetSliceSpacingMode() == vtkMRMLSliceNode::PrescribedSliceSpacingMode)
@@ -1285,7 +1302,7 @@ void qSlicerSegmentEditorAbstractEffect::setShowEffectCursorInThreeDView(bool sh
 //-----------------------------------------------------------------------------
 void qSlicerSegmentEditorAbstractEffect::interactionNodeModified(vtkMRMLInteractionNode* interactionNode)
 {
-  if (interactionNode == NULL)
+  if (interactionNode == nullptr)
     {
     return;
     }

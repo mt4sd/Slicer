@@ -110,7 +110,7 @@ public:
   ///
   /// Standard class methods for type information and printing.
   vtkTypeMacro(vtkAnnotationROIWidget,vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Specify an instance of vtkWidgetRepresentation used to represent this
@@ -138,11 +138,11 @@ public:
   ///
   /// Create the default widget representation if one is not set. By default,
   /// this is an instance of the vtkAnnotationROIRepresentation class.
-  virtual void CreateDefaultRepresentation() VTK_OVERRIDE;
+  void CreateDefaultRepresentation() override;
 
 protected:
   vtkAnnotationROIWidget();
-  ~vtkAnnotationROIWidget();
+  ~vtkAnnotationROIWidget() override;
 
   int WidgetState;
   enum _WidgetState {Start=0,Active};
@@ -160,8 +160,8 @@ protected:
   int RotationEnabled;
 
 private:
-  vtkAnnotationROIWidget(const vtkAnnotationROIWidget&);  //Not implemented
-  void operator=(const vtkAnnotationROIWidget&);  //Not implemented
+  vtkAnnotationROIWidget(const vtkAnnotationROIWidget&) = delete;
+  void operator=(const vtkAnnotationROIWidget&) = delete;
 };
 
 #endif

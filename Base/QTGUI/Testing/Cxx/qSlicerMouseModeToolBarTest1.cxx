@@ -24,6 +24,19 @@
 
 // STD includes
 
+QString activePlaceActionText(qSlicerMouseModeToolBar& mouseModeToolBar)
+{
+  foreach(QAction* action, mouseModeToolBar.actions())
+    {
+    if (action->objectName() == QString("PlaceWidgetAction"))
+      {
+      return action->text();
+      break;
+      }
+    }
+  return QString();
+}
+
 int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
 {
 #ifdef Slicer_VTK_USE_QVTKOPENGLWIDGET
@@ -43,7 +56,7 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
 
   // now reset it to null and set with app logic
   vtkSlicerApplicationLogic *appLogic = vtkSlicerApplicationLogic::New();
-  mouseToolBar.setMRMLScene(NULL);
+  mouseToolBar.setMRMLScene(nullptr);
   appLogic->SetMRMLScene(scene);
   mouseToolBar.setApplicationLogic(appLogic);
   mouseToolBar.setMRMLScene(scene);
@@ -58,13 +71,13 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
   mouseToolBar.changeCursorTo(QCursor(Qt::BusyCursor));
 
   QString activeActionText;
-  activeActionText = mouseToolBar.activeActionText();
+  activeActionText = activePlaceActionText(mouseToolBar);
   std::cout << "Active action text = " << qPrintable(activeActionText) << std::endl;
 
   // get the selection and interaction nodes that the mouse mode tool bar
   // listens to
   vtkMRMLNode *mrmlNode;
-  vtkMRMLSelectionNode *selectionNode = NULL;
+  vtkMRMLSelectionNode *selectionNode = nullptr;
   //QString activeActionText;
   mrmlNode = scene->GetNodeByID("vtkMRMLSelectionNodeSingleton");
   if (mrmlNode)
@@ -80,12 +93,12 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
     selectionNode->AddNewPlaceNodeClassNameToList("vtkMRMLMarkupsFiducialNode", ":/Icons/MarkupsMouseModePlace.png");
 
     selectionNode->SetReferenceActivePlaceNodeClassName("vtkMRMLAnnotationFiducialNode");
-    activeActionText = mouseToolBar.activeActionText();
+    activeActionText = activePlaceActionText(mouseToolBar);
     std::cout << "After setting selection node activeplace node class name to "
               << selectionNode->GetActivePlaceNodeClassName()
               << ", mouse tool bar active action text = "
               << qPrintable(activeActionText) << std::endl;
-    if (activeActionText.compare(QString("Fiducial")) != 0)
+    if (activeActionText.compare(QString("Place Fiducial")) != 0)
       {
       std::cerr << "Error! Expected active action text of 'Fiducial', got '"
                 << qPrintable(activeActionText) << "'" << std::endl;
@@ -93,12 +106,12 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
       }
 
     selectionNode->SetReferenceActivePlaceNodeClassName("vtkMRMLAnnotationRulerNode");
-    activeActionText = mouseToolBar.activeActionText();
+    activeActionText = activePlaceActionText(mouseToolBar);
     std::cout << "After setting selection node active place node class name to "
               << selectionNode->GetActivePlaceNodeClassName()
               << ", mouse tool bar active action text = "
               << qPrintable(activeActionText) << std::endl;
-    if (activeActionText.compare(QString("Ruler")) != 0)
+    if (activeActionText.compare(QString("Place Ruler")) != 0)
         {
         std::cerr << "Error! Expected active action text of 'Ruler', got '"
                   << qPrintable(activeActionText) << "'" << std::endl;
@@ -107,12 +120,12 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
 
     // test with no action text
     selectionNode->SetReferenceActivePlaceNodeClassName("vtkMRMLMarkupsFiducialNode");
-    activeActionText = mouseToolBar.activeActionText();
-    std::cout << "After setting selection node active place node class name to "
+    activeActionText = activePlaceActionText(mouseToolBar);
+    std::cout << __LINE__ << ": After setting selection node active place node class name to "
               << selectionNode->GetActivePlaceNodeClassName()
               << ", mouse tool bar active action text = '"
               << qPrintable(activeActionText) << "'" << std::endl;
-    if (activeActionText.compare(QString("")) != 0)
+    if (activeActionText.compare(QString("Place")) != 0)
       {
       std::cerr << "Error! Expected active action text of '', got '"
                 << qPrintable(activeActionText) << "'" << std::endl;
@@ -120,7 +133,7 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
       }
     }
 
-  vtkMRMLInteractionNode *interactionNode = NULL;
+  vtkMRMLInteractionNode *interactionNode = nullptr;
   mrmlNode = scene->GetNodeByID("vtkMRMLInteractionNodeSingleton");
   if (mrmlNode)
     {
@@ -135,12 +148,12 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
     if (selectionNode)
       {
       selectionNode->SetReferenceActivePlaceNodeClassName("vtkMRMLAnnotationFiducialNode");
-      activeActionText = mouseToolBar.activeActionText();
-      std::cout << "After setting selection node active place node class name to "
+      activeActionText = activePlaceActionText(mouseToolBar);
+      std::cout << __LINE__ << ": After setting selection node active place node class name to "
                 << selectionNode->GetActivePlaceNodeClassName()
                 << ", mouse tool bar active action text = "
                 << qPrintable(activeActionText) << std::endl;
-      if (activeActionText.compare(QString("Fiducial")) != 0)
+      if (activeActionText.compare(QString("Place Fiducial")) != 0)
         {
         std::cerr << "Error! Expected active action text of 'Fiducial', got '"
                   << qPrintable(activeActionText) << "'" << std::endl;
@@ -148,11 +161,11 @@ int qSlicerMouseModeToolBarTest1(int argc, char * argv[] )
         }
       }
     interactionNode->SwitchToViewTransformMode();
-    activeActionText = mouseToolBar.activeActionText();
-    std::cout << "After switching interaction node to view transform, active action text = " << qPrintable(activeActionText) << std::endl;
+    activeActionText = activePlaceActionText(mouseToolBar);
+    std::cout << __LINE__ << ": After switching interaction node to view transform, active action text = " << qPrintable(activeActionText) << std::endl;
     // after a change in the tool bar (removed the Rotate action), this should still
     // be fiducial.
-    if (activeActionText.compare(QString("Fiducial")) != 0)
+    if (activeActionText.compare(QString("Place Fiducial")) != 0)
       {
       std::cerr << "Error! Expected active action text of 'Fiducial', got '" << qPrintable(activeActionText) << "'" << std::endl;
       return EXIT_FAILURE;

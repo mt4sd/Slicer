@@ -34,16 +34,16 @@ public:
   vtkGetVector3Macro(XAxis, double);
   vtkGetVector3Macro(YAxis, double);
   vtkGetVector3Macro(ZAxis, double);
-  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
 
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
   vtkPrincipalAxesAlign();
-  ~vtkPrincipalAxesAlign();
+  ~vtkPrincipalAxesAlign() override;
 private:
-  vtkPrincipalAxesAlign(vtkPrincipalAxesAlign &);
-  void operator=(const vtkPrincipalAxesAlign &);
+  vtkPrincipalAxesAlign(vtkPrincipalAxesAlign &) = delete;
+  void operator=(const vtkPrincipalAxesAlign &) = delete;
 
   double* Center;
   double* XAxis;

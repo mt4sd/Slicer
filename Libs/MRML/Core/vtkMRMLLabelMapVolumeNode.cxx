@@ -35,13 +35,11 @@ vtkMRMLNodeNewMacro(vtkMRMLLabelMapVolumeNode);
 
 //----------------------------------------------------------------------------
 vtkMRMLLabelMapVolumeNode::vtkMRMLLabelMapVolumeNode()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkMRMLLabelMapVolumeNode::~vtkMRMLLabelMapVolumeNode()
-{
-}
+= default;
 
 //-----------------------------------------------------------
 void vtkMRMLLabelMapVolumeNode::CreateNoneNode(vtkMRMLScene *scene)
@@ -61,12 +59,12 @@ void vtkMRMLLabelMapVolumeNode::CreateNoneNode(vtkMRMLScene *scene)
 //----------------------------------------------------------------------------
 void vtkMRMLLabelMapVolumeNode::CreateDefaultDisplayNodes()
 {
-  if (vtkMRMLLabelMapVolumeDisplayNode::SafeDownCast(this->GetDisplayNode())!=NULL)
+  if (vtkMRMLLabelMapVolumeDisplayNode::SafeDownCast(this->GetDisplayNode())!=nullptr)
     {
     // display node already exists
     return;
     }
-  if (this->GetScene()==NULL)
+  if (this->GetScene()==nullptr)
     {
     vtkErrorMacro("vtkMRMLLabelMapVolumeNode::CreateDefaultDisplayNodes failed: scene is invalid");
     return;

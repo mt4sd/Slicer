@@ -64,7 +64,7 @@ vtkSegmentationConverterFactoryInitialize::~vtkSegmentationConverterFactoryIniti
 vtkSegmentationConverterFactory* vtkSegmentationConverterFactory::New()
 {
   vtkSegmentationConverterFactory* ret = vtkSegmentationConverterFactory::GetInstance();
-  ret->Register(NULL);
+  ret->Register(nullptr);
   return ret;
 }
 
@@ -91,13 +91,11 @@ vtkSegmentationConverterFactory* vtkSegmentationConverterFactory::GetInstance()
 
 //----------------------------------------------------------------------------
 vtkSegmentationConverterFactory::vtkSegmentationConverterFactory()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkSegmentationConverterFactory::~vtkSegmentationConverterFactory()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkSegmentationConverterFactory::PrintSelf(ostream& os, vtkIndent indent)
@@ -116,7 +114,7 @@ void vtkSegmentationConverterFactory::classInitialize()
 void vtkSegmentationConverterFactory::classFinalize()
 {
   vtkSegmentationConverterFactoryInstance->Delete();
-  vtkSegmentationConverterFactoryInstance = 0;
+  vtkSegmentationConverterFactoryInstance = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -207,7 +205,7 @@ vtkDataObject* vtkSegmentationConverterFactory::ConstructRepresentationObjectByC
   }
 
   // None of the registered rules can instantiate this type
-  return NULL;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -223,5 +221,5 @@ vtkDataObject* vtkSegmentationConverterFactory::ConstructRepresentationObjectByR
   }
 
   // None of the registered rules can instantiate this type
-  return NULL;
+  return nullptr;
 }

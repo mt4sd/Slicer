@@ -52,7 +52,7 @@ vtkStandardNewMacro(vtkSegment);
 //----------------------------------------------------------------------------
 vtkSegment::vtkSegment()
 {
-  this->Name = NULL;
+  this->Name = nullptr;
   this->Color[0] = SEGMENT_COLOR_INVALID[0];
   this->Color[1] = SEGMENT_COLOR_INVALID[1];
   this->Color[2] = SEGMENT_COLOR_INVALID[2];
@@ -73,7 +73,7 @@ vtkSegment::~vtkSegment()
   if (this->Name)
     {
     delete [] this->Name;
-    this->Name = NULL;
+    this->Name = nullptr;
     }
 }
 
@@ -253,31 +253,33 @@ vtkDataObject* vtkSegment::GetRepresentation(std::string name)
     }
   else
     {
-    return NULL;
+    return nullptr;
     }
 }
 
 //---------------------------------------------------------------------------
-void vtkSegment::AddRepresentation(std::string name, vtkDataObject* representation)
+bool vtkSegment::AddRepresentation(std::string name, vtkDataObject* representation)
 {
   if (this->GetRepresentation(name) == representation)
     {
-    return;
+    return false;
     }
-
   this->Representations[name] = representation; // Representations stores the pointer in a smart pointer, which makes sure the object is not deleted
   this->Modified();
+  return true;
 }
 
 //---------------------------------------------------------------------------
-void vtkSegment::RemoveRepresentation(std::string name)
+bool vtkSegment::RemoveRepresentation(std::string name)
 {
   vtkDataObject* representation = this->GetRepresentation(name);
-  if (representation)
+  if (!representation)
     {
-    this->Representations.erase(name);
-    this->Modified();
+    return false;
     }
+  this->Representations.erase(name);
+  this->Modified();
+  return true;
 }
 
 //---------------------------------------------------------------------------

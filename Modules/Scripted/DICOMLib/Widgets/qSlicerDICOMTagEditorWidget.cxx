@@ -61,7 +61,7 @@ public:
   unsigned int topSeriesHeaderRow();
 
   /// Find exportable for tags table row index
-  /// \return NULL if patient or study row, or if header row. The corresponding exportable otherwise.
+  /// \return nullptr if patient or study row, or if header row. The corresponding exportable otherwise.
   qSlicerDICOMExportable* exportableForRowIndex(unsigned int row);
 
   /// Insert empty row in tags table and make sure the header row indices are updated accordingly
@@ -90,8 +90,8 @@ public:
 qSlicerDICOMTagEditorWidgetPrivate::qSlicerDICOMTagEditorWidgetPrivate(qSlicerDICOMTagEditorWidget& object)
   : q_ptr(&object)
 {
-  this->Scene = NULL;
-  this->TagsTable = NULL;
+  this->Scene = nullptr;
+  this->TagsTable = nullptr;
   this->StudyTagsHeaderRow = 0;
 
   this->HeaderItemColor = QColor::fromRgb(240, 240, 240);
@@ -128,11 +128,7 @@ void qSlicerDICOMTagEditorWidgetPrivate::setupUi(QWidget *qSlicerDICOMTagEditorW
   this->TagsTable = new QTableWidget(qSlicerDICOMTagEditorWidget);
   this->TagsTable->setColumnCount(2);
   this->TagsTable->horizontalHeader()->setVisible(false);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  this->TagsTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-#else
   this->TagsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-#endif
   this->TagsTable->verticalHeader()->setVisible(false);
   this->TagsTable->horizontalHeader()->setStretchLastSection(true);
   this->TagsTable->setSelectionMode(QAbstractItemView::NoSelection);
@@ -196,15 +192,15 @@ qSlicerDICOMExportable* qSlicerDICOMTagEditorWidgetPrivate::exportableForRowInde
   // If patient or study tag, then it corresponds to no exportable
   if (row < this->topSeriesHeaderRow())
     {
-    return NULL;
+    return nullptr;
     }
 
   unsigned int foundSeriesHeaderRowIndex = 0; // 0 is invalid value as it is the patient header
   QList<unsigned int> headerRowIndices = this->SeriesTagsHeaderRows.keys();
   if (headerRowIndices.contains(row))
     {
-    // If row is a header, then return NULL without logging error
-    return NULL;
+    // If row is a header, then return nullptr without logging error
+    return nullptr;
     }
 
   // Iterate through the series header indices from the bottom up
@@ -222,7 +218,7 @@ qSlicerDICOMExportable* qSlicerDICOMTagEditorWidgetPrivate::exportableForRowInde
   if (foundSeriesHeaderRowIndex == 0)
     {
     qCritical() << Q_FUNC_INFO << ": Failed to find series section for row index " << row;
-    return NULL;
+    return nullptr;
     }
 
   return this->SeriesTagsHeaderRows[foundSeriesHeaderRowIndex];
@@ -272,8 +268,7 @@ qSlicerDICOMTagEditorWidget::qSlicerDICOMTagEditorWidget(QWidget *parent)
 
 //------------------------------------------------------------------------------
 qSlicerDICOMTagEditorWidget::~qSlicerDICOMTagEditorWidget()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qSlicerDICOMTagEditorWidget::setMRMLScene(vtkMRMLScene* scene)

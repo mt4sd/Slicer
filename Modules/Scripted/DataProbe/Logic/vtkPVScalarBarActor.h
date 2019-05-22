@@ -42,7 +42,7 @@ class VTK_SLICER_DATAPROBELIB_MODULE_LOGIC_EXPORT vtkPVScalarBarActor : public v
 {
 public:
   vtkTypeMacro(vtkPVScalarBarActor, vtkScalarBarActor);
-  virtual void PrintSelf(ostream &os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream &os, vtkIndent indent) override;
   static vtkPVScalarBarActor *New();
 
   // Description:
@@ -94,32 +94,32 @@ public:
   // Release any graphics resources that are being consumed by this actor.
   // The parameter window could be used to determine which graphic
   // resources to release.
-  virtual void ReleaseGraphicsResources(vtkWindow*) VTK_OVERRIDE;
+  void ReleaseGraphicsResources(vtkWindow*) override;
 
   // Description:
   // Draw the scalar bar and annotation text to the screen.
-  virtual int RenderOverlay(vtkViewport* viewport) VTK_OVERRIDE;
+  int RenderOverlay(vtkViewport* viewport) override;
 
 protected:
   vtkPVScalarBarActor();
-  ~vtkPVScalarBarActor();
+  ~vtkPVScalarBarActor() override;
 
   // Description:
   // These methods override the subclass implementation.
-  virtual void PrepareTitleText() VTK_OVERRIDE;
-  virtual void ComputeScalarBarThickness() VTK_OVERRIDE;
-  virtual void LayoutTitle() VTK_OVERRIDE;
-  virtual void ComputeScalarBarLength() VTK_OVERRIDE;
-  virtual void LayoutTicks() VTK_OVERRIDE;
-  virtual void ConfigureAnnotations() VTK_OVERRIDE;
-  virtual void ConfigureTitle() VTK_OVERRIDE;
-  virtual void ConfigureTicks() VTK_OVERRIDE;
+  void PrepareTitleText() override;
+  void ComputeScalarBarThickness() override;
+  void LayoutTitle() override;
+  void ComputeScalarBarLength() override;
+  void LayoutTicks() override;
+  void ConfigureAnnotations() override;
+  void ConfigureTitle() override;
+  void ConfigureTicks() override;
 
   // Description:
   // Annotate the min/max values on the scalar bar (in interval/ratio mode).
   //
   // This overrides the subclass implementation.
-  virtual void EditAnnotations() VTK_OVERRIDE;
+  void EditAnnotations() override;
 
   // Description:
   // Set up the ScalarBar, ScalarBarMapper, and ScalarBarActor based on the
@@ -175,8 +175,8 @@ protected:
   int AddRangeAnnotations;
 
 private:
-  vtkPVScalarBarActor(const vtkPVScalarBarActor &);     // Not implemented.
-  void operator=(const vtkPVScalarBarActor &);          // Not implemented.
+  vtkPVScalarBarActor(const vtkPVScalarBarActor &) = delete;
+  void operator=(const vtkPVScalarBarActor &) = delete;
 };
 
 #endif //__vtkPVScalarBarActor_h

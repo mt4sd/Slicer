@@ -21,10 +21,11 @@
 
 // MRMLDisplayableManager includes
 #include "vtkMRMLCameraDisplayableManager.h"
-#include "vtkThreeDViewInteractorStyle.h"
+#include "vtkMRMLThreeDViewInteractorStyle.h"
 
 // MRML includes
 #include <vtkEventBroker.h>
+#include <vtkMRMLCameraWidget.h>
 #include <vtkMRMLScene.h>
 #include <vtkMRMLViewNode.h>
 
@@ -47,9 +48,11 @@ class vtkMRMLCameraDisplayableManager::vtkInternal
 {
 public:
   vtkInternal();
+  ~vtkInternal();
 
   vtkMRMLCameraNode* CameraNode;
   int UpdatingCameraNode;
+  vtkSmartPointer<vtkMRMLCameraWidget> CameraWidget;
 };
 
 //---------------------------------------------------------------------------
@@ -58,9 +61,16 @@ public:
 //---------------------------------------------------------------------------
 vtkMRMLCameraDisplayableManager::vtkInternal::vtkInternal()
 {
-  this->CameraNode = 0;
+  this->CameraNode = nullptr;
   this->UpdatingCameraNode = 0;
+  this->CameraWidget = vtkSmartPointer<vtkMRMLCameraWidget>::New();
+}
 
+//---------------------------------------------------------------------------
+vtkMRMLCameraDisplayableManager::vtkInternal::~vtkInternal()
+{
+  this->CameraWidget->SetRenderer(nullptr);
+  this->CameraWidget->SetCameraNode(nullptr);
 }
 
 //---------------------------------------------------------------------------
@@ -100,9 +110,9 @@ void vtkMRMLCameraDisplayableManager::OnMRMLSceneEndClose()
 //---------------------------------------------------------------------------
 void vtkMRMLCameraDisplayableManager::OnMRMLSceneStartImport()
 {
-  if (this->Internal->CameraNode != NULL)
+  if (this->Internal->CameraNode != nullptr)
   {
-    this->Internal->CameraNode->SetActiveTag(NULL);
+    this->Internal->CameraNode->SetActiveTag(nullptr);
   }
 }
 
@@ -111,7 +121,7 @@ void vtkMRMLCameraDisplayableManager::OnMRMLSceneEndImport()
 {
   if (!this->GetMRMLScene())
     {
-    this->SetAndObserveCameraNode(0);
+    this->SetAndObserveCameraNode(nullptr);
     return;
     }
   if (this->GetMRMLViewNode())
@@ -135,7 +145,7 @@ void vtkMRMLCameraDisplayableManager::OnMRMLSceneEndRestore()
   // by grabbing the first available camera. Sounds like a hack, but
   // too  much time was wasted on this thing.
   vtkMRMLCameraNode *camera_node = this->Internal->CameraNode;
-  vtkMRMLNode *nodeInScene = NULL;
+  vtkMRMLNode *nodeInScene = nullptr;
   if (camera_node)
     {
     // camera node is defined but can it be found in the current scene?
@@ -143,8 +153,8 @@ void vtkMRMLCameraDisplayableManager::OnMRMLSceneEndRestore()
     if (!nodeInScene)
       {
       // reset the internal camera node
-      camera_node = NULL;
-      this->SetAndObserveCameraNode(0);
+      camera_node = nullptr;
+      this->SetAndObserveCameraNode(nullptr);
       }
     }
   if (!camera_node)
@@ -236,25 +246,6 @@ void vtkMRMLCameraDisplayableManager::OnMRMLNodeModified(
   vtkMRMLNode* vtkNotUsed(node))
 #endif
 {
-  // ModifiedEvent is fired anytime vtkCamera is modified (when there is a
-  // pan, zoom, rotation...)
-  // The observation is setup here: vtkSetAndObserveMRMLNodeMacro(
-  // this->Internal->CameraNode, newCameraNode);
-  assert(vtkMRMLCameraNode::SafeDownCast(node));
-  vtkInteractorStyle* interactorStyle = vtkInteractorStyle::SafeDownCast(
-    this->GetInteractor()->GetInteractorStyle());
-  if (interactorStyle &&
-      interactorStyle->GetState() != VTKIS_NONE)
-    {
-    // The interactor style is in a "state" mode (rotate, dolly...), that
-    // means it is doing multiple actions on the camera at once (azimuth,
-    // elevation...). When the interactor style is done with updating the
-    // camera, it will call Render() on the interactor which will trigger a
-    // rendering. We don't need to do it here then, there is even a risk to
-    // trigger a rendering before the camera is done being updated (between
-    // azimuth and elevation for example).
-    return;
-    }
   this->RequestRender();
 }
 
@@ -300,13 +291,16 @@ void vtkMRMLCameraDisplayableManager::SetAndObserveCameraNode(vtkMRMLCameraNode 
     {
     viewNode->Modified(); // update vtkCamera from view node (perspective/parallel, etc)
     }
+
+  this->Internal->CameraWidget->SetRenderer(this->GetRenderer());
+  this->Internal->CameraWidget->SetCameraNode(this->Internal->CameraNode);
 };
 
 //---------------------------------------------------------------------------
 void vtkMRMLCameraDisplayableManager::RemoveMRMLObservers()
 {
 //  this->RemoveCameraObservers();
-  this->SetAndObserveCameraNode(0);
+  this->SetAndObserveCameraNode(nullptr);
 
   this->Superclass::RemoveMRMLObservers();
 }
@@ -318,14 +312,14 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
     {
     return;
     }
-  if (this->GetMRMLScene() == 0)
+  if (this->GetMRMLScene() == nullptr)
     {
     vtkErrorMacro("UpdateCameraNode: DisplayableManager does NOT have a scene set, "
                   "can't find CameraNodes");
     return;
     }
 
-  if (this->GetMRMLViewNode() == 0)
+  if (this->GetMRMLViewNode() == nullptr)
     {
     vtkErrorMacro("UpdateCameraNode: DisplayableManager does NOT have a ViewNode!");
     return;
@@ -337,9 +331,9 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
   // how many camera and view nodes are in the scene?
   vtkDebugMacro("UpdateCamera: num camera nodes = :" << this->GetMRMLScene()->GetNumberOfNodesByClass("vtkMRMLCameraNode") << ", num view nodes = " << this->GetMRMLScene()->GetNumberOfNodesByClass("vtkMRMLViewNode"));
 
-  vtkMRMLCameraNode *camera_node = NULL;
-  vtkMRMLCameraNode *unassignedCamera = NULL;
-  vtkMRMLCameraNode  *pruneDefaultCamera = NULL;
+  vtkMRMLCameraNode *camera_node = nullptr;
+  vtkMRMLCameraNode *unassignedCamera = nullptr;
+  vtkMRMLCameraNode  *pruneDefaultCamera = nullptr;
   int foundDefaultCamera = 0;
 
   vtkMRMLViewNode *viewNode = this->GetMRMLViewNode();
@@ -348,7 +342,7 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
     {
     std::vector<vtkMRMLNode *> cnodes;
     int nnodes = this->GetMRMLScene()->GetNodesByClass("vtkMRMLCameraNode", cnodes);
-    vtkMRMLCameraNode *node = NULL;
+    vtkMRMLCameraNode *node = nullptr;
     for (int n=0; n<nnodes; n++)
       {
       node = vtkMRMLCameraNode::SafeDownCast (cnodes[n]);
@@ -409,22 +403,22 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
       }
     }
 
-  if (pruneDefaultCamera != NULL)
+  if (pruneDefaultCamera != nullptr)
     {
     // is there a camera node that's not the default that wants to point to my
     // view node
-    if (camera_node != NULL &&
+    if (camera_node != nullptr &&
         camera_node != pruneDefaultCamera)
       {
       // unhook the default node
       vtkDebugMacro("UpdateCamera: pruning default camera node, set it's active tag to null");
-      pruneDefaultCamera->SetActiveTag(NULL);
+      pruneDefaultCamera->SetActiveTag(nullptr);
       }
     }
   // if a camera node already points to me
   // do I already have it?
-  if (camera_node != NULL &&
-      this->Internal->CameraNode != NULL &&
+  if (camera_node != nullptr &&
+      this->Internal->CameraNode != nullptr &&
       this->Internal->CameraNode == camera_node)
     {
     // I'm already pointing to it
@@ -434,9 +428,9 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
     }
 
   // do I have a camera node?
-  if (this->Internal->CameraNode == NULL)
+  if (this->Internal->CameraNode == nullptr)
     {
-    if (camera_node != NULL)
+    if (camera_node != nullptr)
       {
       // I'm not observing the camera node that is using my view node's id as
       // it's active tag
@@ -446,7 +440,7 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
     else
       {
       // is there an unasigned camera node?
-      if (unassignedCamera != NULL)
+      if (unassignedCamera != nullptr)
         {
         // use it!
         vtkDebugMacro("UpdateCamera: setting active tag on unassinged camera");
@@ -462,7 +456,7 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
         unassignedCamera->SetName(defaultCameraName);
         //this->GetMRMLScene()->GetUniqueNameByString(camera_node->GetNodeTagName()));
         unassignedCamera->SetActiveTag(
-                                       viewNode ? viewNode->GetID() : NULL);
+                                       viewNode ? viewNode->GetID() : nullptr);
         this->GetMRMLScene()->AddNode(unassignedCamera);
         this->SetAndObserveCameraNode(unassignedCamera);
         unassignedCamera->Delete();
@@ -471,7 +465,7 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
     }
   else
     {
-    if (camera_node != NULL)
+    if (camera_node != nullptr)
       {
       // I'm not observing the camera node that is using my view node's id as
       // it's active tag
@@ -483,7 +477,7 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
       // can get here if a view node steals my camera node
       vtkDebugMacro("I have a camera node, but nothing is pointing to my view node");
       // can I swap for an unassigned one?
-      if (unassignedCamera != NULL)
+      if (unassignedCamera != nullptr)
         {
         // swap!
         //vtkDebugMacro("Stealing an unasigned camera node " << unassignedCamera->GetID() << " for view node " << viewNode->GetID());
@@ -499,7 +493,7 @@ void vtkMRMLCameraDisplayableManager::UpdateCameraNode()
         unassignedCamera->SetName(defaultCameraName);
         //this->GetMRMLScene()->GetUniqueNameByString(camera_node->GetNodeTagName()));
         unassignedCamera->SetActiveTag(
-                                       viewNode ? viewNode->GetID() : NULL);
+                                       viewNode ? viewNode->GetID() : nullptr);
         this->GetMRMLScene()->AddNode(unassignedCamera);
         this->SetAndObserveCameraNode(unassignedCamera);
         unassignedCamera->Delete();
@@ -524,7 +518,7 @@ void vtkMRMLCameraDisplayableManager::SetCameraToRenderer()
     {
     return;
     }
-  vtkCamera *camera = this->Internal->CameraNode ? this->Internal->CameraNode->GetCamera() : 0;
+  vtkCamera *camera = this->Internal->CameraNode ? this->Internal->CameraNode->GetCamera() : nullptr;
   this->GetRenderer()->SetActiveCamera(camera);
   if (camera)
     {
@@ -543,17 +537,11 @@ void vtkMRMLCameraDisplayableManager::SetCameraToInteractor()
     return;
     }
   vtkInteractorObserver *iobs = this->GetInteractor()->GetInteractorStyle();
-  vtkThreeDViewInteractorStyle *istyle =
-    vtkThreeDViewInteractorStyle::SafeDownCast(iobs);
+  vtkMRMLThreeDViewInteractorStyle *istyle =
+    vtkMRMLThreeDViewInteractorStyle::SafeDownCast(iobs);
   if (istyle)
     {
     istyle->SetCameraNode(this->Internal->CameraNode);
-    //if (istyle->GetApplicationLogic() == 0 &&
-    //    this->GetApplicationLogic() != 0)
-    //  {
-    //  vtkDebugMacro("Updating interactor style's application logic, since it was 0");
-    //  istyle->SetApplicationLogic(this->GetApplicationLogic());
-    //  }
     }
 }
 
@@ -590,3 +578,24 @@ void vtkMRMLCameraDisplayableManager::SetCameraToInteractor()
 //
 //  broker->RemoveObservations(observations);
 //}
+
+//---------------------------------------------------------------------------
+bool vtkMRMLCameraDisplayableManager::CanProcessInteractionEvent(vtkMRMLInteractionEventData* eventData, double &closestDistance2)
+{
+  return this->Internal->CameraWidget->CanProcessInteractionEvent(eventData, closestDistance2);
+}
+
+//---------------------------------------------------------------------------
+bool vtkMRMLCameraDisplayableManager::ProcessInteractionEvent(vtkMRMLInteractionEventData* eventData)
+{
+  return this->Internal->CameraWidget->ProcessInteractionEvent(eventData);
+  /*
+  bool processed = this->Internal->CameraWidget->ProcessInteractionEvent(eventData);
+  if (this->Internal->CameraWidget->GetNeedToRender())
+    {
+    this->Internal->CameraWidget->NeedToRenderOff();
+    this->RequestRender();
+    }
+  return processed;
+*/
+}

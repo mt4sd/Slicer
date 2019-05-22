@@ -25,7 +25,7 @@
 
 // MRMLDisplayableManager includes
 #include <vtkMRMLDisplayableManagerGroup.h>
-#include <vtkThreeDViewInteractorStyle.h>
+#include <vtkMRMLThreeDViewInteractorStyle.h>
 
 // MRMLLogic includes
 #include <vtkMRMLApplicationLogic.h>
@@ -68,7 +68,7 @@ void SetupRenderer(vtkRenderWindow* renderWindow, vtkRenderer* renderer)
 void SetupScene(vtkRenderer* renderer, vtkMRMLScene* scene, vtkMRMLApplicationLogic* applicationLogic, vtkMRMLDisplayableManagerGroup* displayableManagerGroup)
 {
   // Application logic - Handle creation of vtkMRMLSelectionNode and vtkMRMLInteractionNode
-  if (applicationLogic != 0)
+  if (applicationLogic != nullptr)
     {
     applicationLogic->SetMRMLScene(scene);
     }
@@ -138,7 +138,7 @@ class vtkChangeImageCallback : public vtkCommand
 public:
   static vtkChangeImageCallback *New(){return new vtkChangeImageCallback;}
   vtkChangeImageCallback();
-  virtual void Execute(vtkObject *caller, unsigned long, void*);
+  void Execute(vtkObject *caller, unsigned long, void*) override;
 
   enum ChangeImageBehavior
   {
@@ -156,11 +156,11 @@ public:
 
 //----------------------------------------------------------------------------
 vtkChangeImageCallback::vtkChangeImageCallback()
-  : VolumeNode(0)
+  : VolumeNode(nullptr)
   , ChangeImageBehavior(DeepCopyImage)
   , ImageDataCollection(vtkSmartPointer<vtkCollection>::New())
   , CurrentImageData(-1)
-  , Interactor(0)
+  , Interactor(nullptr)
 {
   const int imageCount = 5;
   for (int i = 0; i < imageCount; ++i)

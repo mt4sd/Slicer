@@ -20,6 +20,7 @@
 This script allows to generate the markdown table displayed in doxygen
 documentation of vtkMRMLColorLogic::AddDefaultColorNodes()
 """
+from __future__ import print_function
 
 nodes = slicer.mrmlScene.GetNodesByClass("vtkMRMLColorNode")
 nodes.UnRegister(slicer.mrmlScene)
@@ -43,7 +44,7 @@ titles = {'family': 'Family',
           'node_name': 'Node name',
           'singleton_tag': 'Singleton Tag',
           'node_id': 'Node ID'}
-max_row_widths = {column_name: len(column_title) for (column_name, column_title) in titles.iteritems()}
+max_row_widths = {column_name: len(column_title) for (column_name, column_title) in titles.items()}
 
 for row in table:
     for column_name in max_row_widths.keys():
@@ -52,14 +53,14 @@ for row in table:
             max_row_widths[column_name] = column_width
 
 # Update template with widths
-for (column_name, column_width) in max_row_widths.iteritems():
+for (column_name, column_width) in max_row_widths.items():
     template = template.replace(column_name, column_name + ":%d" % column_width)
 
 # Print headers
 print(template.format(**titles))
 
 # Print separator
-print(template.format(**{column_name: '-'*column_width for column_name, column_width in max_row_widths.iteritems()}))
+print(template.format(**{column_name: '-'*column_width for column_name, column_width in max_row_widths.items()}))
 
 # Print content
 for row in table:

@@ -1,12 +1,14 @@
+from __future__ import print_function
 import os
 import vtk
 import vtkITK
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import Effect
-import IslandEffect
+
+from . import EditUtil
+from . import HelpButton
+from . import IslandEffectOptions, IslandEffectTool, IslandEffectLogic, IslandEffect
 
 __all__ = [
   'IdentifyIslandsEffectOptions',
@@ -33,7 +35,7 @@ comment = """
 # IdentifyIslandsEffectOptions - see Effect for superclasses
 #
 
-class IdentifyIslandsEffectOptions(IslandEffect.IslandEffectOptions):
+class IdentifyIslandsEffectOptions(IslandEffectOptions):
   """ IdentifyIslandsEffect-specfic gui
   """
 
@@ -73,7 +75,7 @@ class IdentifyIslandsEffectOptions(IslandEffect.IslandEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.IdentifyObserver(self.parameterNodeTag)
@@ -93,7 +95,7 @@ class IdentifyIslandsEffectOptions(IslandEffect.IslandEffectOptions):
 # IdentifyIslandsEffectTool
 #
 
-class IdentifyIslandsEffectTool(IslandEffect.IslandEffectTool):
+class IdentifyIslandsEffectTool(IslandEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -119,7 +121,7 @@ class IdentifyIslandsEffectTool(IslandEffect.IslandEffectTool):
 # IdentifyIslandsEffectLogic
 #
 
-class IdentifyIslandsEffectLogic(IslandEffect.IslandEffectLogic):
+class IdentifyIslandsEffectLogic(IslandEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an IdentifyIslandsEffectTool
@@ -138,11 +140,11 @@ class IdentifyIslandsEffectLogic(IslandEffect.IslandEffectLogic):
     # change the label values based on the parameter node
     #
     if not self.sliceLogic:
-      self.sliceLogic = self.editUtil.getSliceLogic()
-    parameterNode = self.editUtil.getParameterNode()
+      self.sliceLogic = EditUtil.getSliceLogic()
+    parameterNode = EditUtil.getParameterNode()
     minimumSize = int(parameterNode.GetParameter("IslandEffect,minimumSize"))
     fullyConnected = bool(parameterNode.GetParameter("IslandEffect,fullyConnected"))
-    label = self.editUtil.getLabel()
+    label = EditUtil.getLabel()
 
     # note that island operation happens in unsigned long space
     # but the slicer editor works in Short
@@ -179,7 +181,7 @@ class IdentifyIslandsEffectLogic(IslandEffect.IslandEffectLogic):
 # The IdentifyIslandsEffect class definition
 #
 
-class IdentifyIslandsEffect(IslandEffect.IslandEffect):
+class IdentifyIslandsEffect(IslandEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

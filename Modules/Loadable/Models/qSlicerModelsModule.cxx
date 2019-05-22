@@ -43,12 +43,6 @@
 #include "qSlicerSubjectHierarchyModelsPlugin.h"
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerModelsModule, qSlicerModelsModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_Models
 class qSlicerModelsModulePrivate
 {
@@ -61,8 +55,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerModelsModulePrivate::qSlicerModelsModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerModelsModule methods
@@ -76,8 +69,7 @@ qSlicerModelsModule::qSlicerModelsModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerModelsModule::~qSlicerModelsModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerModelsModule::helpText()const

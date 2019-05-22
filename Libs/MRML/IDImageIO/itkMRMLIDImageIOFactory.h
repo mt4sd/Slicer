@@ -39,8 +39,8 @@ public:
   typedef SmartPointer<const Self>  ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char* GetITKSourceVersion(void) const ITK_OVERRIDE;
-  virtual const char* GetDescription(void) const ITK_OVERRIDE;
+  const char* GetITKSourceVersion(void) const override;
+  const char* GetDescription(void) const override;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -58,11 +58,11 @@ public:
 
 protected:
   MRMLIDImageIOFactory();
-  ~MRMLIDImageIOFactory();
+  ~MRMLIDImageIOFactory() override;
 
 private:
-  MRMLIDImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  MRMLIDImageIOFactory(const Self&) = delete;
+  void operator=(const Self&) = delete;
 
 };
 

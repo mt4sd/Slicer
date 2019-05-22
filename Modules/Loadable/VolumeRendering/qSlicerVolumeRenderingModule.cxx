@@ -42,12 +42,6 @@
 VTK_MODULE_INIT(vtkSlicerVolumeRenderingModuleMRMLDisplayableManager)
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerVolumeRenderingModule, qSlicerVolumeRenderingModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_VolumeRendering
 class qSlicerVolumeRenderingModulePrivate
 {
@@ -60,8 +54,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerVolumeRenderingModulePrivate::qSlicerVolumeRenderingModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerVolumeRenderingModule methods
@@ -75,8 +68,7 @@ qSlicerVolumeRenderingModule::qSlicerVolumeRenderingModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerVolumeRenderingModule::~qSlicerVolumeRenderingModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerVolumeRenderingModule::helpText()const

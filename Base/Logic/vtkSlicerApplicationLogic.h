@@ -28,8 +28,10 @@
 #include <vtkCollection.h>
 
 // ITK includes
-#include <itkMultiThreader.h>
-#include <itkMutexLock.h>
+#include <itkPlatformMultiThreader.h>
+
+// STL includes
+#include <mutex>
 
 class vtkMRMLSelectionNode;
 class vtkMRMLInteractionNode;
@@ -52,7 +54,7 @@ class VTK_SLICER_BASE_LOGIC_EXPORT vtkSlicerApplicationLogic
   /// The Usual vtk class functions
   static vtkSlicerApplicationLogic *New();
   vtkTypeMacro(vtkSlicerApplicationLogic, vtkMRMLApplicationLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Update the data IO, local and remote, with the new scene
   /// For stand alone applications, follow the set up steps in
@@ -130,6 +132,14 @@ class VTK_SLICER_BASE_LOGIC_EXPORT vtkSlicerApplicationLogic
   /// RequestProcessedEvent is invoked with the request UID as calldata.
   /// \sa RequestReadScene(), RequestWriteData(), RequestModified()
   vtkMTimeType RequestUpdateSubjectHierarchyLocation(const std::string &updatedNode, const std::string& siblingNode);
+
+  /// Request adding a node reference
+  /// The request will executed on the main thread.
+  /// Return the request UID (monotonically increasing) of the request or 0 if
+  /// the request failed to be registered. When the request is processed,
+  /// RequestProcessedEvent is invoked with the request UID as calldata.
+  /// \sa RequestReadScene(), RequestWriteData(), RequestModified()
+  vtkMTimeType RequestAddNodeReference(const std::string &referencingNode, const std::string& referencedNode, const std::string& role);
 
   /// Return the number of items that need to be read from the queue
   /// (this allows code that invokes command line modules to know when
@@ -214,13 +224,13 @@ class VTK_SLICER_BASE_LOGIC_EXPORT vtkSlicerApplicationLogic
 protected:
 
   vtkSlicerApplicationLogic();
-  ~vtkSlicerApplicationLogic();
+  ~vtkSlicerApplicationLogic() override;
 
-  /// Callback used by a MultiThreader to start a processing thread
-  static ITK_THREAD_RETURN_TYPE ProcessingThreaderCallback( void * );
+   /// Callback used by a MultiThreader to start a processing thread
+  static itk::ITK_THREAD_RETURN_TYPE ProcessingThreaderCallback( void * );
 
-  /// Callback used by a MultiThreader to start a networking thread
-  static ITK_THREAD_RETURN_TYPE NetworkingThreaderCallback( void * );
+   /// Callback used by a MultiThreader to start a networking thread
+  static itk::ITK_THREAD_RETURN_TYPE NetworkingThreaderCallback( void * );
 
   /// Task processing loop that is run in the processing thread
   void ProcessProcessingTasks();
@@ -239,15 +249,15 @@ private:
   vtkSlicerApplicationLogic(const vtkSlicerApplicationLogic&);
   void operator=(const vtkSlicerApplicationLogic&);
 
-  itk::MultiThreader::Pointer ProcessingThreader;
-  itk::MutexLock::Pointer ProcessingThreadActiveLock;
-  itk::MutexLock::Pointer ProcessingTaskQueueLock;
-  itk::MutexLock::Pointer ModifiedQueueActiveLock;
-  itk::MutexLock::Pointer ModifiedQueueLock;
-  itk::MutexLock::Pointer ReadDataQueueActiveLock;
-  itk::MutexLock::Pointer ReadDataQueueLock;
-  itk::MutexLock::Pointer WriteDataQueueActiveLock;
-  itk::MutexLock::Pointer WriteDataQueueLock;
+  itk::PlatformMultiThreader::Pointer ProcessingThreader;
+  std::mutex ProcessingThreadActiveLock;
+  std::mutex ProcessingTaskQueueLock;
+  std::mutex ModifiedQueueActiveLock;
+  std::mutex ModifiedQueueLock;
+  std::mutex ReadDataQueueActiveLock;
+  std::mutex ReadDataQueueLock;
+  std::mutex WriteDataQueueActiveLock;
+  std::mutex WriteDataQueueLock;
   vtkTimeStamp RequestTimeStamp;
   int ProcessingThreadId;
   std::vector<int> NetworkingThreadIDs;

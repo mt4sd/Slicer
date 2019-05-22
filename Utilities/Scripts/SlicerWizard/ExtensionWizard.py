@@ -5,7 +5,7 @@ import re
 import sys
 import textwrap
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 #-----------------------------------------------------------------------------
 def haveGit():
@@ -18,10 +18,11 @@ def haveGit():
 
   # If Python is not built with SSL support then do not even try to import
   # GithubHelper (it would throw missing attribute error for HTTPSConnection)
-  import httplib
-  if hasattr(httplib, "HTTPSConnection"):
+  import http.client
+  if hasattr(http.client, "HTTPSConnection"):
     # SSL is available
     try:
+      global git, GithubHelper, NotSet
       import git
       from . import GithubHelper
       from .GithubHelper import NotSet
@@ -29,7 +30,7 @@ def haveGit():
     except ImportError:
       _haveGit = False
   else:
-    logging.debug("ExtensionWizard: git support is disabled because httplib.HTTPSConnection is not available")
+    logging.debug("ExtensionWizard: git support is disabled because http.client.HTTPSConnection is not available")
     _haveGit = False
 
   return _haveGit
@@ -80,11 +81,11 @@ class ExtensionWizard(object):
     """Create a new extension from specified extension template.
 
     :param args.destination: Directory wherein the new extension is created.
-    :type args.destination: :class:`basestring`
+    :type args.destination: :class:`str`
     :param name: Name for the new extension.
-    :type name: :class:`basestring`
+    :type name: :class:`str`
     :param kind: Identifier of the template from which to create the extension.
-    :type kind: :class:`basestring`
+    :type kind: :class:`str`
 
     Note that the extension is written to a *new subdirectory* which is created
     in ``args.destination``. The ``name`` is used both as the name of this
@@ -109,11 +110,11 @@ class ExtensionWizard(object):
     """Add a module to an existing extension.
 
     :param args.destination: Location (directory) of the extension to modify.
-    :type args.destination: :class:`basestring`
+    :type args.destination: :class:`str`
     :param kind: Identifier of the template from which to create the module.
-    :type kind: :class:`basestring`
+    :type kind: :class:`str`
     :param name: Name for the new module.
-    :type name: :class:`basestring`
+    :type name: :class:`str`
 
     This creates a new module from the specified module template and adds it to
     the CMakeLists.txt of the extension. The ``name`` is used both as the name
@@ -143,7 +144,7 @@ class ExtensionWizard(object):
     """Generate extension description and write it to :attr:`sys.stdout`.
 
     :param args.destination: Location (directory) of the extension to describe.
-    :type args.destination: :class:`basestring`
+    :type args.destination: :class:`str`
 
     If something goes wrong, the application displays a suitable error message.
     """
@@ -196,7 +197,7 @@ class ExtensionWizard(object):
     """Publish extension to github repository.
 
     :param args.destination: Location (directory) of the extension to publish.
-    :type args.destination: :class:`basestring`
+    :type args.destination: :class:`str`
 
     This creates a public github repository for an extension (whose name is the
     extension name), adds it as a remote of the extension's local repository,
@@ -346,18 +347,18 @@ class ExtensionWizard(object):
     :param args.destination:
       Location (directory) of the extension to contribute.
     :type args.destination:
-      :class:`basestring`
+      :class:`str`
     :param args.target:
       Name of branch which the extension targets (must match a branch name in
       the extension index repository).
     :type args.target:
-      :class:`basestring`
+      :class:`str`
     :param args.index:
       Path to an existing clone of the extension index, or path to which the
       index should be cloned. If ``None``, a subdirectory in the extension's
       ``.git`` directory is used.
     :type args.index:
-      :class:`basestring` or ``None``
+      :class:`str` or ``None``
     :param args.test:
       If ``True``, include a note in the pull request that the request is a
       test and should not be merged.

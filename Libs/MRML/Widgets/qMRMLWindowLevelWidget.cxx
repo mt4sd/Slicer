@@ -37,13 +37,13 @@ protected:
 
 public:
   qMRMLWindowLevelWidgetPrivate(qMRMLWindowLevelWidget& object);
-  virtual ~qMRMLWindowLevelWidgetPrivate();
-  virtual void init();
+  ~qMRMLWindowLevelWidgetPrivate() override;
+  void init() override;
 
-  virtual bool blockSignals(bool block);
-  virtual void setRange(double min, double max);
-  virtual void setDecimals(int decimals);
-  virtual void setSingleStep(double singleStep);
+  bool blockSignals(bool block) override;
+  void setRange(double min, double max) override;
+  void setDecimals(int decimals) override;
+  void setSingleStep(double singleStep) override;
 };
 
 // --------------------------------------------------------------------------
@@ -55,8 +55,7 @@ qMRMLWindowLevelWidgetPrivate
 
 // --------------------------------------------------------------------------
 qMRMLWindowLevelWidgetPrivate::~qMRMLWindowLevelWidgetPrivate()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLWindowLevelWidgetPrivate::init()
@@ -142,8 +141,7 @@ qMRMLWindowLevelWidget::qMRMLWindowLevelWidget(QWidget* parentWidget)
 
 // --------------------------------------------------------------------------
 qMRMLWindowLevelWidget::~qMRMLWindowLevelWidget()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLWindowLevelWidget::setAutoWindowLevel(ControlMode autoWindowLevel)

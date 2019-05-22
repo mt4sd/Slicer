@@ -37,8 +37,7 @@ qSlicerEventBrokerModule::qSlicerEventBrokerModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerEventBrokerModule::~qSlicerEventBrokerModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 qSlicerAbstractModuleRepresentation * qSlicerEventBrokerModule::createWidgetRepresentation()
@@ -49,7 +48,7 @@ qSlicerAbstractModuleRepresentation * qSlicerEventBrokerModule::createWidgetRepr
 //-----------------------------------------------------------------------------
 vtkMRMLAbstractLogic* qSlicerEventBrokerModule::createLogic()
 {
-  return 0;
+  return nullptr;
 }
 
 //-----------------------------------------------------------------------------

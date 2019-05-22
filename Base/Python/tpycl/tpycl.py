@@ -7,9 +7,10 @@
 # the main class is tpycl, and scripts can
 #
 
+from __future__ import print_function
 import sys
 import os
-import Tkinter
+import tkinter
 import slicer
 import qt
 
@@ -24,7 +25,7 @@ class tpycl(object):
     except AttributeError:
       sys.argv = []
       sys.argv.append("")
-    self.tcl = Tkinter.Tcl()
+    self.tcl = tkinter.Tcl()
     self.tcl.createcommand("py_eval", self.py_eval)
     self.tcl.createcommand("py_package", self.py_package)
     self.tcl.createcommand("py_type", self.py_type)
@@ -49,24 +50,24 @@ class tpycl(object):
     self.tcl.eval('source "%s/bin/Python/tpycl/tpycl.tcl"' % slicer.app.slicerHome)
 
   def usage(self):
-    print "tpycl [options] [file.tcl] [arg] [arg]"
-    print "-v --verbose : debugging info while parsing"
-    print "-h --help : extra help info"
-    print ""
-    print "tpycl is a tcl shell implemented in python that"
-    print "allows you to import and execute python code from"
-    print "inside tcl (hence the name - an homage to jcw's typcl which"
-    print "allows you to call tcl from python)."
-    print "Not all python constructs supported, but tpycl should be"
-    print "adequate to call many packages."
+    print("tpycl [options] [file.tcl] [arg] [arg]")
+    print("-v --verbose : debugging info while parsing")
+    print("-h --help : extra help info")
+    print("")
+    print("tpycl is a tcl shell implemented in python that")
+    print("allows you to import and execute python code from")
+    print("inside tcl (hence the name - an homage to jcw's typcl which")
+    print("allows you to call tcl from python).")
+    print("Not all python constructs supported, but tpycl should be")
+    print("adequate to call many packages.")
     exit()
 
   def dprint(self, *args):
     """ debug print """
     if self.verbose:
       for arg in args:
-        print arg,
-      print ""
+        print(arg, end=' ')
+      print("")
 
   def py_package(self, packageName):
     """ imports a vtk-wrapped python package
@@ -112,7 +113,7 @@ class tpycl(object):
     """
 
     # only delete if the instanceName exists
-    if globals().has_key(instanceName):
+    if instanceName in globals():
       exec( "del(%s)"%instanceName, globals() )
 
     return None
@@ -174,7 +175,7 @@ class tpycl(object):
     self.dprint("callback command is <%s>" % cmd)
     try:
       result = self.tcl.eval(cmd)
-    except Tkinter.TclError,error:
+    except tkinter.TclError as error:
       print (error)
       errorInfo = self.tcl.eval("set ::errorInfo")
       print (errorInfo)
@@ -195,7 +196,7 @@ class tpycl(object):
       return()
     try:
       result = self.tcl.eval(cmd)
-    except Tkinter.TclError,error:
+    except tkinter.TclError as error:
       print (error)
       errorInfo = self.tcl.eval("set ::errorInfo")
       print (errorInfo)
@@ -232,20 +233,20 @@ class tpycl(object):
     # if given a file, run it
     if self.file != "":
       fp = open(self.file)
-      while 1:
+      while True:
         cmd = fp.readline()
         if cmd == "":
           break
         self.tcl_eval( cmd[:-1] )
 
     # evaluate stdin until eof
-    while 1:
+    while True:
       sys.stdout.write( "% " )
       cmd = sys.stdin.readline()[:-1]
       if cmd != "":
         result = self.tcl_eval( cmd )
         if result is not None:
-          print result
+          print(result)
 
 if __name__ == "__main__":
   tp = tpycl()

@@ -55,14 +55,14 @@ public:
   // List of node that should be updated when NodeAddedEvent is caught
   std::vector<std::string> NodeAddedClassNames;
 
-  virtual void ResetNumberOfEvents()
+  void ResetNumberOfEvents() override
     {
     vtkMRMLCoreTestingUtilities::vtkMRMLNodeCallback::ResetNumberOfEvents();
     this->NumberOfSingletonNodes = 0;
     this->NodeAddedClassNames.clear();
     }
 
-  virtual void Execute(vtkObject* caller, unsigned long eid, void *calldata)
+  void Execute(vtkObject* caller, unsigned long eid, void *calldata) override
     {
     vtkMRMLCoreTestingUtilities::vtkMRMLNodeCallback::Execute(caller, eid, calldata);
 
@@ -175,7 +175,7 @@ protected:
     {
     this->NumberOfSingletonNodes = 0;
     }
-  ~vtkMRMLSceneCallback() {};
+  ~vtkMRMLSceneCallback() override  = default;
 
 }; // class vtkMRMLSceneCallback
 
@@ -357,7 +357,7 @@ int vtkMRMLSceneTest2(int argc, char * argv [] )
 
   std::cout << "List of Node Names in this Scene" << std::endl;
   vtkCollectionSimpleIterator it;
-  vtkMRMLNode* node = NULL;
+  vtkMRMLNode* node = nullptr;
   vtkCollection *nodes = scene->GetNodes();
   for (nodes->InitTraversal(it);
     (node = vtkMRMLNode::SafeDownCast(nodes->GetNextItemAsObject(it)));)
@@ -372,7 +372,7 @@ int vtkMRMLSceneTest2(int argc, char * argv [] )
   // Expected number of nodes that should removed
   int numberOfNodes = scene->GetNumberOfNodes();
   callback->ResetNumberOfEvents();
-  scene = NULL;
+  scene = nullptr;
   CHECK_EXIT_SUCCESS(callback->CheckStatus());
   CHECK_INT(callback->GetNumberOfEvents(vtkMRMLScene::NodeRemovedEvent), numberOfNodes);
 

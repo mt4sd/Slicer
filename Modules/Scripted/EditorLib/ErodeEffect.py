@@ -1,11 +1,13 @@
+from __future__ import print_function
 import os
 import vtk
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import Effect
-import MorphologyEffect
+
+from . import EditUtil
+from . import HelpButton
+from . import MorphologyEffectOptions, MorphologyEffectTool, MorphologyEffectLogic, MorphologyEffect
 
 __all__ = [
   'ErodeEffectOptions',
@@ -31,7 +33,7 @@ comment = """
 # ErodeEffectOptions - see Effect for superclasses
 #
 
-class ErodeEffectOptions(MorphologyEffect.MorphologyEffectOptions):
+class ErodeEffectOptions(MorphologyEffectOptions):
   """ ErodeEffect-specfic gui
   """
 
@@ -60,7 +62,7 @@ class ErodeEffectOptions(MorphologyEffect.MorphologyEffectOptions):
     super(ErodeEffectOptions,self).destroy()
 
   def onApply(self):
-    logic = ErodeEffectLogic(self.editUtil.getSliceLogic())
+    logic = ErodeEffectLogic(EditUtil.getSliceLogic())
     logic.undoRedo = self.undoRedo
     fill = int(self.parameterNode.GetParameter('MorphologyEffect,fill'))
     neighborMode = self.parameterNode.GetParameter('MorphologyEffect,neighborMode')
@@ -71,7 +73,7 @@ class ErodeEffectOptions(MorphologyEffect.MorphologyEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.RemoveObserver(self.parameterNodeTag)
@@ -96,7 +98,7 @@ class ErodeEffectOptions(MorphologyEffect.MorphologyEffectOptions):
 # ErodeEffectTool
 #
 
-class ErodeEffectTool(MorphologyEffect.MorphologyEffectTool):
+class ErodeEffectTool(MorphologyEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -119,7 +121,7 @@ class ErodeEffectTool(MorphologyEffect.MorphologyEffectTool):
 # ErodeEffectLogic
 #
 
-class ErodeEffectLogic(MorphologyEffect.MorphologyEffectLogic):
+class ErodeEffectLogic(MorphologyEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an ErodeEffectTool
@@ -139,7 +141,7 @@ class ErodeEffectLogic(MorphologyEffect.MorphologyEffectLogic):
     eroder.SetInputData( self.getScopedLabelInput() )
     eroder.SetOutput( self.getScopedLabelOutput() )
 
-    eroder.SetForeground( self.editUtil.getLabel() )
+    eroder.SetForeground( EditUtil.getLabel() )
     eroder.SetBackground( fill )
 
     if neighborMode == '8':
@@ -151,7 +153,7 @@ class ErodeEffectLogic(MorphologyEffect.MorphologyEffectLogic):
       # bad neighbor mode - silently use default
       print('Bad neighborMode: %s' % neighborMode)
 
-    for i in xrange(iterations):
+    for i in range(iterations):
       # TODO: $this setProgressFilter eroder "Erode ($i)"
       print('updating')
       eroder.Update()
@@ -165,7 +167,7 @@ class ErodeEffectLogic(MorphologyEffect.MorphologyEffectLogic):
 # The ErodeEffect class definition
 #
 
-class ErodeEffect(MorphologyEffect.MorphologyEffect):
+class ErodeEffect(MorphologyEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

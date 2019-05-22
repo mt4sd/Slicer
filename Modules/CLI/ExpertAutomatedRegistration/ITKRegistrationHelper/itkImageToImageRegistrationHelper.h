@@ -210,8 +210,8 @@ public:
   typename TImage::ConstPointer  ResampleImage(
     InterpolationMethodEnumType interp
       = OptimizedRegistrationMethodType
-        ::LINEAR_INTERPOLATION, const TImage * movingImage = NULL,
-    const MatrixTransformType * matrixTransform = NULL, const BSplineTransformType * bsplineTransform = NULL,
+        ::LINEAR_INTERPOLATION, const TImage * movingImage = nullptr,
+    const MatrixTransformType * matrixTransform = nullptr, const BSplineTransformType * bsplineTransform = nullptr,
     PixelType defaultPixelValue = 0 );
 
   // Returns the moving image resampled into the space of the fixed image
@@ -423,12 +423,12 @@ public:
 protected:
 
   ImageToImageRegistrationHelper( void );
-  virtual ~ImageToImageRegistrationHelper( void );
+  ~ImageToImageRegistrationHelper( void ) override;
 
   void PrintSelfHelper( std::ostream & os, Indent indent, const std::string basename, MetricMethodEnumType metric,
                         InterpolationMethodEnumType interpolation ) const;
 
-  void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
+  void PrintSelf( std::ostream & os, Indent indent ) const override;
 
 private:
 

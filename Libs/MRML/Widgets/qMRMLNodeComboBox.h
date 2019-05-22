@@ -89,8 +89,8 @@ public:
 
   /// Construct an empty qMRMLNodeComboBox with a null scene,
   /// no nodeType, where the hidden nodes are not forced on display.
-  explicit qMRMLNodeComboBox(QWidget* parent = 0);
-  virtual ~qMRMLNodeComboBox();
+  explicit qMRMLNodeComboBox(QWidget* parent = nullptr);
+  ~qMRMLNodeComboBox() override;
 
   /// Get MRML scene that has been set by setMRMLScene(), there is no scene
   /// by default (0).
@@ -284,7 +284,7 @@ public slots:
   ///
   /// Its name is generated using \a basename.
   ///
-  /// \return The new node or NULL if \a nodeType is not among the allowed
+  /// \return The new node or nullptr if \a nodeType is not among the allowed
   /// node types specified using setNodeTypes().
   ///
   /// \sa nodeTypes()
@@ -312,7 +312,7 @@ public slots:
   virtual void renameCurrentNode();
 
 signals:
-  /// This signal is sent anytime the current node is changed. NULL if
+  /// This signal is sent anytime the current node is changed. nullptr if
   /// no node is current or the current item is "None".
   void currentNodeChanged(vtkMRMLNode* node);
 
@@ -360,8 +360,8 @@ signals:
 
 protected:
   /// qMRMLNodeComboBox will not take ownership on the model.
-  qMRMLNodeComboBox(QAbstractItemModel* model, QWidget* parent = 0);
-  qMRMLNodeComboBox(qMRMLNodeComboBoxPrivate* pimpl, QWidget* parent = 0);
+  qMRMLNodeComboBox(QAbstractItemModel* model, QWidget* parent = nullptr);
+  qMRMLNodeComboBox(qMRMLNodeComboBoxPrivate* pimpl, QWidget* parent = nullptr);
   QAbstractItemModel* rootModel()const;
 
   void setComboBox(QComboBox* comboBox);
@@ -370,7 +370,7 @@ protected:
   /// QComboBox view or item delegate.
   QComboBox* comboBox()const;
 
-  virtual void changeEvent(QEvent* event);
+  void changeEvent(QEvent* event) override;
 
 protected slots:
   void activateExtraItem(const QModelIndex& index);

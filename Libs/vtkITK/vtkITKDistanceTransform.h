@@ -19,7 +19,7 @@ class VTK_ITK_EXPORT vtkITKDistanceTransform : public vtkSimpleImageToImageFilte
 public:
   static vtkITKDistanceTransform *New();
   vtkTypeMacro(vtkITKDistanceTransform, vtkSimpleImageToImageFilter);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Output volume contains square of distance or actual distance
   vtkGetMacro(SquaredDistance, int);
@@ -40,9 +40,9 @@ public:
 
 protected:
   vtkITKDistanceTransform();
-  ~vtkITKDistanceTransform();
+  ~vtkITKDistanceTransform() override;
 
-  virtual void SimpleExecute(vtkImageData* input, vtkImageData* output) VTK_OVERRIDE;
+  void SimpleExecute(vtkImageData* input, vtkImageData* output) override;
 
   int SquaredDistance;
   int InsideIsPositive;
@@ -50,8 +50,8 @@ protected:
   double BackgroundValue;
 
 private:
-  vtkITKDistanceTransform(const vtkITKDistanceTransform&);  /// Not implemented.
-  void operator=(const vtkITKDistanceTransform&);  /// Not implemented.
+  vtkITKDistanceTransform(const vtkITKDistanceTransform&) = delete;
+  void operator=(const vtkITKDistanceTransform&) = delete;
 };
 
 #endif

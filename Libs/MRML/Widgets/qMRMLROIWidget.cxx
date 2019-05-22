@@ -43,7 +43,7 @@ public:
 qMRMLROIWidgetPrivate::qMRMLROIWidgetPrivate(qMRMLROIWidget& object)
   : q_ptr(&object)
 {
-  this->ROINode = 0;
+  this->ROINode = nullptr;
 }
 
 // --------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void qMRMLROIWidgetPrivate::init()
                    q, SLOT(updateROI()));
   QObject::connect(this->ISRangeWidget, SIGNAL(valuesChanged(double,double)),
                    q, SLOT(updateROI()));
-  q->setEnabled(this->ROINode != 0);
+  q->setEnabled(this->ROINode != nullptr);
 }
 
 // --------------------------------------------------------------------------
@@ -78,8 +78,7 @@ qMRMLROIWidget::qMRMLROIWidget(QWidget* _parent)
 
 // --------------------------------------------------------------------------
 qMRMLROIWidget::~qMRMLROIWidget()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 vtkMRMLROINode* qMRMLROIWidget::mrmlROINode()const
@@ -97,7 +96,7 @@ void qMRMLROIWidget::setMRMLROINode(vtkMRMLROINode* roiNode)
 
   d->ROINode = roiNode;
   this->onMRMLNodeModified();
-  this->setEnabled(roiNode != 0);
+  this->setEnabled(roiNode != nullptr);
 }
 
 // --------------------------------------------------------------------------

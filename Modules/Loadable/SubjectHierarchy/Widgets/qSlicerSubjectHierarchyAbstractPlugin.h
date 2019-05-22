@@ -72,8 +72,8 @@ class Q_SLICER_MODULE_SUBJECTHIERARCHY_WIDGETS_EXPORT qSlicerSubjectHierarchyAbs
 
 public:
   typedef QObject Superclass;
-  qSlicerSubjectHierarchyAbstractPlugin(QObject* parent = NULL);
-  virtual ~qSlicerSubjectHierarchyAbstractPlugin();
+  qSlicerSubjectHierarchyAbstractPlugin(QObject* parent = nullptr);
+  ~qSlicerSubjectHierarchyAbstractPlugin() override;
 
 // Role-related virtual methods
 // If the subclass plugin does not offer a role, these do not need to be overridden
@@ -199,7 +199,7 @@ public:
   Q_INVOKABLE bool isThisPluginOwnerOfItem(vtkIdType itemID)const;
 
   /// Switch to module with given name
-  /// \return Widget representation of the module if found, NULL otherwise
+  /// \return Widget representation of the module if found, nullptr otherwise
   Q_INVOKABLE static qSlicerAbstractModuleWidget* switchToModule(QString moduleName);
 
 public:

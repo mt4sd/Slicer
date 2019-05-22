@@ -29,13 +29,13 @@ class QMRML_WIDGETS_PLUGINS_EXPORT qMRMLSceneFactoryWidgetPlugin : public QObjec
   Q_OBJECT
 
 public:
-  qMRMLSceneFactoryWidgetPlugin(QObject *_parent = 0);
+  qMRMLSceneFactoryWidgetPlugin(QObject *_parent = nullptr);
 
-  QWidget *createWidget(QWidget *_parent);
-  QString domXml() const;
-  QString includeFile() const;
-  bool isContainer() const;
-  QString name() const;
+  QWidget *createWidget(QWidget *_parent) override;
+  QString domXml() const override;
+  QString includeFile() const override;
+  bool isContainer() const override;
+  QString name() const override;
 };
 
 #endif

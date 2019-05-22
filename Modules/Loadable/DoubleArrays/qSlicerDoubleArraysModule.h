@@ -30,37 +30,35 @@ class Q_SLICER_QTMODULES_DOUBLEARRAYS_EXPORT qSlicerDoubleArraysModule :
   public qSlicerLoadableModule
 {
   Q_OBJECT
-#ifdef Slicer_HAVE_QT5
   Q_PLUGIN_METADATA(IID "org.slicer.modules.loadable.qSlicerLoadableModule/1.0");
-#endif
   Q_INTERFACES(qSlicerLoadableModule);
 
 public:
 
   typedef qSlicerLoadableModule Superclass;
-  explicit qSlicerDoubleArraysModule(QObject *parent=0);
-  virtual ~qSlicerDoubleArraysModule();
+  explicit qSlicerDoubleArraysModule(QObject *parent=nullptr);
+  ~qSlicerDoubleArraysModule() override;
 
   qSlicerGetTitleMacro(QTMODULE_TITLE);
 
-  virtual QString helpText()const;
-  virtual QString acknowledgementText()const;
-  virtual QStringList contributors()const;
+  QString helpText()const override;
+  QString acknowledgementText()const override;
+  QStringList contributors()const override;
 
-  virtual QStringList categories()const;
-  virtual QStringList dependencies() const;
-  virtual bool isHidden()const;
+  QStringList categories()const override;
+  QStringList dependencies() const override;
+  bool isHidden()const override;
 
 protected:
 
   /// Initialize the module. Register the volumes reader/writer
-  virtual void setup();
+  void setup() override;
 
   /// Create and return the widget representation associated to this module
-  virtual qSlicerAbstractModuleRepresentation * createWidgetRepresentation();
+  qSlicerAbstractModuleRepresentation * createWidgetRepresentation() override;
 
   /// Create and return the logic associated to this module
-  virtual vtkMRMLAbstractLogic* createLogic();
+  vtkMRMLAbstractLogic* createLogic() override;
 
 protected:
   QScopedPointer<qSlicerDoubleArraysModulePrivate> d_ptr;

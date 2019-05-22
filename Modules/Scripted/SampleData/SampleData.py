@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import unittest
 import vtk, qt, ctk, slicer
@@ -146,13 +147,13 @@ class SampleDataSource(object):
       sampleDescription = sampleName
     self.sampleDescription = sampleDescription
     if (isinstance(uris, list) or isinstance(uris, tuple)):
-      if isinstance(loadFileType, basestring) or loadFileType is None:
+      if isinstance(loadFileType, str) or loadFileType is None:
         loadFileType = [loadFileType] * len(uris)
       if nodeNames is None:
         nodeNames = [None] * len(uris)
       if loadFiles is None:
         loadFiles = [None] * len(uris)
-    elif isinstance(uris, basestring):
+    elif isinstance(uris, str):
       uris = [uris,]
       fileNames = [fileNames,]
       nodeNames = [nodeNames,]
@@ -230,10 +231,9 @@ class SampleDataWidget(ScriptedLoadableModuleWidget):
     iconPath = os.path.join(os.path.dirname(__file__).replace('\\','/'), 'Resources','Icons')
     desktop = qt.QDesktopWidget()
     mainScreenSize = desktop.availableGeometry(desktop.primaryScreen)
-    iconSize = qt.QSize(mainScreenSize.width()/15,mainScreenSize.height()/10)
+    iconSize = qt.QSize(int(mainScreenSize.width()/15),int(mainScreenSize.height()/10))
 
-    categories = slicer.modules.sampleDataSources.keys()
-    categories.sort()
+    categories = sorted(slicer.modules.sampleDataSources.keys())
     if self.logic.builtInCategoryName in categories:
       categories.remove(self.logic.builtInCategoryName)
     categories.insert(0,self.logic.builtInCategoryName)
@@ -352,7 +352,7 @@ class SampleDataLogic(object):
     except AttributeError:
       slicer.modules.sampleDataSources = {}
 
-    if not slicer.modules.sampleDataSources.has_key(category):
+    if category not in slicer.modules.sampleDataSources:
       slicer.modules.sampleDataSources[category] = []
 
     slicer.modules.sampleDataSources[category].append(SampleDataSource(
@@ -408,7 +408,7 @@ class SampleDataLogic(object):
           ('CTBrain', 'MRBrainT1', 'MRBrainT2')),
         )
 
-    if not slicer.modules.sampleDataSources.has_key(self.builtInCategoryName):
+    if self.builtInCategoryName not in slicer.modules.sampleDataSources:
       slicer.modules.sampleDataSources[self.builtInCategoryName] = []
     for sourceArgument in sourceArguments:
       slicer.modules.sampleDataSources[self.builtInCategoryName].append(SampleDataSource(*sourceArgument))
@@ -645,12 +645,12 @@ class SampleDataLogic(object):
   def downloadFile(self, uri, destFolderPath, name):
     filePath = destFolderPath + '/' + name
     if not os.path.exists(filePath) or os.stat(filePath).st_size == 0:
-      import urllib
+      import urllib.request, urllib.parse, urllib.error
       self.logMessage('<b>Requesting download</b> <i>%s</i> from %s...' % (name, uri))
       # add a progress bar
       self.downloadPercent = 0
       try:
-        urllib.urlretrieve(uri, filePath, self.reportHook)
+        urllib.request.urlretrieve(uri, filePath, self.reportHook)
         self.logMessage('<b>Download finished</b>')
       except IOError as e:
         self.logMessage('<b>\tDownload failed: %s</b>' % e, logging.ERROR)
@@ -728,8 +728,8 @@ class SampleDataTest(ScriptedLoadableModuleTest):
     """Gets an ur from a local file path.
     Typically it prefixes the received path by file:// or file:///.
     """
-    import urlparse, urllib
-    return urlparse.urljoin('file:', urllib.pathname2url(path))
+    import urllib.parse, urllib.request, urllib.parse, urllib.error
+    return urllib.parse.urljoin('file:', urllib.request.pathname2url(path))
 
   def test_downloadFromSource_downloadFiles(self):
     """Specifying URIs and fileNames without nodeNames is expected to download the files

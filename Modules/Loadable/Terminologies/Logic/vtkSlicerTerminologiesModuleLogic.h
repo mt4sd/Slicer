@@ -42,7 +42,7 @@ class VTK_SLICER_TERMINOLOGIES_LOGIC_EXPORT vtkSlicerTerminologiesModuleLogic :
 public:
   static vtkSlicerTerminologiesModuleLogic *New();
   vtkTypeMacro(vtkSlicerTerminologiesModuleLogic, vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Information needed to uniquely identify a terminology code
   class CodeIdentifier
@@ -213,9 +213,9 @@ public:
 
 protected:
   vtkSlicerTerminologiesModuleLogic();
-  virtual ~vtkSlicerTerminologiesModuleLogic();
+  ~vtkSlicerTerminologiesModuleLogic() override;
 
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
   /// Load default terminology dictionaries from JSON into \sa LoadedTerminologies
   void LoadDefaultTerminologies();
@@ -229,8 +229,8 @@ protected:
   char* UserContextsPath;
 
 private:
-  vtkSlicerTerminologiesModuleLogic(const vtkSlicerTerminologiesModuleLogic&); // Not implemented
-  void operator=(const vtkSlicerTerminologiesModuleLogic&);              // Not implemented
+  vtkSlicerTerminologiesModuleLogic(const vtkSlicerTerminologiesModuleLogic&) = delete;
+  void operator=(const vtkSlicerTerminologiesModuleLogic&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

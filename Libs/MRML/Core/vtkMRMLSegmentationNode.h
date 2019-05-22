@@ -57,54 +57,54 @@ public:
 
   static vtkMRMLSegmentationNode *New();
   vtkTypeMacro(vtkMRMLSegmentationNode, vtkMRMLDisplayableNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Create instance of a GAD node.
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Set node attributes from name/value pairs
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// Copy the entire contents of the node into this node
   virtual void DeepCopy(vtkMRMLNode* node);
 
   /// Get unique node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Segmentation";};
+  const char* GetNodeTagName() override {return "Segmentation";};
 
   /// Get bounding box in global RAS form (xmin,xmax, ymin,ymax, zmin,zmax).
   /// This method returns the bounds of the object with any transforms that may
   /// be applied to it.
   /// \sa GetBounds()
-  virtual void GetRASBounds(double bounds[6]) VTK_OVERRIDE;
+  void GetRASBounds(double bounds[6]) override;
 
   /// Get bounding box in global RAS form (xmin,xmax, ymin,ymax, zmin,zmax).
   /// This method always returns the bounds of the untransformed object.
   /// \sa GetRASBounds()
-  virtual void GetBounds(double bounds[6]) VTK_OVERRIDE;
+  void GetBounds(double bounds[6]) override;
 
   /// Returns true if the transformable node can apply non linear transforms
   /// \sa ApplyTransform
-  virtual bool CanApplyNonLinearTransforms()const VTK_OVERRIDE;
+  bool CanApplyNonLinearTransforms()const override;
 
   /// Apply a transform matrix on the segmentation
   /// \sa SetAndObserveTransformNodeID, ApplyTransform, CanApplyNonLinearTransforms
-  virtual void ApplyTransformMatrix(vtkMatrix4x4* transformMatrix) VTK_OVERRIDE;
+  void ApplyTransformMatrix(vtkMatrix4x4* transformMatrix) override;
 
   /// Apply a transform on the segmentation
   /// \sa SetAndObserveTransformNodeID, CanApplyNonLinearTransforms
-  virtual void ApplyTransform(vtkAbstractTransform* transform) VTK_OVERRIDE;
+  void ApplyTransform(vtkAbstractTransform* transform) override;
 
   /// Create a segmentation storage node
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE;
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override;
 
   /// Create and observe a segmentation display node
-  virtual void CreateDefaultDisplayNodes() VTK_OVERRIDE;
+  void CreateDefaultDisplayNodes() override;
 
   /// Function called from segmentation logic when UID is added in a subject hierarchy node.
   /// In case the newly added UID is a volume node referenced from this segmentation,
@@ -128,10 +128,10 @@ public:
   /// of signed short type. Label value of n-th segment in segmentIDs list will be (n + 1). Label value of background = 0.
   /// \param extentComputationMode Determines how to compute extents (EXTENT_REFERENCE_GEOMETRY, EXTENT_UNION_OF_SEGMENTS,
   ///   EXTENT_UNION_OF_SEGMENTS_PADDED, EXTENT_UNION_OF_EFFECTIVE_SEGMENTS, or EXTENT_UNION_OF_EFFECTIVE_SEGMENTS_PADDED).
-  /// \param mergedLabelmapGeometry Determines geometry of merged labelmap if not NULL, automatically determined otherwise
+  /// \param mergedLabelmapGeometry Determines geometry of merged labelmap if not nullptr, automatically determined otherwise
   /// \param segmentIDs List of IDs of segments to include in the merged labelmap. If empty or missing, then all segments are included
   /// \return Success flag
-  virtual bool GenerateMergedLabelmap(vtkOrientedImageData* mergedImageData, int extentComputationMode, vtkOrientedImageData* mergedLabelmapGeometry = NULL, const std::vector<std::string>& segmentIDs = std::vector<std::string>());
+  virtual bool GenerateMergedLabelmap(vtkOrientedImageData* mergedImageData, int extentComputationMode, vtkOrientedImageData* mergedLabelmapGeometry = nullptr, const std::vector<std::string>& segmentIDs = std::vector<std::string>());
 //ETX
 #endif // __VTK_WRAP__
 
@@ -141,7 +141,7 @@ public:
   /// \sa GenerateMergedLabelmap
   virtual bool GenerateMergedLabelmapForAllSegments(vtkOrientedImageData* mergedImageData,
     int extentComputationMode = vtkSegmentation::EXTENT_UNION_OF_EFFECTIVE_SEGMENTS,
-    vtkOrientedImageData* mergedLabelmapGeometry = NULL, vtkStringArray* segmentIDs = NULL);
+    vtkOrientedImageData* mergedLabelmapGeometry = nullptr, vtkStringArray* segmentIDs = nullptr);
 
   enum
     {
@@ -175,8 +175,8 @@ public:
   virtual bool GenerateEditMask(vtkOrientedImageData* maskImage, int editMode,
     vtkOrientedImageData* referenceGeometry,
     std::string editedSegmentID="", std::string maskSegmentID="",
-    vtkOrientedImageData* masterVolume = NULL, double editableIntensityRange[2] = NULL,
-    vtkMRMLSegmentationDisplayNode* displayNode = NULL);
+    vtkOrientedImageData* masterVolume = nullptr, double editableIntensityRange[2] = nullptr,
+    vtkMRMLSegmentationDisplayNode* displayNode = nullptr);
 
   /// Expose reference identifier to get the volume node defining the reference image geometry if any
   static std::string GetReferenceImageGeometryReferenceRole() { return "referenceImageGeometryRef"; };
@@ -225,23 +225,29 @@ public:
   /// Add new segment from a closed surface.
   /// \return Segment ID of the new segment. Empty string if an error occurred.
   virtual std::string AddSegmentFromClosedSurfaceRepresentation(vtkPolyData* polyData,
-    std::string segmentName = "", double color[3] = NULL, std::string segmentId = "");
+    std::string segmentName = "", double color[3] = nullptr, std::string segmentId = "");
 
   /// Add new segment from a binary labelmap.
   /// \return Segment ID of the new segment. Empty string if an error occurred.
   std::string AddSegmentFromBinaryLabelmapRepresentation(vtkOrientedImageData* imageData,
-    std::string segmentName = "", double color[3] = NULL, std::string segmentId = "");
+    std::string segmentName = "", double color[3] = nullptr, std::string segmentId = "");
 
   /// Delete segment from segmentation.
   void RemoveSegment(const std::string& segmentID);
 
   /// Get position of the segment's center (in the segmentation node's coordinate system)
-  double* GetSegmentCenter(const std::string& segmentID);
+  double* GetSegmentCenter(const std::string& segmentID) VTK_SIZEHINT(3);
+  /// Python-accessible version of \sa GetSegmentCenter.
+  /// Get position of the segment's center (in the segmentation node's coordinate system)
+  void GetSegmentCenter(const std::string& segmentID, double center[3]);
 
   /// Get position of the segment's center in world coordinate system.
-  /// It is the position returned by GetSegmentCenter() transformed by the segmentation node's
+  /// It is the position returned by \sa GetSegmentCenter() transformed by the segmentation node's
   /// parent transform.
-  double* GetSegmentCenterRAS(const std::string& segmentID);
+  double* GetSegmentCenterRAS(const std::string& segmentID) VTK_SIZEHINT(3);
+  /// Python-accessible version of \sa GetSegmentCenterRAS.
+  /// Get position of the segment's center in world coordinate system.
+  void GetSegmentCenterRAS(const std::string& segmentID, double centerRAS[3]);
 
 protected:
   /// Set segmentation object
@@ -268,7 +274,7 @@ protected:
 
 protected:
   vtkMRMLSegmentationNode();
-  virtual ~vtkMRMLSegmentationNode();
+  ~vtkMRMLSegmentationNode() override;
   vtkMRMLSegmentationNode(const vtkMRMLSegmentationNode&);
   void operator=(const vtkMRMLSegmentationNode&);
 

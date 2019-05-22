@@ -50,13 +50,12 @@ public:
 qMRMLNavigationViewPrivate::qMRMLNavigationViewPrivate(qMRMLNavigationView& object)
   : q_ptr(&object)
 {
-  this->MRMLScene = 0;
+  this->MRMLScene = nullptr;
 }
 
 //---------------------------------------------------------------------------
 qMRMLNavigationViewPrivate::~qMRMLNavigationViewPrivate()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 // qMRMLNavigationView methods
@@ -74,8 +73,7 @@ qMRMLNavigationView::qMRMLNavigationView(QWidget* _parent) : Superclass(_parent)
 
 // --------------------------------------------------------------------------
 qMRMLNavigationView::~qMRMLNavigationView()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qMRMLNavigationView::setMRMLScene(vtkMRMLScene* newScene)
@@ -95,7 +93,7 @@ void qMRMLNavigationView::setMRMLScene(vtkMRMLScene* newScene)
   d->MRMLScene = newScene;
   if (!d->MRMLViewNode || newScene != d->MRMLViewNode->GetScene())
     {
-    this->setMRMLViewNode(0);
+    this->setMRMLViewNode(nullptr);
     }
   this->updateFromMRMLScene();
 }
@@ -115,7 +113,7 @@ void qMRMLNavigationView::setMRMLViewNode(vtkMRMLViewNode* newViewNode)
   this->updateFromMRMLViewNode();
 
   // Enable/disable widget
-  this->setEnabled(d->MRMLViewNode != 0);
+  this->setEnabled(d->MRMLViewNode != nullptr);
 }
 
 //---------------------------------------------------------------------------

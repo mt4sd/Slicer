@@ -52,7 +52,7 @@ qMRMLMarkupsFiducialProjectionPropertyWidgetPrivate
 ::qMRMLMarkupsFiducialProjectionPropertyWidgetPrivate(qMRMLMarkupsFiducialProjectionPropertyWidget& object)
   : q_ptr(&object)
 {
-  this->FiducialDisplayNode = NULL;
+  this->FiducialDisplayNode = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -90,21 +90,32 @@ qMRMLMarkupsFiducialProjectionPropertyWidget
 //-----------------------------------------------------------------------------
 qMRMLMarkupsFiducialProjectionPropertyWidget
 ::~qMRMLMarkupsFiducialProjectionPropertyWidget()
+= default;
+
+//-----------------------------------------------------------------------------
+void qMRMLMarkupsFiducialProjectionPropertyWidget
+::setMRMLMarkupsNode(vtkMRMLMarkupsNode* markupsNode)
 {
+  Q_D(qMRMLMarkupsFiducialProjectionPropertyWidget);
+  vtkMRMLMarkupsDisplayNode* displayNode = (markupsNode ? markupsNode->GetMarkupsDisplayNode() : nullptr);
+  this->setMRMLMarkupsDisplayNode(displayNode);
 }
 
 //-----------------------------------------------------------------------------
 void qMRMLMarkupsFiducialProjectionPropertyWidget
-::setMRMLFiducialNode(vtkMRMLMarkupsFiducialNode* fiducialNode)
+::setMRMLMarkupsDisplayNode(vtkMRMLMarkupsDisplayNode* markupsDisplayNode)
 {
   Q_D(qMRMLMarkupsFiducialProjectionPropertyWidget);
-  vtkMRMLMarkupsDisplayNode* displayNode
-    = fiducialNode ? fiducialNode->GetMarkupsDisplayNode() : NULL;
+  if (markupsDisplayNode == d->FiducialDisplayNode)
+    {
+    // no change
+    return;
+    }
 
-  qvtkReconnect(d->FiducialDisplayNode, displayNode, vtkCommand::ModifiedEvent,
-                this, SLOT(updateWidgetFromDisplayNode()));
+  qvtkReconnect(d->FiducialDisplayNode, markupsDisplayNode, vtkCommand::ModifiedEvent,
+    this, SLOT(updateWidgetFromDisplayNode()));
 
-  d->FiducialDisplayNode = displayNode;
+  d->FiducialDisplayNode = markupsDisplayNode;
   this->updateWidgetFromDisplayNode();
 }
 
@@ -200,7 +211,7 @@ void qMRMLMarkupsFiducialProjectionPropertyWidget
 {
   Q_D(qMRMLMarkupsFiducialProjectionPropertyWidget);
 
-  this->setEnabled(d->FiducialDisplayNode != 0);
+  this->setEnabled(d->FiducialDisplayNode != nullptr);
 
   if (!d->FiducialDisplayNode)
     {
@@ -210,8 +221,7 @@ void qMRMLMarkupsFiducialProjectionPropertyWidget
   // Update widget if different from MRML node
   // -- 2D Projection Visibility
   d->point2DProjectionCheckBox->setChecked(
-    d->FiducialDisplayNode->GetSliceProjection() &
-    vtkMRMLMarkupsDisplayNode::ProjectionOn);
+    d->FiducialDisplayNode->GetSliceProjection());
 
   // -- Projection Color
   double pColor[3];

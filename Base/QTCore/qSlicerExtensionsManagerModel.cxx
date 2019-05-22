@@ -30,10 +30,7 @@
 #include <QTemporaryFile>
 #include <QTextStream>
 #include <QUrl>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QUrlQuery>
-#endif
 
 // CTK includes
 #include <ctkScopedCurrentDir.h>
@@ -80,18 +77,11 @@ struct UpdateDownloadInformation
 class QStandardItemModelWithRole : public QStandardItemModel
 {
 public:
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  void setRoleNames(const QHash<int,QByteArray> &roleNames)
-  {
-    this->QStandardItemModel::setRoleNames(roleNames);
-  }
-#else
-  QHash<int, QByteArray> roleNames() const
+  QHash<int, QByteArray> roleNames() const override
   {
     return this->CustomRoleNames;
   }
   QHash<int,QByteArray> CustomRoleNames;
-#endif
 };
 
 } // end of anonymous namespace
@@ -303,14 +293,7 @@ void qSlicerExtensionsManagerModelPrivate::init()
     ++columnIdx;
     }
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  //
-  // See QStandardItemModelWithRole::roleNames() for Qt5 implementation
-  //
-  this->Model.setRoleNames(roleNames);
-#else
   this->Model.CustomRoleNames = roleNames;
-#endif
 
   QObject::connect(q, SIGNAL(slicerRequirementsChanged(QString,QString,QString)),
                    q, SLOT(identifyIncompatibleExtensions()));
@@ -423,7 +406,7 @@ QStandardItem* qSlicerExtensionsManagerModelPrivate::extensionItem(const QString
       this->Model.findItems(extensionName, Qt::MatchExactly, Self::NameColumn);
   if (foundItems.count() != 1)
     {
-    return 0;
+    return nullptr;
     }
   return this->Model.item(foundItems.at(0)->row(), column);
 }
@@ -1006,8 +989,7 @@ qSlicerExtensionsManagerModel::qSlicerExtensionsManagerModel(QObject* _parent)
 
 // --------------------------------------------------------------------------
 qSlicerExtensionsManagerModel::~qSlicerExtensionsManagerModel()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 QUrl qSlicerExtensionsManagerModel::serverUrl()const
@@ -1302,7 +1284,7 @@ qSlicerExtensionsManagerModelPrivate::downloadExtension(
   ExtensionMetadataType extensionMetadata = q->retrieveExtensionMetadata(extensionId);
   if (extensionMetadata.count() == 0)
     {
-    return 0;
+    return nullptr;
     }
 
   QString itemId = extensionMetadata["item_id"].toString();
@@ -1310,15 +1292,10 @@ qSlicerExtensionsManagerModelPrivate::downloadExtension(
   this->debug(QString("Downloading extension [ itemId: %1]").arg(itemId));
   QUrl downloadUrl(q->serverUrl());
   downloadUrl.setPath(downloadUrl.path() + "/download");
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  downloadUrl.setQueryItems(
-        QList<QPair<QString, QString> >() << QPair<QString, QString>("items", itemId));
-#else
   QUrlQuery urlQuery;
   urlQuery.setQueryItems(
         QList<QPair<QString, QString> >() << QPair<QString, QString>("items", itemId));
   downloadUrl.setQuery(urlQuery);
-#endif
 
   QNetworkReply* const reply =
     this->NetworkManager.get(QNetworkRequest(downloadUrl));
@@ -1375,11 +1352,7 @@ void qSlicerExtensionsManagerModel::onInstallDownloadFinished(
 
   QNetworkReply* const reply = task->reply();
   QUrl downloadUrl = reply->url();
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  Q_ASSERT(downloadUrl.hasQueryItem("items"));
-#else
   Q_ASSERT(QUrlQuery(downloadUrl).hasQueryItem("items"));
-#endif
 
   emit this->downloadFinished(reply);
 
@@ -1563,7 +1536,7 @@ bool qSlicerExtensionsManagerModel::installExtension(
       msg += QString("<li>%1</li>").arg(dependencyName);
       }
     msg += "</ul><p>The extension may not function properly.</p>";
-    QMessageBox::warning(0, "Unresolved dependencies", msg);
+    QMessageBox::warning(nullptr, "Unresolved dependencies", msg);
     }
 
   // Prompt to install dependencies (if any)
@@ -1576,7 +1549,7 @@ bool qSlicerExtensionsManagerModel::installExtension(
       }
     msg += "</ul><p>Would you like to install them now?</p>";
     const QMessageBox::StandardButton result =
-      QMessageBox::question(0, "Install dependencies", msg,
+      QMessageBox::question(nullptr, "Install dependencies", msg,
                             QMessageBox::Yes | QMessageBox::No);
 
     if (result == QMessageBox::Yes)
@@ -1786,11 +1759,7 @@ void qSlicerExtensionsManagerModel::onUpdateDownloadFinished(
   // Get network reply
   QNetworkReply* const reply = task->reply();
   QUrl downloadUrl = reply->url();
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  Q_ASSERT(downloadUrl.hasQueryItem("items"));
-#else
   Q_ASSERT(QUrlQuery(downloadUrl).hasQueryItem("items"));
-#endif
 
   // Notify observers of event
   emit this->downloadFinished(reply);

@@ -12,7 +12,7 @@ import base64
 import slicer
 
 qt_resource_handle = None
-qt_resource_data = base64.decodestring(\"\"\"
+qt_resource_data = base64.decodebytes(b\"\"\"
 """
 
 _footer = """
@@ -64,9 +64,11 @@ def compileResources(in_path, out_file, args):
 
     os.remove(tmp_path)
 
+  _data = base64.encodestring(data).rstrip().decode()
+
   # Write output script
   out_file.write(_header)
-  out_file.write(base64.encodestring(data).rstrip())
+  out_file.write(_data)
   out_file.write(_footer)
 
 def main(argv):

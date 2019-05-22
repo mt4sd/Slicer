@@ -35,31 +35,31 @@ class VTK_MRML_EXPORT vtkMRMLUnitNode : public vtkMRMLNode
 public:
   static vtkMRMLUnitNode *New();
   vtkTypeMacro(vtkMRMLUnitNode,vtkMRMLNode);
-  virtual void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Unit";}
+  const char* GetNodeTagName() override {return "Unit";}
 
   /// Reimplemented to prevent reset if unit node is a singleton.
-  virtual void Reset(vtkMRMLNode* defaultNode) VTK_OVERRIDE;
+  void Reset(vtkMRMLNode* defaultNode) override;
 
   ///
   /// Set/Get the quantity the unit belongs to. A unit can only
@@ -89,7 +89,7 @@ public:
   ///
   /// Set the name of the unit. Since unit nodes are singleton,
   /// this name must be unique throughout the scene.
-  virtual void SetName(const char* name) VTK_OVERRIDE;
+  void SetName(const char* name) override;
 
   ///
   /// Set/Get the unit prefix.
@@ -140,7 +140,7 @@ public:
 
 protected:
   vtkMRMLUnitNode();
-  virtual ~vtkMRMLUnitNode();
+  ~vtkMRMLUnitNode() override;
   vtkMRMLUnitNode(const vtkMRMLUnitNode&);
   void operator=(const vtkMRMLUnitNode&);
 

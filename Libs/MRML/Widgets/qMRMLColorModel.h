@@ -71,8 +71,8 @@ class QMRML_WIDGETS_EXPORT qMRMLColorModel : public QStandardItemModel
 
 public:
   typedef QAbstractItemModel Superclass;
-  qMRMLColorModel(QObject *parent=0);
-  virtual ~qMRMLColorModel();
+  qMRMLColorModel(QObject *parent=nullptr);
+  ~qMRMLColorModel() override;
 
   /// ColorRole is an invivisble role that contains the true color (QColor) when
   /// Qt::DecorationRole contains a pixmap of the color.
@@ -128,7 +128,7 @@ public:
 
   /// Overload the header data method for the vertical header
   /// so that can return the color index rather than the row
-  virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 protected slots:
   void onMRMLColorNodeModified(vtkObject* node);
@@ -136,7 +136,7 @@ protected slots:
 
 protected:
 
-  qMRMLColorModel(qMRMLColorModelPrivate* pimpl, QObject *parent=0);
+  qMRMLColorModel(qMRMLColorModelPrivate* pimpl, QObject *parent=nullptr);
   virtual void updateItemFromColor(QStandardItem* item, int color, int column);
   virtual void updateColorFromItem(int color, QStandardItem* item);
   virtual void updateNode();

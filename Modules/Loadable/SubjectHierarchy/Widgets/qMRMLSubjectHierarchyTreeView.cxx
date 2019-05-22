@@ -128,23 +128,23 @@ public:
 //------------------------------------------------------------------------------
 qMRMLSubjectHierarchyTreeViewPrivate::qMRMLSubjectHierarchyTreeViewPrivate(qMRMLSubjectHierarchyTreeView& object)
   : q_ptr(&object)
-  , Model(NULL)
-  , SortFilterModel(NULL)
+  , Model(nullptr)
+  , SortFilterModel(nullptr)
   , ShowRootItem(false)
   , RootItemID(vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID)
   , ContextMenuEnabled(true)
   , EditActionVisible(true)
-  , RenameAction(NULL)
-  , DeleteAction(NULL)
-  , EditAction(NULL)
-  , ToggleVisibilityAction(NULL)
-  , SelectPluginSubMenu(NULL)
-  , SelectPluginActionGroup(NULL)
-  , ExpandToDepthAction(NULL)
-  , SceneMenu(NULL)
-  , VisibilityMenu(NULL)
-  , TransformItemDelegate(NULL)
-  , SubjectHierarchyNode(NULL)
+  , RenameAction(nullptr)
+  , DeleteAction(nullptr)
+  , EditAction(nullptr)
+  , ToggleVisibilityAction(nullptr)
+  , SelectPluginSubMenu(nullptr)
+  , SelectPluginActionGroup(nullptr)
+  , ExpandToDepthAction(nullptr)
+  , SceneMenu(nullptr)
+  , VisibilityMenu(nullptr)
+  , TransformItemDelegate(nullptr)
+  , SubjectHierarchyNode(nullptr)
   , HighlightReferencedItems(true)
 {
 }
@@ -169,20 +169,11 @@ void qMRMLSubjectHierarchyTreeViewPrivate::init()
   this->SortFilterModel->setSourceModel(this->Model);
 
   // Set up headers
-  q->header()->setStretchLastSection(false);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  q->header()->setResizeMode(this->Model->nameColumn(), QHeaderView::Stretch);
-  q->header()->setResizeMode(this->Model->visibilityColumn(), QHeaderView::ResizeToContents);
-  q->header()->setResizeMode(this->Model->colorColumn(), QHeaderView::ResizeToContents);
-  q->header()->setResizeMode(this->Model->transformColumn(), QHeaderView::ResizeToContents);
-  q->header()->setResizeMode(this->Model->idColumn(), QHeaderView::ResizeToContents);
-#else
-  q->header()->setSectionResizeMode(this->Model->nameColumn(), QHeaderView::Stretch);
-  q->header()->setSectionResizeMode(this->Model->visibilityColumn(), QHeaderView::ResizeToContents);
-  q->header()->setSectionResizeMode(this->Model->colorColumn(), QHeaderView::ResizeToContents);
-  q->header()->setSectionResizeMode(this->Model->transformColumn(), QHeaderView::ResizeToContents);
-  q->header()->setSectionResizeMode(this->Model->idColumn(), QHeaderView::ResizeToContents);
-#endif
+  q->resetColumnSizesToDefault();
+  if (this->Model->descriptionColumn()>=0)
+    {
+    q->setColumnHidden(this->Model->descriptionColumn(), true);
+    }
 
   // Set generic MRML item delegate
   q->setItemDelegate(new qMRMLItemDelegate(q));
@@ -232,6 +223,43 @@ void qMRMLSubjectHierarchyTreeViewPrivate::init()
 
   // Set up scene and node actions for the tree view
   this->setupActions();
+}
+
+//--------------------------------------------------------------------------
+void qMRMLSubjectHierarchyTreeView::resetColumnSizesToDefault()
+{
+  Q_D(qMRMLSubjectHierarchyTreeView);
+
+  // Set up headers
+  this->header()->setStretchLastSection(false);
+  if (this->header()->count() <= 0)
+    {
+    return;
+    }
+  if (d->Model->nameColumn() >= 0)
+    {
+    this->header()->setSectionResizeMode(d->Model->nameColumn(), QHeaderView::Stretch);
+    }
+  if (d->Model->descriptionColumn() >= 0)
+    {
+    this->header()->setSectionResizeMode(d->Model->descriptionColumn(), QHeaderView::Interactive);
+    }
+  if (d->Model->visibilityColumn() >= 0)
+    {
+  this->header()->setSectionResizeMode(d->Model->visibilityColumn(), QHeaderView::ResizeToContents);
+    }
+  if (d->Model->colorColumn() >= 0)
+    {
+    this->header()->setSectionResizeMode(d->Model->colorColumn(), QHeaderView::ResizeToContents);
+    }
+  if (d->Model->transformColumn() >= 0)
+    {
+    this->header()->setSectionResizeMode(d->Model->transformColumn(), QHeaderView::ResizeToContents);
+    }
+  if (d->Model->idColumn() >= 0)
+    {
+    this->header()->setSectionResizeMode(d->Model->idColumn(), QHeaderView::ResizeToContents);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -339,8 +367,7 @@ qMRMLSubjectHierarchyTreeView::qMRMLSubjectHierarchyTreeView(QWidget *parent)
 
 //------------------------------------------------------------------------------
 qMRMLSubjectHierarchyTreeView::~qMRMLSubjectHierarchyTreeView()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qMRMLSubjectHierarchyTreeView::setSubjectHierarchyNode(vtkMRMLSubjectHierarchyNode* shNode)
@@ -354,8 +381,8 @@ void qMRMLSubjectHierarchyTreeView::setSubjectHierarchyNode(vtkMRMLSubjectHierar
 
   if (!shNode)
     {
-    d->Model->setMRMLScene(NULL);
-    d->TransformItemDelegate->setMRMLScene(NULL);
+    d->Model->setMRMLScene(nullptr);
+    d->TransformItemDelegate->setMRMLScene(nullptr);
     return;
     }
 
@@ -382,7 +409,7 @@ vtkMRMLSubjectHierarchyNode* qMRMLSubjectHierarchyTreeView::subjectHierarchyNode
 vtkMRMLScene* qMRMLSubjectHierarchyTreeView::mrmlScene()const
 {
   Q_D(const qMRMLSubjectHierarchyTreeView);
-  return d->Model ? d->Model->mrmlScene() : NULL;
+  return d->Model ? d->Model->mrmlScene() : nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -393,7 +420,7 @@ void qMRMLSubjectHierarchyTreeView::setMRMLScene(vtkMRMLScene* scene)
     return;
     }
 
-  this->setSubjectHierarchyNode(scene ? vtkMRMLSubjectHierarchyNode::GetSubjectHierarchyNode(scene) : NULL);
+  this->setSubjectHierarchyNode(scene ? vtkMRMLSubjectHierarchyNode::GetSubjectHierarchyNode(scene) : nullptr);
 
   // Connect scene close ended event so that subject hierarchy can be cleared
   qvtkReconnect( scene, vtkMRMLScene::EndCloseEvent, this, SLOT( onMRMLSceneCloseEnded(vtkObject*) ) );
@@ -806,11 +833,7 @@ bool qMRMLSubjectHierarchyTreeView::clickDecoration(QMouseEvent* e)
   Q_D(qMRMLSubjectHierarchyTreeView);
 
   QModelIndex index = this->indexAt(e->pos());
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  QStyleOptionViewItemV4 opt = this->viewOptions();
-#else
   QStyleOptionViewItem opt = this->viewOptions();
-#endif
   opt.rect = this->visualRect(index);
   qobject_cast<qMRMLItemDelegate*>(this->itemDelegate())->initStyleOption(&opt,index);
   QRect decorationElement = this->style()->subElementRect(QStyle::SE_ItemViewItemDecoration, &opt, this);
@@ -1299,7 +1322,7 @@ void qMRMLSubjectHierarchyTreeView::deleteSelectedItems()
       && !qSlicerSubjectHierarchyPluginHandler::instance()->autoDeleteSubjectHierarchyChildren() )
       {
       answer =
-        QMessageBox::question(NULL, tr("Delete subject hierarchy branch?"),
+        QMessageBox::question(nullptr, tr("Delete subject hierarchy branch?"),
         tr("The deleted subject hierarchy item has children. "
             "Do you want to remove those too?\n\n"
             "If you choose yes, the whole branch will be deleted, including all children.\n"

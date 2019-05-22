@@ -51,7 +51,7 @@ protected:
   qMRMLTableWidget* const q_ptr;
 public:
   qMRMLTableWidgetPrivate(qMRMLTableWidget& object);
-  ~qMRMLTableWidgetPrivate();
+  ~qMRMLTableWidgetPrivate() override;
 
   void init();
 
@@ -64,14 +64,13 @@ public:
 qMRMLTableWidgetPrivate::qMRMLTableWidgetPrivate(qMRMLTableWidget& object)
   : q_ptr(&object)
 {
-  this->TableView = 0;
-  this->TableController = 0;
+  this->TableView = nullptr;
+  this->TableController = nullptr;
 }
 
 //---------------------------------------------------------------------------
 qMRMLTableWidgetPrivate::~qMRMLTableWidgetPrivate()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void qMRMLTableWidgetPrivate::init()
@@ -112,8 +111,8 @@ qMRMLTableWidget::qMRMLTableWidget(QWidget* parentWidget)
 qMRMLTableWidget::~qMRMLTableWidget()
 {
   Q_D(qMRMLTableWidget);
-  d->TableView->setMRMLScene(0);
-  d->TableController->setMRMLScene(0);
+  d->TableView->setMRMLScene(nullptr);
+  d->TableController->setMRMLScene(nullptr);
 }
 
 

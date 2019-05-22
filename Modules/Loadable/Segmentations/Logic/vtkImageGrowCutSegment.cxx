@@ -37,13 +37,13 @@ public:
   {
   }
 
-  virtual void operator =(FibHeapNode& RHS)
+  void operator =(FibHeapNode& RHS) override
   {
     FHN_Assign(RHS);
     m_Key = ((HeapNode&)RHS).m_Key;
   }
 
-  virtual int operator ==(FibHeapNode& RHS)
+  int operator ==(FibHeapNode& RHS) override
   {
     if (FHN_Cmp(RHS))
       {
@@ -52,7 +52,7 @@ public:
     return m_Key == ((HeapNode&)RHS).m_Key ? 1 : 0;
   }
 
-  virtual int operator <(FibHeapNode& RHS)
+  int operator <(FibHeapNode& RHS) override
   {
     int x = FHN_Cmp(RHS);
     if (x != 0)
@@ -127,8 +127,8 @@ public:
 //-----------------------------------------------------------------------------
 vtkImageGrowCutSegment::vtkInternal::vtkInternal()
 {
-  m_Heap = NULL;
-  m_HeapNodes = NULL;
+  m_Heap = nullptr;
+  m_HeapNodes = nullptr;
   m_bSegInitialized = false;
   m_DistanceVolume = vtkSmartPointer<vtkImageData>::New();
   m_DistanceVolumePre = vtkSmartPointer<vtkImageData>::New();
@@ -145,15 +145,15 @@ vtkImageGrowCutSegment::vtkInternal::~vtkInternal()
 //-----------------------------------------------------------------------------
 void vtkImageGrowCutSegment::vtkInternal::Reset()
 {
-  if (m_Heap != NULL)
+  if (m_Heap != nullptr)
     {
     delete m_Heap;
-    m_Heap = NULL;
+    m_Heap = nullptr;
     }
-  if (m_HeapNodes != NULL)
+  if (m_HeapNodes != nullptr)
     {
     delete[]m_HeapNodes;
-    m_HeapNodes = NULL;
+    m_HeapNodes = nullptr;
     }
   m_bSegInitialized = false;
   m_DistanceVolume->Initialize();
@@ -171,14 +171,14 @@ bool vtkImageGrowCutSegment::vtkInternal::InitializationAHP(
 {
   m_Heap = new FibHeap;
   long dimXYZ = m_DimX * m_DimY * m_DimZ;
-  if ((m_HeapNodes = new HeapNode[dimXYZ + 1]) == NULL)
+  if ((m_HeapNodes = new HeapNode[dimXYZ + 1]) == nullptr)
     {
     vtkGenericWarningMacro("Memory allocation failed. Dimensions: " << m_DimX << "x" << m_DimY << "x" << m_DimZ);
     return false;
     }
   LabelPixelType* seedLabelVolumePtr = static_cast<LabelPixelType*>(seedLabelVolume->GetScalarPointer());
-  MaskPixelType* maskLabelVolumePtr = NULL;
-  if (seedLabelVolume != NULL)
+  MaskPixelType* maskLabelVolumePtr = nullptr;
+  if (seedLabelVolume != nullptr)
     {
     maskLabelVolumePtr = static_cast<MaskPixelType*>(maskLabelVolume->GetScalarPointer());
     }
@@ -455,16 +455,16 @@ void vtkImageGrowCutSegment::vtkInternal::DijkstraBasedClassificationAHP(
   m_bSegInitialized = true;
 
   // Release memory
-  if (m_Heap != NULL)
+  if (m_Heap != nullptr)
     {
     delete m_Heap;
-    m_Heap = NULL;
+    m_Heap = nullptr;
     }
   //m_HeapNodes.clear();
-  if (m_HeapNodes != NULL)
+  if (m_HeapNodes != nullptr)
     {
     delete[] m_HeapNodes;
-    m_HeapNodes = NULL;
+    m_HeapNodes = nullptr;
     }
 }
 
@@ -630,7 +630,7 @@ int vtkImageGrowCutSegment::RequestInformation(
 {
   // get the info objects
   vtkInformation *inInfo = inputVector[0]->GetInformationObject(1);
-  if (inInfo != NULL)
+  if (inInfo != nullptr)
     {
     this->Superclass::RequestInformation(request, inputVector, outputVector);
     }

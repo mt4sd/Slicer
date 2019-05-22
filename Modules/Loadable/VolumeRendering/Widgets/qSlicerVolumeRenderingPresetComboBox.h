@@ -41,8 +41,8 @@ class Q_SLICER_MODULE_VOLUMERENDERING_WIDGETS_EXPORT qSlicerVolumeRenderingPrese
 public:
   /// Constructors
   typedef qSlicerWidget Superclass;
-  explicit qSlicerVolumeRenderingPresetComboBox(QWidget* parent=0);
-  virtual ~qSlicerVolumeRenderingPresetComboBox();
+  explicit qSlicerVolumeRenderingPresetComboBox(QWidget* parent=nullptr);
+  ~qSlicerVolumeRenderingPresetComboBox() override;
 
   /// Get selected preset node in the combobox.
   /// Note: This node is not in the main MRML scene, but from the private presets scene

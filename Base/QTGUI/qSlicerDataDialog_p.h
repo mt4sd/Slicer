@@ -35,8 +35,8 @@ class qSlicerDataDialogPrivate
 {
   Q_OBJECT
 public:
-  explicit qSlicerDataDialogPrivate(QWidget* _parent=0);
-  virtual ~qSlicerDataDialogPrivate();
+  explicit qSlicerDataDialogPrivate(QWidget* _parent=nullptr);
+  ~qSlicerDataDialogPrivate() override;
 
   QList<qSlicerIO::IOProperties> selectedFiles()const;
 public slots:

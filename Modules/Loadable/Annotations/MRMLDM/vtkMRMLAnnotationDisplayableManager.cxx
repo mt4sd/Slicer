@@ -23,6 +23,7 @@
 
 // MRML includes
 #include <vtkMRMLApplicationLogic.h>
+#include <vtkMRMLInteractionEventData.h>
 #include <vtkMRMLInteractionNode.h>
 #include <vtkMRMLScene.h>
 #include <vtkMRMLSelectionNode.h>
@@ -95,7 +96,7 @@ vtkMRMLAnnotationDisplayableManager::~vtkMRMLAnnotationDisplayableManager()
 
   this->DisableInteractorStyleEventsProcessing = 0;
   this->m_Updating = 0;
-  this->m_Focus = 0;
+  this->m_Focus = nullptr;
 
   this->Helper->Delete();
   this->m_ClickCounter->Delete();
@@ -275,7 +276,7 @@ void vtkMRMLAnnotationDisplayableManager::RemoveMRMLObservers()
 void vtkMRMLAnnotationDisplayableManager::UpdateFromMRML()
 {
   // this gets called from RequestRender, so make sure to jump out quickly if possible
-  if (this->GetMRMLScene() == NULL || this->m_Focus == NULL)
+  if (this->GetMRMLScene() == nullptr || this->m_Focus == nullptr)
     {
     return;
     }
@@ -294,7 +295,7 @@ void vtkMRMLAnnotationDisplayableManager::UpdateFromMRML()
     if (annotationNode)
       {
       // do we  have a widget for it?
-      if (this->GetWidget(annotationNode) == NULL)
+      if (this->GetWidget(annotationNode) == nullptr)
         {
         vtkDebugMacro("UpdateFromMRML: adding node " << annotationNode->GetID());
         if (this->AddAnnotation(annotationNode))
@@ -319,6 +320,8 @@ void vtkMRMLAnnotationDisplayableManager::SetMRMLSceneInternal(vtkMRMLScene* new
 
   if (newScene)
     {
+    this->RemoveObserversFromInteractionNode();
+    this->RemoveObserversFromSelectionNode();
     this->AddObserversToInteractionNode();
     this->AddObserversToSelectionNode();
     }
@@ -427,6 +430,7 @@ void vtkMRMLAnnotationDisplayableManager::OnMRMLSceneNodeAdded(vtkMRMLNode* node
 
   if (node->IsA("vtkMRMLInteractionNode"))
     {
+    this->RemoveObserversFromInteractionNode();
     this->AddObserversToInteractionNode();
     return;
     }
@@ -704,7 +708,7 @@ vtkMRMLSliceNode * vtkMRMLAnnotationDisplayableManager::GetSliceNode()
 //---------------------------------------------------------------------------
 bool vtkMRMLAnnotationDisplayableManager::Is2DDisplayableManager()
 {
-  return GetSliceNode() != 0;
+  return GetSliceNode() != nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -808,7 +812,7 @@ void vtkMRMLAnnotationDisplayableManager::OnMRMLSliceNodeModifiedEvent(vtkMRMLSl
         // compute intersection with slice plane
         // if !=0: mark the intersection
 
-        if(rulerNode->GetAnnotationLineDisplayNode()->GetSliceIntersectionVisibility())
+        if(rulerNode->GetAnnotationLineDisplayNode()->GetVisibility2D())
           {
           //double this->GetSliceNode()->GetSliceOffset() = p1[2] + (p2[2]-p1[2])*t;
           // t = (this->GetSliceNode()->GetSliceOffset() - p1[2]) / (p2[2]-p1[2])
@@ -892,7 +896,7 @@ void vtkMRMLAnnotationDisplayableManager::OnMRMLSliceNodeModifiedEvent(vtkMRMLSl
         if (lineDisplayNode)
           {
           if ((lineDisplayNode->GetSliceProjection() & lineDisplayNode->ProjectionOn) &&
-              lineDisplayNode->GetVisibility())
+              lineDisplayNode->GetVisibility() && lineDisplayNode->GetVisibility2D())
             {
             double overLineWidth = lineDisplayNode->GetOverLineThickness();
             double underLineWidth = lineDisplayNode->GetUnderLineThickness();
@@ -1100,7 +1104,7 @@ void vtkMRMLAnnotationDisplayableManager::OnMRMLSliceNodeModifiedEvent(vtkMRMLSl
           vtkMRMLAnnotationPointDisplayNode::SafeDownCast(fiducialNode->GetAnnotationPointDisplayNode());
 
         if ((pointDisplayNode->GetSliceProjection() & pointDisplayNode->ProjectionOn) &&
-            pointDisplayNode->GetVisibility())
+            pointDisplayNode->GetVisibility() && pointDisplayNode->GetVisibility2D())
           {
           double glyphScale = fiducialNode->GetAnnotationPointDisplayNode()->GetGlyphScale()*2;
           int glyphType = fiducialNode->GetAnnotationPointDisplayNode()->GetGlyphType();
@@ -1247,7 +1251,7 @@ bool vtkMRMLAnnotationDisplayableManager::IsWidgetDisplayable(vtkMRMLSliceNode* 
     return 0;
     }
 
-  // down cast the node as a controlpoints node to get the coordinates
+  // down cast the node as a control points node to get the coordinates
   vtkMRMLAnnotationControlPointsNode * controlPointsNode = vtkMRMLAnnotationControlPointsNode::SafeDownCast(node);
 
   if (!controlPointsNode)
@@ -1363,7 +1367,7 @@ bool vtkMRMLAnnotationDisplayableManager::IsWidgetDisplayable(vtkMRMLSliceNode* 
         // default to spacing 1.0 in case can't get volume slice spacing from
         // the logic as that will be a multiplicative no-op
         double spacing = 1.0;
-        vtkMRMLSliceLogic *sliceLogic = NULL;
+        vtkMRMLSliceLogic *sliceLogic = nullptr;
         vtkMRMLApplicationLogic *mrmlAppLogic = this->GetMRMLApplicationLogic();
         if (mrmlAppLogic)
           {
@@ -1372,7 +1376,7 @@ bool vtkMRMLAnnotationDisplayableManager::IsWidgetDisplayable(vtkMRMLSliceNode* 
         if (sliceLogic)
           {
           double *volumeSliceSpacing = sliceLogic->GetLowestVolumeSliceSpacing();
-          if (volumeSliceSpacing != NULL)
+          if (volumeSliceSpacing != nullptr)
             {
             vtkDebugMacro("Slice node " << this->GetSliceNode()->GetName()
                           << ": volumeSliceSpacing = "
@@ -1540,7 +1544,7 @@ void vtkMRMLAnnotationDisplayableManager::OnClickInRenderWindowGetCoordinates()
 
   if (x < windowWidth && y < windowHeight)
     {
-    const char *associatedNodeID = NULL;
+    const char *associatedNodeID = nullptr;
     // is this a 2d manager that has a volume in the background?
     if (this->Is2DDisplayableManager())
       {
@@ -1548,8 +1552,8 @@ void vtkMRMLAnnotationDisplayableManager::OnClickInRenderWindowGetCoordinates()
         {
         // find the slice composite node in the scene with the matching layout
         // name
-        vtkMRMLSliceLogic *sliceLogic = NULL;
-        vtkMRMLSliceCompositeNode* sliceCompositeNode = NULL;
+        vtkMRMLSliceLogic *sliceLogic = nullptr;
+        vtkMRMLSliceCompositeNode* sliceCompositeNode = nullptr;
         vtkMRMLApplicationLogic *mrmlAppLogic = this->GetMRMLApplicationLogic();
         if (mrmlAppLogic)
           {
@@ -1592,7 +1596,7 @@ void vtkMRMLAnnotationDisplayableManager::OnClickInRenderWindowGetCoordinates()
         const char *pickedNodeID = modelDisplayableManager->GetPickedNodeID();
         vtkDebugMacro("Click was on model " << pickedNodeID);
         vtkMRMLNode *mrmlNode = this->GetMRMLScene()->GetNodeByID(pickedNodeID);
-        vtkMRMLDisplayNode *displayNode = NULL;
+        vtkMRMLDisplayNode *displayNode = nullptr;
         if (mrmlNode)
           {
           vtkDebugMacro("Got a mrml node by name, id = " << mrmlNode->GetID());
@@ -1764,7 +1768,7 @@ void vtkMRMLAnnotationDisplayableManager::GetWorldToDisplayCoordinates(double r,
 /// Convert world to display coordinates
 void vtkMRMLAnnotationDisplayableManager::GetWorldToDisplayCoordinates(double * worldCoordinates, double * displayCoordinates)
 {
-  if (worldCoordinates == NULL)
+  if (worldCoordinates == nullptr)
     {
     return;
     }
@@ -1777,7 +1781,7 @@ void vtkMRMLAnnotationDisplayableManager::GetWorldToDisplayCoordinates(double * 
 void vtkMRMLAnnotationDisplayableManager::GetDisplayToViewportCoordinates(double x, double y, double * viewportCoordinates)
 {
 
-  if (viewportCoordinates == NULL)
+  if (viewportCoordinates == nullptr)
     {
     return;
     }
@@ -1945,12 +1949,12 @@ bool vtkMRMLAnnotationDisplayableManager::IsCorrectDisplayableManager()
 {
 
   vtkMRMLSelectionNode *selectionNode = this->GetSelectionNode();
-  if ( selectionNode == 0 )
+  if ( selectionNode == nullptr )
     {
     vtkErrorMacro ( "IsCorrectDisplayableManager: No selection node in the scene." );
     return false;
     }
-  if ( selectionNode->GetActivePlaceNodeClassName() == 0)
+  if ( selectionNode->GetActivePlaceNodeClassName() == nullptr)
     {
     //vtkErrorMacro ( "IsCorrectDisplayableManager: no active annotation");
     return false;
@@ -1990,7 +1994,7 @@ vtkAbstractWidget* vtkMRMLAnnotationDisplayableManager::CreateWidget(vtkMRMLAnno
 
   // A widget should be created here.
   vtkErrorMacro("CreateWidget should be overloaded!");
-  return 0;
+  return nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -2023,14 +2027,14 @@ void vtkMRMLAnnotationDisplayableManager::GetWorldToLocalCoordinates(vtkMRMLAnno
                                                                      double *worldCoordinates,
                                                                      double *localCoordinates)
 {
-  if (node == NULL)
+  if (node == nullptr)
     {
     vtkErrorMacro("GetWorldToLocalCoordinates: node is null");
     return;
     }
 
   vtkMRMLTransformNode* tnode = node->GetParentTransformNode();
-  if (tnode != NULL && tnode->IsTransformToWorldLinear())
+  if (tnode != nullptr && tnode->IsTransformToWorldLinear())
     {
     vtkNew<vtkMatrix4x4> transformToWorld;
     transformToWorld->Identity();
@@ -2140,7 +2144,7 @@ bool vtkMRMLAnnotationDisplayableManager::AddAnnotation(vtkMRMLAnnotationNode *a
     }
 
   // There should not be a widget for the new node
-  if (this->Helper->GetWidget(annotationNode) != 0)
+  if (this->Helper->GetWidget(annotationNode) != nullptr)
     {
     vtkErrorMacro("AddAnnotation: A widget is already associated to this node!");
     return false;
@@ -2169,5 +2173,38 @@ bool vtkMRMLAnnotationDisplayableManager::AddAnnotation(vtkMRMLAnnotationNode *a
   // tear down widget creation
   this->OnWidgetCreated(newWidget, annotationNode);
 
+  return true;
+}
+
+//---------------------------------------------------------------------------
+bool vtkMRMLAnnotationDisplayableManager::CanProcessInteractionEvent(vtkMRMLInteractionEventData* eventData, double &closestDistance2)
+{
+  if (this->GetDisableInteractorStyleEventsProcessing())
+    {
+    return false;
+    }
+  if (!this->IsCorrectDisplayableManager())
+    {
+    return false;
+    }
+  if (eventData->GetType() != vtkCommand::LeftButtonPressEvent
+    && eventData->GetType() != vtkCommand::LeftButtonReleaseEvent
+    && eventData->GetType() != vtkCommand::RightButtonPressEvent
+    && eventData->GetType() != vtkCommand::RightButtonReleaseEvent)
+    {
+    return false;
+    }
+  if (this->GetInteractionNode()->GetCurrentInteractionMode() != vtkMRMLInteractionNode::Place)
+    {
+    return false;
+    }
+  closestDistance2 = 0.0;
+  return true;
+}
+
+//---------------------------------------------------------------------------
+bool vtkMRMLAnnotationDisplayableManager::ProcessInteractionEvent(vtkMRMLInteractionEventData* eventData)
+{
+  this->OnInteractorStyleEvent(eventData->GetType());
   return true;
 }

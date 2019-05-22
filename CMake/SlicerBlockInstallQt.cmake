@@ -3,33 +3,6 @@
 # -------------------------------------------------------------------------
 set(QT_INSTALL_LIB_DIR ${Slicer_INSTALL_LIB_DIR})
 
-if(Slicer_REQUIRED_QT_VERSION VERSION_LESS "5")
-
-  foreach(qtlib ${Slicer_REQUIRED_QT_MODULES})
-    if(QT_${qtlib}_LIBRARY_RELEASE)
-      if(APPLE)
-        install(DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}"
-          DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime)
-      elseif(UNIX)
-        # Install .so and versioned .so.x.y
-        get_filename_component(QT_LIB_DIR_tmp ${QT_${qtlib}_LIBRARY_RELEASE} PATH)
-        get_filename_component(QT_LIB_NAME_tmp ${QT_${qtlib}_LIBRARY_RELEASE} NAME)
-        install(DIRECTORY ${QT_LIB_DIR_tmp}/
-          DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime
-          FILES_MATCHING PATTERN "${QT_LIB_NAME_tmp}*"
-          PATTERN "${QT_LIB_NAME_tmp}*.debug" EXCLUDE)
-      elseif(WIN32)
-        get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
-        if(EXISTS "${QT_DLL_PATH_tmp}/${qtlib}4.dll")
-          install(FILES ${QT_DLL_PATH_tmp}/${qtlib}4.dll
-            DESTINATION bin COMPONENT Runtime)
-        endif()
-      endif()
-    endif()
-  endforeach()
-
-else()
-
   list(APPEND QT_LIBRARIES
     "Qt5::Gui"
     )
@@ -70,12 +43,14 @@ else()
     # XcbQpa
     slicerInstallLibrary(FILE ${qt_root_dir}/lib/libQt5XcbQpa.so
       DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime
+      STRIP
       )
 
     # ICU libraries
     foreach(iculib IN ITEMS data i18n io le lx test tu uc)
       slicerInstallLibrary(FILE ${qt_root_dir}/lib/libicu${iculib}.so
         DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime
+        STRIP
         )
     endforeach()
 
@@ -95,6 +70,7 @@ else()
       # no corresponding CMake module.
       slicerInstallLibrary(FILE ${qt_root_dir}/lib/libQt5DesignerComponents.so
         DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime
+        STRIP
         )
     endif()
 
@@ -103,6 +79,9 @@ else()
       install(PROGRAMS ${qt_root_dir}/libexec/QtWebEngineProcess
         DESTINATION ${Slicer_INSTALL_ROOT}/libexec COMPONENT Runtime
         )
+      slicerStripInstalledLibrary(
+        FILES "${Slicer_INSTALL_ROOT}/libexec/QtWebEngineProcess"
+        COMPONENT Runtime)
       # XXX Workaround for QTBUG-66346 fixed in Qt >= 5.11 (See https://github.com/Slicer/Slicer/pull/944)
       set(qt_conf_contents "[Paths]\nPrefix = ..\nTranslations = share/QtTranslations")
       install(
@@ -127,6 +106,9 @@ else()
           DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime
           FILES_MATCHING PATTERN "${QT_LIB_NAME_tmp}*"
           PATTERN "${QT_LIB_NAME_tmp}*.debug" EXCLUDE)
+        slicerStripInstalledLibrary(
+          FILES "${QT_INSTALL_LIB_DIR}/${QT_LIB_NAME_tmp}"
+          COMPONENT Runtime)
       endif()
     endforeach()
 
@@ -137,10 +119,12 @@ else()
       )
 
     # Install webengine translations
-    set(translations_dir "${qt_root_dir}/translations/qtwebengine_locales")
-    install(DIRECTORY ${translations_dir}
-      DESTINATION ${Slicer_INSTALL_ROOT}/share/QtTranslations/ COMPONENT Runtime
-      )
+    if("Qt5::WebEngine" IN_LIST QT_LIBRARIES)
+      set(translations_dir "${qt_root_dir}/translations/qtwebengine_locales")
+      install(DIRECTORY ${translations_dir}
+        DESTINATION ${Slicer_INSTALL_ROOT}/share/QtTranslations/ COMPONENT Runtime
+        )
+    endif()
 
     # Configure and install qt.conf
     set(qt_conf_contents "[Paths]\nPrefix = ..\nPlugins = ${Slicer_INSTALL_QtPlugins_DIR}\nTranslations = share/QtTranslations")
@@ -193,5 +177,7 @@ else()
       DESTINATION ${Slicer_INSTALL_ROOT}/bin COMPONENT Runtime
       RENAME designer-real${CMAKE_EXECUTABLE_SUFFIX}
       )
+    slicerStripInstalledLibrary(
+      FILES "${Slicer_INSTALL_ROOT}/bin/designer-real"
+      COMPONENT Runtime)
   endif()
-endif()

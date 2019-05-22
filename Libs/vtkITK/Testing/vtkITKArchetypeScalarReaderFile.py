@@ -9,7 +9,7 @@ import numpy
 """
 To run as test from slicer python console, replace the following with your source tree path and paste:
 
-execfile('/Users/pieper/slicer4/latest/Slicer/Libs/vtkITK/Testing/vtkITKArchetypeScalarReaderFile.py'); t = vtkITKReaderAgainstNRRDReader(); t.runTest()
+exec(open('/Users/pieper/slicer4/latest/Slicer/Libs/vtkITK/Testing/vtkITKArchetypeScalarReaderFile.py').read()); t = vtkITKReaderAgainstNRRDReader(); t.runTest()
 
 note that from the 't' variable in the console you can access the readers and other instance variables for debugging.
 """
@@ -52,8 +52,8 @@ class vtkITKReaderAgainstNRRDReader(unittest.TestCase):
 
 
 def compare_vtk_matrix(m1, m2, n=4):
-    for i in xrange(0,n):
-        for j in xrange(0,n):
+    for i in range(0,n):
+        for j in range(0,n):
             assert m1.GetElement(i,j) == m2.GetElement(i,j)
     return True
 

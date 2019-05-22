@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 import Slicer
 import time
@@ -62,7 +63,7 @@ def texturedPlane():
 
   toParent = vtk.vtkMatrix4x4()
   transformNode.GetMatrixTransformToParent(toParent)
-  for i in xrange(steps):
+  for i in range(steps):
     imageSource.SetInValue( 200*(i%2) )
 
     toParent.SetElement(0, 3, i)
@@ -73,6 +74,6 @@ def texturedPlane():
 
   endTime = time.time()
   elapsed = endTime - startTime
-  hertz = steps/elapsed
-  print 'ran %d iterations in %g seconds (%g hertz)' % (steps, elapsed, hertz)
+  hertz = int(steps / elapsed)
+  print('ran %d iterations in %g seconds (%g hertz)' % (steps, elapsed, hertz))
 

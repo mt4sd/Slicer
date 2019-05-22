@@ -49,8 +49,8 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerModulePanel
 
 public:
   typedef qSlicerAbstractModulePanel Superclass;
-  qSlicerModulePanel(QWidget* parent = 0, Qt::WindowFlags f = 0);
-  virtual ~qSlicerModulePanel();
+  qSlicerModulePanel(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
+  ~qSlicerModulePanel() override;
 
   /// Get the helpAndAcknowledgmentVisible property value.
   /// \sa helpAndAcknowledgmentVisible, isHelpAndAcknowledgmentVisible()
@@ -60,19 +60,19 @@ public:
   /// \sa helpAndAcknowledgmentVisible, setHelpAndAcknowledgmentVisible()
   bool isHelpAndAcknowledgmentVisible()const;
 
-  virtual void removeAllModules();
+  void removeAllModules() override;
   qSlicerAbstractCoreModule* currentModule()const;
   QString currentModuleName()const;
 
-  virtual bool eventFilter(QObject* watchedModule, QEvent* event);
-  virtual QSize minimumSizeHint()const;
+  bool eventFilter(QObject* watchedModule, QEvent* event) override;
+  QSize minimumSizeHint()const override;
 
 public slots:
   void setModule(const QString& moduleName);
 
 protected:
-  virtual void addModule(qSlicerAbstractCoreModule* module);
-  virtual void removeModule(qSlicerAbstractCoreModule* module);
+  void addModule(qSlicerAbstractCoreModule* module) override;
+  void removeModule(qSlicerAbstractCoreModule* module) override;
   void setModule(qSlicerAbstractCoreModule* module);
 
 protected:

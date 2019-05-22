@@ -72,10 +72,10 @@ protected:
 public:
   /// Private constructor made public to enable python wrapping
   /// IMPORTANT: Should not be used for creating effect handler! Use instance() instead.
-  qSlicerSegmentEditorEffectFactory(QObject* parent=NULL);
+  qSlicerSegmentEditorEffectFactory(QObject* parent=nullptr);
 
   /// Private destructor made public to enable python wrapping
-  virtual ~qSlicerSegmentEditorEffectFactory();
+  ~qSlicerSegmentEditorEffectFactory() override;
 
 private:
   Q_DISABLE_COPY(qSlicerSegmentEditorEffectFactory);

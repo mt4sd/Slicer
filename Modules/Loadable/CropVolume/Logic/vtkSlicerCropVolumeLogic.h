@@ -69,7 +69,7 @@ public:
 
   static vtkSlicerCropVolumeLogic *New();
   vtkTypeMacro(vtkSlicerCropVolumeLogic,vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void SetVolumesLogic(vtkSlicerVolumesLogic* logic);
   vtkSlicerVolumesLogic* GetVolumesLogic();
@@ -102,15 +102,15 @@ public:
 
   static bool IsROIAlignedWithInputVolume(vtkMRMLCropVolumeParametersNode* parametersNode);
 
-  virtual void RegisterNodes() VTK_OVERRIDE;
+  void RegisterNodes() override;
 
 protected:
   vtkSlicerCropVolumeLogic();
-  virtual ~vtkSlicerCropVolumeLogic();
+  ~vtkSlicerCropVolumeLogic() override;
 
 private:
-  vtkSlicerCropVolumeLogic(const vtkSlicerCropVolumeLogic&); // Not implemented
-  void operator=(const vtkSlicerCropVolumeLogic&);           // Not implemented
+  vtkSlicerCropVolumeLogic(const vtkSlicerCropVolumeLogic&) = delete;
+  void operator=(const vtkSlicerCropVolumeLogic&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

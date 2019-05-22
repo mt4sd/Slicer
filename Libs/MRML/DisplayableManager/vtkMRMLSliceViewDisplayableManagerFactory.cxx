@@ -34,7 +34,7 @@
 vtkMRMLSliceViewDisplayableManagerFactory* vtkMRMLSliceViewDisplayableManagerFactory::New()
 {
   vtkMRMLSliceViewDisplayableManagerFactory* instance = Self::GetInstance();
-  instance->Register(0);
+  instance->Register(nullptr);
   return instance;
 }
 
@@ -68,8 +68,7 @@ vtkMRMLSliceViewDisplayableManagerFactory::
 
 //----------------------------------------------------------------------------
 vtkMRMLSliceViewDisplayableManagerFactory::~vtkMRMLSliceViewDisplayableManagerFactory()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLSliceViewDisplayableManagerFactory::PrintSelf(ostream& os, vtkIndent indent)

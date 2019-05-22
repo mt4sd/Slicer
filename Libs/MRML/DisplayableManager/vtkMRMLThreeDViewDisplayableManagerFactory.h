@@ -42,7 +42,7 @@ public:
 
   vtkTypeMacro(vtkMRMLThreeDViewDisplayableManagerFactory,
                        vtkMRMLDisplayableManagerFactory);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// This is a singleton pattern New.  There will only be ONE
   /// reference to a vtkMRMLThreeDViewDisplayableManagerFactory object per process. Clients that
@@ -56,14 +56,14 @@ public:
 protected:
 
   vtkMRMLThreeDViewDisplayableManagerFactory();
-  virtual ~vtkMRMLThreeDViewDisplayableManagerFactory();
+  ~vtkMRMLThreeDViewDisplayableManagerFactory() override;
 
   VTK_SINGLETON_DECLARE(vtkMRMLThreeDViewDisplayableManagerFactory);
 
 private:
 
-  vtkMRMLThreeDViewDisplayableManagerFactory(const vtkMRMLThreeDViewDisplayableManagerFactory&);
-  void operator=(const vtkMRMLThreeDViewDisplayableManagerFactory&);
+  vtkMRMLThreeDViewDisplayableManagerFactory(const vtkMRMLThreeDViewDisplayableManagerFactory&) = delete;
+  void operator=(const vtkMRMLThreeDViewDisplayableManagerFactory&) = delete;
 
 };
 

@@ -53,13 +53,13 @@ public:
   // it changes the output window to that.
   static vtkTestingOutputWindow* GetInstance();
 
-  virtual void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual void DisplayText(const char* text) VTK_OVERRIDE;
-  virtual void DisplayErrorText(const char* text) VTK_OVERRIDE;
-  virtual void DisplayWarningText(const char* text) VTK_OVERRIDE;
-  virtual void DisplayGenericWarningText(const char* text) VTK_OVERRIDE;
-  virtual void DisplayDebugText(const char* text) VTK_OVERRIDE;
+  void DisplayText(const char* text) override;
+  void DisplayErrorText(const char* text) override;
+  void DisplayWarningText(const char* text) override;
+  void DisplayGenericWarningText(const char* text) override;
+  void DisplayDebugText(const char* text) override;
 
   // Sets number of warning and error messages to zero
   virtual void ResetNumberOfLoggedMessages();
@@ -81,15 +81,15 @@ public:
   
 protected:
   vtkTestingOutputWindow(); 
-  virtual ~vtkTestingOutputWindow(); 
+  ~vtkTestingOutputWindow() override; 
   
   int NumberOfLoggedWarningMessages;
   int NumberOfLoggedErrorMessages;
   int NumberOfLoggedMessages;
 
 private:
-  vtkTestingOutputWindow(const vtkTestingOutputWindow&);  // Not implemented.
-  void operator=(const vtkTestingOutputWindow&);  // Not implemented.
+  vtkTestingOutputWindow(const vtkTestingOutputWindow&) = delete;
+  void operator=(const vtkTestingOutputWindow&) = delete;
 };
 
 

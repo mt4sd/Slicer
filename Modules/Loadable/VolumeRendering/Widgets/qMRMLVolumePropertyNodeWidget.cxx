@@ -54,13 +54,12 @@ qMRMLVolumePropertyNodeWidgetPrivate::qMRMLVolumePropertyNodeWidgetPrivate(
   qMRMLVolumePropertyNodeWidget& object)
   : q_ptr(&object)
 {
-  this->VolumePropertyNode = 0;
+  this->VolumePropertyNode = nullptr;
 }
 
 // --------------------------------------------------------------------------
 qMRMLVolumePropertyNodeWidgetPrivate::~qMRMLVolumePropertyNodeWidgetPrivate()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLVolumePropertyNodeWidgetPrivate::setupUi()
@@ -86,8 +85,7 @@ qMRMLVolumePropertyNodeWidget::qMRMLVolumePropertyNodeWidget(QWidget* parentWidg
 
 // --------------------------------------------------------------------------
 qMRMLVolumePropertyNodeWidget::~qMRMLVolumePropertyNodeWidget()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 vtkVolumeProperty* qMRMLVolumePropertyNodeWidget::volumeProperty()const
@@ -121,7 +119,7 @@ void qMRMLVolumePropertyNodeWidget::updateFromVolumePropertyNode()
 {
   Q_D(qMRMLVolumePropertyNodeWidget);
   vtkVolumeProperty* newVolumeProperty =
-    d->VolumePropertyNode ? d->VolumePropertyNode->GetVolumeProperty() : 0;
+    d->VolumePropertyNode ? d->VolumePropertyNode->GetVolumeProperty() : nullptr;
   qvtkReconnect(d->VolumePropertyWidget->volumeProperty(), newVolumeProperty,
                 vtkCommand::ModifiedEvent, this, SIGNAL(volumePropertyChanged()));
   d->VolumePropertyWidget->setVolumeProperty(newVolumeProperty);

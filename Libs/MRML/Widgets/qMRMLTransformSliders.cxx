@@ -42,7 +42,7 @@ public:
   qMRMLTransformSlidersPrivate()
     {
     this->TypeOfTransform = -1;
-    this->MRMLTransformNode = 0;
+    this->MRMLTransformNode = nullptr;
     }
 
   int                                    TypeOfTransform;
@@ -95,8 +95,7 @@ qMRMLTransformSliders::qMRMLTransformSliders(QWidget* slidersParent)
 
 // --------------------------------------------------------------------------
 qMRMLTransformSliders::~qMRMLTransformSliders()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLTransformSliders::setCoordinateReference(CoordinateReferenceType _coordinateReference)
@@ -216,9 +215,9 @@ void qMRMLTransformSliders::setMRMLTransformNode(vtkMRMLTransformNode* transform
   d->PASlider->setMRMLTransformNode(transformNode);
   d->ISSlider->setMRMLTransformNode(transformNode);
 
-  // If the node is NULL, any action on the widget is meaningless, this is why
+  // If the node is nullptr, any action on the widget is meaningless, this is why
   // the widget is disabled
-  this->setEnabled(transformNode != 0 && transformNode->IsLinear());
+  this->setEnabled(transformNode != nullptr && transformNode->IsLinear());
   d->MRMLTransformNode = transformNode;
 }
 

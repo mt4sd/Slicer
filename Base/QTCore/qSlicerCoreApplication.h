@@ -38,6 +38,7 @@
 #ifdef Slicer_BUILD_DICOM_SUPPORT
 class ctkDICOMDatabase;
 #endif
+class ctkErrorLogAbstractModel;
 class QSettings;
 class qSlicerCoreIOManager;
 class qSlicerCoreCommandOptions;
@@ -99,7 +100,7 @@ public:
 
   typedef QApplication Superclass;
   qSlicerCoreApplication(int &argc, char **argv);
-  virtual ~qSlicerCoreApplication();
+  ~qSlicerCoreApplication() override;
 
   /// Return a reference to the application singleton
   static qSlicerCoreApplication* application();
@@ -308,6 +309,9 @@ public:
   void setExtensionsManagerModel(qSlicerExtensionsManagerModel* model);
 #endif
 
+  /// Get errorLogModel
+  Q_INVOKABLE ctkErrorLogAbstractModel* errorLogModel()const;
+
   /// Get the module manager
   Q_INVOKABLE qSlicerModuleManager* moduleManager()const;
 
@@ -413,7 +417,7 @@ public:
   QString os()const;
 
 #ifdef Slicer_BUILD_DICOM_SUPPORT
-  /// Return the active slicer dicom database (will be NULL until set by dicom
+  /// Return the active slicer dicom database (will be nullptr until set by dicom
   /// management code).
   Q_INVOKABLE ctkDICOMDatabase* dicomDatabase() const;
 
@@ -444,6 +448,20 @@ public slots:
   static void restart();
 
   bool unregisterResource(int handle);
+
+  /// Calls setRenderPaused(pause) on the current layout manager.
+  /// Emits pauseRenderRequested() if pause is true and resumeRenderRequested() if pause is false.
+  /// The caller is responsible for making sure that each setRenderPaused(true) is paired with
+  /// setRenderPaused(false).
+  /// Implemented in qSlicerApplication
+  /// \sa qSlicerApplication::setRenderPaused()
+  virtual void setRenderPaused(bool pause) { Q_UNUSED(pause); };
+  /// Equivalent to setRenderPaused(true)
+  /// \sa setRenderPaused
+  virtual void pauseRender() {};
+  /// Equivalent to setRenderPaused(false)
+  /// \sa setRenderPaused
+  virtual void resumeRender() {};
 
 protected:
 

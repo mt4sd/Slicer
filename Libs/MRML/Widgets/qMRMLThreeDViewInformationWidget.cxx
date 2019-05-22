@@ -34,13 +34,12 @@
 qMRMLThreeDViewInformationWidgetPrivate::qMRMLThreeDViewInformationWidgetPrivate(qMRMLThreeDViewInformationWidget& object)
   : q_ptr(&object)
 {
-  this->MRMLViewNode = 0;
+  this->MRMLViewNode = nullptr;
 }
 
 //---------------------------------------------------------------------------
 qMRMLThreeDViewInformationWidgetPrivate::~qMRMLThreeDViewInformationWidgetPrivate()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void qMRMLThreeDViewInformationWidgetPrivate::setupUi(qMRMLWidget* widget)
@@ -58,8 +57,8 @@ void qMRMLThreeDViewInformationWidgetPrivate::updateWidgetFromMRMLViewNode()
 {
   Q_Q(qMRMLThreeDViewInformationWidget);
 
-  q->setEnabled(this->MRMLViewNode != 0);
-  if (this->MRMLViewNode == 0)
+  q->setEnabled(this->MRMLViewNode != nullptr);
+  if (this->MRMLViewNode == nullptr)
     {
     return;
     }
@@ -82,8 +81,7 @@ qMRMLThreeDViewInformationWidget::qMRMLThreeDViewInformationWidget(QWidget* _par
 
 // --------------------------------------------------------------------------
 qMRMLThreeDViewInformationWidget::~qMRMLThreeDViewInformationWidget()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 vtkMRMLViewNode* qMRMLThreeDViewInformationWidget::mrmlViewNode()const

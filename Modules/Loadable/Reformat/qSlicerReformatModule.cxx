@@ -29,12 +29,6 @@
 #include "qSlicerReformatModuleWidget.h"
 
 //------------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerReformatModule, qSlicerReformatModule);
-#endif
-
-//------------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_Reformat
 class qSlicerReformatModulePrivate
 {
@@ -47,8 +41,7 @@ public:
 
 //------------------------------------------------------------------------------
 qSlicerReformatModulePrivate::qSlicerReformatModulePrivate()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 // qSlicerReformatModule methods
@@ -62,8 +55,7 @@ qSlicerReformatModule(QObject* _parent) : Superclass(_parent),
 
 //------------------------------------------------------------------------------
 qSlicerReformatModule::~qSlicerReformatModule()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 QString qSlicerReformatModule::helpText()const

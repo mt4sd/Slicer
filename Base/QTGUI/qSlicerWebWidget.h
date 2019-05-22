@@ -28,27 +28,17 @@
 // QtGUI includes
 #include "qSlicerBaseQTGUIExport.h"
 
-#include "vtkSlicerConfigure.h" // For Slicer_USE_PYTHONQT_WITH_OPENSSL, Slicer_HAVE_WEBKIT_SUPPORT
+#include "vtkSlicerConfigure.h" // For Slicer_USE_PYTHONQT_WITH_OPENSSL
 
 class QNetworkReply;
 class qSlicerWebWidgetPrivate;
 class QUrl;
-#ifdef Slicer_HAVE_WEBKIT_SUPPORT
-class QWebView;
-#else
 class QWebChannel;
 #include <QWebEnginePage>
 class QWebEngineView;
-#endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
-#ifdef QT_NO_OPENSSL
-struct QSslError{};
-#endif
-#else
 #ifdef QT_NO_SSL
 struct QSslError{};
-#endif
 #endif
 
 class Q_SLICER_BASE_QTGUI_EXPORT qSlicerWebWidget
@@ -64,10 +54,10 @@ public:
   typedef QWidget Superclass;
 
   /// Constructor
-  explicit qSlicerWebWidget(QWidget* parent = 0);
+  explicit qSlicerWebWidget(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerWebWidget();
+  ~qSlicerWebWidget() override;
 
   /// \brief Return true if external URL should be open with desktop service.
   ///
@@ -90,11 +80,7 @@ public:
 //  void setProfile(QWebEngineProfile* profile);
 
   /// Return a reference to the QWebView used internally.
-#ifdef Slicer_HAVE_WEBKIT_SUPPORT
-  Q_INVOKABLE QWebView * webView();
-#else
   Q_INVOKABLE QWebEngineView * webView();
-#endif
 
   /// Convenient function to evaluate JS in main frame context
   /// from C++ or Python code
@@ -118,26 +104,27 @@ signals:
   /// emited with result of evalJS
   void evalResult(QString js, QString result);
 
+  /// signal passed through from QWebEngineView
+  void loadStarted();
+  void loadProgress(int progress);
+  void loadFinished(bool ok);
+
 protected slots:
   virtual void initJavascript();
   virtual void onLoadStarted();
+  virtual void onLoadProgress(int progress);
   virtual void onLoadFinished(bool ok);
-#ifdef Slicer_HAVE_WEBKIT_SUPPORT
-  virtual void onLinkClicked(const QUrl& url);
-#endif
   void handleSslErrors(QNetworkReply* reply, const QList<QSslError> &errors);
 
 protected:
-  qSlicerWebWidget(qSlicerWebWidgetPrivate* pimpl, QWidget* parent = 0);
+  qSlicerWebWidget(qSlicerWebWidgetPrivate* pimpl, QWidget* parent = nullptr);
   QScopedPointer<qSlicerWebWidgetPrivate> d_ptr;
 
   /// Event filter used to capture WebView Show and Hide events in order to both set
   /// "document.webkitHidden" property and trigger the associated event.
-  bool eventFilter(QObject *obj, QEvent *event);
+  bool eventFilter(QObject *obj, QEvent *event) override;
 
-#ifndef Slicer_HAVE_WEBKIT_SUPPORT
   virtual bool acceptNavigationRequest(const QUrl & url, QWebEnginePage::NavigationType type, bool isMainFrame);
-#endif
 
 private:
   Q_DECLARE_PRIVATE(qSlicerWebWidget);

@@ -56,6 +56,7 @@
 #include <algorithm>
 #include <cassert>
 #include <ctime>
+#include <mutex>
 #include <set>
 
 #ifdef _WIN32
@@ -89,7 +90,7 @@ public:
   {
     return new vtkSlicerCLIRescheduleCallback;
   }
-  virtual void Execute(vtkObject* caller, unsigned long eid, void *callData)
+  void Execute(vtkObject* caller, unsigned long eid, void *callData) override
   {
     if (std::find(this->ThreadIDs.begin(), this->ThreadIDs.end(),
                   vtkMultiThreader::GetCurrentThreadID()) != this->ThreadIDs.end())
@@ -140,12 +141,12 @@ public:
 protected:
   vtkSlicerCLIRescheduleCallback()
   {
-    this->CLIModuleLogic = 0;
+    this->CLIModuleLogic = nullptr;
     this->Delay = 0;
   }
-  ~vtkSlicerCLIRescheduleCallback()
+  ~vtkSlicerCLIRescheduleCallback() override
   {
-    this->SetCLIModuleLogic(0);
+    this->SetCLIModuleLogic(nullptr);
   }
 
   vtkSlicerCLIModuleLogic* CLIModuleLogic;
@@ -166,7 +167,7 @@ public:
   {
     return new vtkSlicerCLIOneShotCallbackCallback;
   }
-  virtual void Execute(vtkObject* caller, unsigned long eid, void *callData)
+  void Execute(vtkObject* caller, unsigned long eid, void *callData) override
   {
     if (callData)
     {
@@ -176,7 +177,7 @@ public:
         vtkCallbackCommand *callback = vtkCallbackCommand::SafeDownCast(object);
         if (callback)
         {
-          callback->Execute(caller, eid, 0);
+          callback->Execute(caller, eid, nullptr);
 
           // delete the callback
           callback->Delete();
@@ -187,8 +188,8 @@ public:
     }
   }
   protected:
-  vtkSlicerCLIOneShotCallbackCallback() {}
-  ~vtkSlicerCLIOneShotCallbackCallback() {}
+  vtkSlicerCLIOneShotCallbackCallback()  = default;
+  ~vtkSlicerCLIOneShotCallbackCallback() override  = default;
 };
 
 //----------------------------------------------------------------------------
@@ -201,7 +202,7 @@ public:
 
   int RedirectModuleStreams;
 
-  itk::MutexLock::Pointer ProcessesKillLock;
+  std::mutex ProcessesKillLock;
   std::vector<itksysProcess*> Processes;
 
   typedef std::vector<std::pair<vtkMTimeType, vtkMRMLCommandLineModuleNode*> > RequestType;
@@ -213,13 +214,13 @@ public:
     {
     }
     FindRequest(vtkMTimeType requestUID)
-      : Node(0)
+      : Node(nullptr)
       , LastRequestUID(requestUID)
     {
     }
     bool operator()(const std::pair<vtkMTimeType, vtkMRMLCommandLineModuleNode*>& p)
     {
-      return (this->Node != 0 && p.second == this->Node) ||
+      return (this->Node != nullptr && p.second == this->Node) ||
         (this->LastRequestUID != 0 && p.first == this->LastRequestUID);
     }
     vtkMRMLCommandLineModuleNode* Node;
@@ -297,7 +298,6 @@ vtkSlicerCLIModuleLogic::vtkSlicerCLIModuleLogic()
 {
   this->Internal = new vtkInternal();
 
-  this->Internal->ProcessesKillLock = itk::MutexLock::New();
   this->Internal->DeleteTemporaryFiles = 1;
   this->Internal->AllowInMemoryTransfer = 1;
   this->Internal->RedirectModuleStreams = 1;
@@ -677,7 +677,7 @@ void vtkSlicerCLIModuleLogic::ApplyAndWait ( vtkMRMLCommandLineModuleNode* node,
 //-----------------------------------------------------------------------------
 void vtkSlicerCLIModuleLogic::KillProcesses()
 {
-  this->Internal->ProcessesKillLock->Lock();
+  this->Internal->ProcessesKillLock.lock();
   for (std::vector<itksysProcess*>::iterator it = this->Internal->Processes.begin();
        it != this->Internal->Processes.end();
        ++it)
@@ -685,7 +685,7 @@ void vtkSlicerCLIModuleLogic::KillProcesses()
     itksysProcess* process = *it;
     itksysProcess_Kill(process);
     }
-  this->Internal->ProcessesKillLock->Unlock();
+  this->Internal->ProcessesKillLock.unlock();
 }
 
 //-----------------------------------------------------------------------------
@@ -822,7 +822,7 @@ void vtkSlicerCLIModuleLogic
 void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
 {
   // check if MRML node is present
-  if (clientdata == NULL)
+  if (clientdata == nullptr)
     {
     vtkErrorMacro("No input CommandLineModuleNode found");
     return;
@@ -853,7 +853,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
 
   // Determine the type of the module: command line or shared object
   int (*entryPoint)(int argc, char* argv[]);
-  entryPoint = NULL;
+  entryPoint = nullptr;
   CommandLineModuleType commandType = CommandLineModule;
 
   std::string target
@@ -871,7 +871,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
     qDebug() << "Found CommandLine Module, target is "
              << node0->GetModuleDescription().GetTarget().c_str();
     commandType = CommandLineModule;
-    if ( entryPoint != NULL )
+    if ( entryPoint != nullptr )
       {
       vtkWarningMacro("Module reports that it is a Command Line Module but has a shared object module target. " << target.c_str());
       }
@@ -882,7 +882,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
     qDebug() << "Found SharedObject Module";
 
     commandType = SharedObjectModule;
-    if ( entryPoint == NULL )
+    if ( entryPoint == nullptr )
       {
       vtkWarningMacro("Module reports that it is a Shared Object Module but does not have a shared object module target. " << target.c_str());
       }
@@ -1018,8 +1018,8 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
     vtkMRMLNode *nd
       = this->GetMRMLScene()->GetNodeByID( (*id2fn0).first.c_str() );
 
-    vtkSmartPointer<vtkMRMLStorageNode> out = 0;
-    vtkSmartPointer<vtkMRMLStorageNode> defaultOut = 0;
+    vtkSmartPointer<vtkMRMLStorageNode> out = nullptr;
+    vtkSmartPointer<vtkMRMLStorageNode> defaultOut = nullptr;
 
     vtkMRMLStorableNode *sn = dynamic_cast<vtkMRMLStorableNode *>(nd);
     if (sn)
@@ -1074,7 +1074,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
           {
           // not using a storage node.  using a mini-scene to transfer
           // the node
-          out = 0;  // don't use the storage node
+          out = nullptr;  // don't use the storage node
 
           vtkMRMLNode *cp = miniscene->CopyNode(nd);
 
@@ -1123,7 +1123,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
         {
         vtkErrorMacro("ERROR writing file " << out->GetFileName());
         }
-      out = 0;
+      out = nullptr;
       }
     }
 
@@ -1265,7 +1265,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz";
-    srand(time(0));
+    srand(time(nullptr));
 
     std::ostringstream code;
     for (int ii = 0; ii < 10; ii++)
@@ -1502,7 +1502,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
               if (nthHierarchyNode)
                 {
                 vtkMRMLDisplayableHierarchyNode *nthDisplayableHierarchyNode = vtkMRMLDisplayableHierarchyNode::SafeDownCast(nthHierarchyNode);
-                vtkMRMLDisplayableNode *displayableNode = NULL;
+                vtkMRMLDisplayableNode *displayableNode = nullptr;
                 if (nthDisplayableHierarchyNode)
                   {
                   displayableNode = nthDisplayableHierarchyNode->GetDisplayableNode();
@@ -1638,7 +1638,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
               if (nthHierarchyNode)
                 {
                 vtkMRMLDisplayableHierarchyNode *nthDisplayableHierarchyNode = vtkMRMLDisplayableHierarchyNode::SafeDownCast(nthHierarchyNode);
-                vtkMRMLDisplayableNode *displayableNode = NULL;
+                vtkMRMLDisplayableNode *displayableNode = nullptr;
                 if (nthDisplayableHierarchyNode)
                   {
                   displayableNode = nthDisplayableHierarchyNode->GetDisplayableNode();
@@ -1800,7 +1800,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
     {
     command[i] = const_cast<char*>(commandLineAsString[i].c_str());
     }
-  command[commandLineAsString.size()] = 0;
+  command[commandLineAsString.size()] = nullptr;
 
   // print the command line
   //
@@ -1907,7 +1907,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
         }
 
       // Capture the output from the filter
-      if (length != 0 && tbuffer != 0)
+      if (length != 0 && tbuffer != nullptr)
         {
         if (pipe == itksysProcess_Pipe_STDOUT)
           {
@@ -1980,9 +1980,9 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
           }
         }
       }
-    this->Internal->ProcessesKillLock->Lock();
-    itksysProcess_WaitForExit(process, 0);
-    this->Internal->ProcessesKillLock->Unlock();
+    this->Internal->ProcessesKillLock.lock();
+    itksysProcess_WaitForExit(process, nullptr);
+    this->Internal->ProcessesKillLock.unlock();
 
     // remove the embedded XML from the stdout stream
     //
@@ -2143,11 +2143,11 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
         }
 
       // clean up
-      this->Internal->ProcessesKillLock->Lock();
+      this->Internal->ProcessesKillLock.lock();
       this->Internal->Processes.erase(
             std::find(this->Internal->Processes.begin(), this->Internal->Processes.end(), process));
       itksysProcess_Delete(process);
-      this->Internal->ProcessesKillLock->Unlock();
+      this->Internal->ProcessesKillLock.unlock();
       }
     }
   else if ( commandType == SharedObjectModule )
@@ -2171,7 +2171,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
         }
 
       // run the module
-      if ( entryPoint != NULL ) {
+      if ( entryPoint != nullptr ) {
         returnValue = (*entryPoint)(commandLineAsString.size(), command);
       }
 
@@ -2311,7 +2311,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
 //       (PyObject*)(vtkSlicerApplication::GetInstance()->GetPythonDictionary()),
 //       (PyObject*)(vtkSlicerApplication::GetInstance()->GetPythonDictionary()));
 //
-//     if (v == NULL || PyErr_Occurred())
+//     if (v == nullptr || PyErr_Occurred())
 //       {
 //       node0->SetStatus(vtkMRMLCommandLineModuleNode::CompletedWithErrors, false);
 //       PyErr_Print();
@@ -2446,22 +2446,29 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
     }
 
 
-    // rewire the mrml scene as directed
+    // Rewire the MRML scene as directed
     //
-    // 1. if an output transform has a reference, then that reference is placed under the transform.
+    // 1. If an output transform has a reference, then that reference is placed under the transform.
     //        (subject, predicate, object) = (reference, setTransform, transform)
     //
-    // 2. if an output volume/model has a reference, then that output volume/model is placed in the
+    // 2. If an output volume/model has a reference, then that output volume/model is placed in the
     // same spot of the subject hierarchy as the reference.
     //        (subject, predicate, object) = (reference, setParent, volume/model)
+    //
+    // 3. If a node has a forward reference (reference as a child element not an attribute, which
+    // specifies reference from the place where it was defined as opposed to 1. which points
+    // backwards), then a node reference is added from that node to the specified node with a given
+    // role.
+    //        (subject, predicate, object) = (node, addNodeReference, referencedNode)
+    //
+    // Warning: Never make any call that results in a Modified event. Instead, do a request
+    //          (see the solutions below)
     //
     for (pgit = pgbeginit; pgit != pgendit; ++pgit)
       {
       // iterate over each parameter in this group
-      std::vector<ModuleParameter>::const_iterator pbeginit
-        = (*pgit).GetParameters().begin();
-      std::vector<ModuleParameter>::const_iterator pendit
-        = (*pgit).GetParameters().end();
+      std::vector<ModuleParameter>::const_iterator pbeginit = (*pgit).GetParameters().begin();
+      std::vector<ModuleParameter>::const_iterator pendit = (*pgit).GetParameters().end();
       std::vector<ModuleParameter>::const_iterator pit;
 
       for (pit = pbeginit; pit != pendit; ++pit)
@@ -2493,7 +2500,7 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
                   // Multiple transform nodes can refer to the same transformable node (e.g., linear or bspline transform
                   // can be computed, whichever is computed should transform the moving volume),
                   // we only want to use the transform that is not None.
-                  if (trefNode != NULL && !transformNodeID.empty())
+                  if (trefNode != nullptr && !transformNodeID.empty())
                     {
                     // Place a request to update parent transform based of the referenced node
                     vtkMTimeType requestUID = this->GetApplicationLogic()
@@ -2513,10 +2520,6 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
                     this->Internal->SetLastRequest(node0, requestUID);
                     }
                   }
-                else
-                  {
-                  // TODO: other reference types
-                  }
                 }
               else
                 {
@@ -2527,6 +2530,39 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
           else
             {
             vtkWarningMacro( << "Referenced parameter unknown: " << (*pit).GetReference() );
+            }
+          }
+        // does parameter have forward references?
+        std::map<std::string,std::vector<std::string> > forwardReferences;
+        (*pit).GetForwardReferences(forwardReferences);
+        if (forwardReferences.size() > 0)
+          {
+          std::string referencingNodeID = (*pit).GetValue();
+          if (referencingNodeID.size() > 0)
+            {
+            std::map<std::string,std::vector<std::string> >::const_iterator frit;
+            for (frit = forwardReferences.begin(); frit != forwardReferences.end(); ++frit)
+              {
+              std::string role = frit->first;
+
+              std::vector<std::string>::const_iterator frvit;
+              for (frvit = frit->second.begin(); frvit != frit->second.end(); ++frvit)
+                {
+                // does the reference parameter exist?
+                if (node0->GetModuleDescription().HasParameter(*frvit))
+                  {
+                  // get the id stored in the parameter referenced
+                  std::string referencedNodeID = node0->GetModuleDescription().GetParameterValue(*frvit);
+                  if (referencedNodeID.size() > 0)
+                    {
+                    // Place a request to add node reference
+                    vtkMTimeType requestUID = this->GetApplicationLogic()
+                      ->RequestAddNodeReference(referencingNodeID, referencedNodeID, role);
+                    this->Internal->SetLastRequest(node0, requestUID);
+                    }
+                  }
+                } // for frvit (referenced nodes)
+              } // for frit (forward references)
             }
           }
         } // for pit

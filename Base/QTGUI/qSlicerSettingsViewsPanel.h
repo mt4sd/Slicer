@@ -49,10 +49,10 @@ public:
   typedef ctkSettingsPanel Superclass;
 
   /// Constructor
-  explicit qSlicerSettingsViewsPanel(QWidget* parent = 0);
+  explicit qSlicerSettingsViewsPanel(QWidget* parent = nullptr);
 
   /// Destructor
-  virtual ~qSlicerSettingsViewsPanel();
+  ~qSlicerSettingsViewsPanel() override;
 
   /// Get current value as string
   QString currentMSAA() const;

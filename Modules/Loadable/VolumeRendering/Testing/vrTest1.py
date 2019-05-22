@@ -1,3 +1,4 @@
+from __future__ import print_function
 import slicer
 import qt
 import os
@@ -5,7 +6,7 @@ import os
 #from libVolumeRenderingMRMLPython import *
 
 def load_default_volume():
-  if not getNodes().has_key('moving'):
+  if 'moving' not in getNodes():
     fileName = "c:/alexy/Slicer4/Libs/MRML/Core/Testing/TestData/moving.nrrd"
     #fileName = os.environ['SLICER_HOME'] + "/share/MRML/Testing/TestData/moving.nrrd"
     #fileName = os.environ['HOME'] + "/Dropbox/data/faces/neutral.nrrd"
@@ -82,7 +83,7 @@ def vr4():
   vrdn.SetCurrentVolumeMapper(4)
 
 def vrthres(value):
-  print("set threshold to", value)
+  print(("set threshold to", value))
   vrdn = getNode('vtkMRMLVolumeRenderingDisplayNode')
   vpn = vrdn.GetVolumePropertyNode()
   vp = vpn.GetVolumeProperty()

@@ -62,7 +62,7 @@ protected:
   qSlicerSubjectHierarchyLabelMapsPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyLabelMapsPluginPrivate(qSlicerSubjectHierarchyLabelMapsPlugin& object);
-  ~qSlicerSubjectHierarchyLabelMapsPluginPrivate();
+  ~qSlicerSubjectHierarchyLabelMapsPluginPrivate() override;
   void init();
 public:
   QIcon LabelmapIcon;
@@ -79,7 +79,7 @@ qSlicerSubjectHierarchyLabelMapsPluginPrivate::qSlicerSubjectHierarchyLabelMapsP
 {
   this->LabelmapIcon = QIcon(":Icons/Labelmap.png");
 
-  this->ToggleOutlineVisibilityAction = NULL;
+  this->ToggleOutlineVisibilityAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -95,8 +95,7 @@ void qSlicerSubjectHierarchyLabelMapsPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyLabelMapsPluginPrivate::~qSlicerSubjectHierarchyLabelMapsPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyLabelMapsPlugin methods
@@ -114,8 +113,7 @@ qSlicerSubjectHierarchyLabelMapsPlugin::qSlicerSubjectHierarchyLabelMapsPlugin(Q
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyLabelMapsPlugin::~qSlicerSubjectHierarchyLabelMapsPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchyLabelMapsPlugin::canAddNodeToSubjectHierarchy(
@@ -124,7 +122,7 @@ double qSlicerSubjectHierarchyLabelMapsPlugin::canAddNodeToSubjectHierarchy(
   Q_UNUSED(parentItemID);
   if (!node)
     {
-    qCritical() << Q_FUNC_INFO << ": Input node is NULL!";
+    qCritical() << Q_FUNC_INFO << ": Input node is nullptr!";
     return 0.0;
     }
   else if (node->IsA("vtkMRMLLabelMapVolumeNode"))
@@ -340,7 +338,7 @@ void qSlicerSubjectHierarchyLabelMapsPlugin::showVisibilityContextMenuActionsFor
 void qSlicerSubjectHierarchyLabelMapsPlugin::toggle2DOutlineVisibility(bool checked)
 {
   vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
-  vtkMRMLSliceNode* sliceNode = NULL;
+  vtkMRMLSliceNode* sliceNode = nullptr;
   const int numberOfSliceNodes = scene->GetNumberOfNodesByClass("vtkMRMLSliceNode");
 
   for (int i=0; i<numberOfSliceNodes; i++)

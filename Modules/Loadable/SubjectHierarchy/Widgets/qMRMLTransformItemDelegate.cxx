@@ -55,7 +55,7 @@ void DelegateMenu::showEvent(QShowEvent* event)
 qMRMLTransformItemDelegate::qMRMLTransformItemDelegate(QObject *parent)
   : QStyledItemDelegate(parent)
 {
-  this->MRMLScene = NULL;
+  this->MRMLScene = nullptr;
   this->FixedRowHeight = -1;
 
   this->NoneAction = new QAction("None", this);
@@ -73,8 +73,7 @@ qMRMLTransformItemDelegate::qMRMLTransformItemDelegate(QObject *parent)
 
 //------------------------------------------------------------------------------
 qMRMLTransformItemDelegate::~qMRMLTransformItemDelegate()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qMRMLTransformItemDelegate::setMRMLScene(vtkMRMLScene* scene)
@@ -147,7 +146,7 @@ void qMRMLTransformItemDelegate::setEditorData(QWidget *editor, const QModelInde
       qCritical() << Q_FUNC_INFO << ": Invalid editor widget";
       return;
       }
-    QAction* actionForTransform = NULL;
+    QAction* actionForTransform = nullptr;
     if (transformNodeID.isEmpty())
       {
       actionForTransform = this->NoneAction;

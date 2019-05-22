@@ -199,7 +199,7 @@ class RSNAQuantTutorialTest(ScriptedLoadableModuleTest):
       logic.takeScreenshot('Ruler','Ruler used to measure tumor diameter',-1)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -296,7 +296,7 @@ class RSNAQuantTutorialTest(ScriptedLoadableModuleTest):
       logic.takeScreenshot('PETCT-TumorUptake','No uptake in the area of the primary tumor',-1)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -359,7 +359,7 @@ class RSNAQuantTutorialTest(ScriptedLoadableModuleTest):
       slicer.util.clickAndDrag(redWidget,button='Middle')
       logic.takeScreenshot('ChangeTracker-Pan','Inspect - pan',-1)
 
-      for offset in xrange(-20,20,2):
+      for offset in range(-20,20,2):
         redController.setSliceOffsetValue(offset)
       logic.takeScreenshot('ChangeTracker-Scroll','Inspect - scroll',-1)
 
@@ -389,8 +389,8 @@ class RSNAQuantTutorialTest(ScriptedLoadableModuleTest):
       logic.takeScreenshot('ChangeTracker-GoForward','Go Forward',-1)
 
       checkList = changeTracker.analyzeROIStep._ChangeTrackerAnalyzeROIStep__metricCheckboxList
-      index = checkList.values().index('IntensityDifferenceMetric')
-      checkList.keys()[index].checked = True
+      index = list(checkList.values()).index('IntensityDifferenceMetric')
+      list(checkList.keys())[index].checked = True
       logic.takeScreenshot('ChangeTracker-PickMetric','Select the ROI analysis method',-1)
 
       changeTracker.workflow.goForward()
@@ -404,7 +404,7 @@ class RSNAQuantTutorialTest(ScriptedLoadableModuleTest):
       compareWidget = layoutManager.sliceWidget('Compare1')
       style = compareWidget.interactorStyle()
       interactor = style.GetInteractor()
-      for step in xrange(100):
+      for step in range(100):
         interactor.SetEventPosition(10,step)
         style.OnMouseMove()
 
@@ -416,13 +416,13 @@ class RSNAQuantTutorialTest(ScriptedLoadableModuleTest):
 
       self.delayDisplay('Inspect - scroll')
       compareController = redWidget.sliceController()
-      for offset in xrange(10,30,2):
+      for offset in range(10,30,2):
         compareController.setSliceOffsetValue(offset)
 
       logic.takeScreenshot('ChangeTracker-InspectResults','Inspected results',-1)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))

@@ -46,7 +46,7 @@ public:
 
   static vtkTopologicalHierarchy *New();
   vtkTypeMacro(vtkTopologicalHierarchy, vtkObject );
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Get output topological hierarchy levels
   virtual vtkIntArray* GetOutputLevels();
@@ -99,11 +99,11 @@ protected:
 
 protected:
   vtkTopologicalHierarchy();
-  ~vtkTopologicalHierarchy();
+  ~vtkTopologicalHierarchy() override;
 
 private:
-  vtkTopologicalHierarchy(const vtkTopologicalHierarchy&); // Not implemented
-  void operator=(const vtkTopologicalHierarchy&);               // Not implemented
+  vtkTopologicalHierarchy(const vtkTopologicalHierarchy&) = delete;
+  void operator=(const vtkTopologicalHierarchy&) = delete;
 };
 
 #endif

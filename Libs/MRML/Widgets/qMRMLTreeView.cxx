@@ -57,18 +57,18 @@
 qMRMLTreeViewPrivate::qMRMLTreeViewPrivate(qMRMLTreeView& object)
   : q_ptr(&object)
 {
-  this->SceneModel = 0;
-  this->SortFilterModel = 0;
+  this->SceneModel = nullptr;
+  this->SortFilterModel = nullptr;
   this->FitSizeToVisibleIndexes = true;
   this->TreeViewSizeHint = QSize();
   this->TreeViewMinSizeHint = QSize(120, 120);
   this->ShowScene = true;
   this->ShowRootNode = false;
-  this->NodeMenu = 0;
-  this->RenameAction = 0;
-  this->DeleteAction = 0;
-  this->EditAction = 0;
-  this->SceneMenu = 0;
+  this->NodeMenu = nullptr;
+  this->RenameAction = nullptr;
+  this->DeleteAction = nullptr;
+  this->EditAction = nullptr;
+  this->SceneMenu = nullptr;
   this->ExpandedNodes = vtkCollection::New();
 }
 //------------------------------------------------------------------------------
@@ -316,8 +316,7 @@ qMRMLTreeView::qMRMLTreeView(qMRMLTreeViewPrivate* pimpl, QWidget *parentObject)
 
 //------------------------------------------------------------------------------
 qMRMLTreeView::~qMRMLTreeView()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qMRMLTreeView::setMRMLScene(vtkMRMLScene* scene)
@@ -343,7 +342,7 @@ void qMRMLTreeView::setSceneModelType(const QString& modelName)
 {
   Q_D(qMRMLTreeView);
 
-  qMRMLSceneModel* newModel = 0;
+  qMRMLSceneModel* newModel = nullptr;
   qMRMLSortFilterProxyModel* newFilterModel = d->SortFilterModel;
   // switch on the incoming model name
   if (modelName == QString("Transform"))
@@ -407,7 +406,7 @@ void qMRMLTreeView::setSortFilterProxyModel(qMRMLSortFilterProxyModel* newFilter
 vtkMRMLScene* qMRMLTreeView::mrmlScene()const
 {
   Q_D(const qMRMLTreeView);
-  return d->SceneModel ? d->SceneModel->mrmlScene() : 0;
+  return d->SceneModel ? d->SceneModel->mrmlScene() : nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -431,7 +430,7 @@ void qMRMLTreeView::onSelectionChanged(const QItemSelection & selected,
 {
   Q_UNUSED(deselected);
   Q_D(qMRMLTreeView);
-  vtkMRMLNode* newCurrentNode = 0;
+  vtkMRMLNode* newCurrentNode = nullptr;
   if (selected.indexes().count() > 0)
     {
     newCurrentNode = d->SortFilterModel->mrmlNodeFromIndex(selected.indexes()[0]);
@@ -633,7 +632,7 @@ void qMRMLTreeView::setRootNode(vtkMRMLNode* rootNode)
   // could potentially be filtered out.
   this->sortFilterProxyModel()->setHideNodesUnaffiliatedWithNodeID(QString());
   QModelIndex treeRootIndex;
-  if (rootNode == 0)
+  if (rootNode == nullptr)
     {
     if (!d->ShowScene)
       {
@@ -793,11 +792,7 @@ void qMRMLTreeView::mouseReleaseEvent(QMouseEvent* e)
     {
     // get the index of the current column
     QModelIndex index = this->indexAt(e->pos());
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    QStyleOptionViewItemV4 opt = this->viewOptions();
-#else
     QStyleOptionViewItem opt = this->viewOptions();
-#endif
     opt.rect = this->visualRect(index);
     qobject_cast<qMRMLItemDelegate*>(this->itemDelegate())->initStyleOption(&opt,index);
     QRect decorationElement =
@@ -879,7 +874,7 @@ void qMRMLTreeView::toggleVisibility(const QModelIndex& index)
     if (nodeTypes.empty())
       {
       vtkMRMLModelHierarchyLogic::SetChildrenVisibility(displayableHierarchyNode,
-                                                        0, 0, visibility);
+                                                        nullptr, nullptr, visibility);
       }
     for (std::map<std::string, std::string>::iterator it = nodeTypes.begin();
          it != nodeTypes.end(); it++)
@@ -897,7 +892,7 @@ void qMRMLTreeView::toggleVisibility(const QModelIndex& index)
   else if (selectionNode && displayableNode)
     {
     char *displayableType = (char *)node->GetClassName();
-    char *displayType = 0;
+    char *displayType = nullptr;
     std::string ds = selectionNode->GetModelHierarchyDisplayNodeClassName(displayableType);
     if (!ds.empty())
       {

@@ -37,7 +37,7 @@ public:
   /// Create a new vtkMRMLVolumePropertyNode
   static vtkMRMLVolumePropertyNode *New();
   vtkTypeMacro(vtkMRMLVolumePropertyNode,vtkMRMLStorableNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Don't change its scalarOpacity, gradientOpacity or color on the volume property
   /// but use the methods below. It wouldn't observe them.
@@ -138,36 +138,36 @@ public:
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// Copy only the parameter set (like volume properties, piecewise functions
   /// etc. as deep copy, but no references etc.)
   void CopyParameterSet(vtkMRMLNode *node);
 
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "VolumeProperty";}
+  const char* GetNodeTagName() override {return "VolumeProperty";}
 
   /// Reimplemented for internal reasons.
-  virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
+  void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData) override;
 
-  /// Create default storage node or NULL if does not have one
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE;
+  /// Create default storage node or nullptr if does not have one
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override;
 
   /// \sa vtkMRMLStorableNode::GetModifiedSinceRead()
-  virtual bool GetModifiedSinceRead() VTK_OVERRIDE;
+  bool GetModifiedSinceRead() override;
 
 protected:
   vtkMRMLVolumePropertyNode(void);
-  ~vtkMRMLVolumePropertyNode(void);
+  ~vtkMRMLVolumePropertyNode(void) override;
 
   static int NodesFromString(const std::string& dataString, double* &data, int nodeSize);
   static int DataFromString(const std::string& dataString, double* &data);
@@ -211,8 +211,8 @@ protected:
 
 private:
   /// Caution: Not implemented
-  vtkMRMLVolumePropertyNode(const vtkMRMLVolumePropertyNode&);//Not implemented
-  void operator=(const vtkMRMLVolumePropertyNode&);// Not implemented
+  vtkMRMLVolumePropertyNode(const vtkMRMLVolumePropertyNode&) = delete;
+  void operator=(const vtkMRMLVolumePropertyNode&) = delete;
 
 };
 

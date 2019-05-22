@@ -66,8 +66,8 @@ class Q_SLICER_MODULE_SUBJECTHIERARCHY_WIDGETS_EXPORT qMRMLSubjectHierarchyTreeV
 
 public:
   typedef QTreeView Superclass;
-  qMRMLSubjectHierarchyTreeView(QWidget *parent=0);
-  virtual ~qMRMLSubjectHierarchyTreeView();
+  qMRMLSubjectHierarchyTreeView(QWidget *parent=nullptr);
+  ~qMRMLSubjectHierarchyTreeView() override;
 
 public:
   Q_INVOKABLE vtkMRMLScene* mrmlScene()const;
@@ -184,6 +184,9 @@ public slots:
   void setEditMenuActionVisible(bool visible);
   void setSelectRoleSubMenuVisible(bool visible);
 
+  /// Resets column sizes and size policies to default.
+  void resetColumnSizesToDefault();
+
 signals:
   void currentItemChanged(vtkIdType);
   void currentItemModified(vtkIdType);
@@ -234,9 +237,9 @@ protected:
   /// \return True if decoration of an enabled item was indeed clicked (and event handled). False otherwise
   virtual bool clickDecoration(QMouseEvent* e);
   /// Handle mouse press event
-  virtual void mousePressEvent(QMouseEvent* e);
+  void mousePressEvent(QMouseEvent* e) override;
   /// Handle key press event
-  virtual void keyPressEvent(QKeyEvent* e);
+  void keyPressEvent(QKeyEvent* e) override;
 
   /// Apply highlight for subject hierarchy items referenced by argument items by DICOM
   /// \sa highlightReferencedItems

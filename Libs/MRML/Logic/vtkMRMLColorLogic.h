@@ -38,7 +38,7 @@ public:
   /// The Usual vtk class functions
   static vtkMRMLColorLogic *New();
   vtkTypeMacro(vtkMRMLColorLogic,vtkMRMLAbstractLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// \brief Add default color nodes.
   ///
@@ -201,7 +201,7 @@ public:
   /// it's storage node, turn off hide from editors, remove the
   /// singleton tag.
   /// \sa CreateFileNode, CreateProceduralFileNode
-  vtkMRMLColorNode* LoadColorFile(const char *fileName, const char *nodeName = NULL);
+  vtkMRMLColorNode* LoadColorFile(const char *fileName, const char *nodeName = nullptr);
 
   /// Get/Set the user defined paths where to look for extra colour files
   vtkGetStringMacro(UserColorFilePaths);
@@ -221,13 +221,13 @@ public:
 
 protected:
   vtkMRMLColorLogic();
-  virtual ~vtkMRMLColorLogic();
+  ~vtkMRMLColorLogic() override;
   // disable copy constructor and operator
   vtkMRMLColorLogic(const vtkMRMLColorLogic&);
   void operator=(const vtkMRMLColorLogic&);
 
   /// Reimplemented to listen to specific scene events
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
   /// Called when the scene fires vtkMRMLScene::NewSceneEvent.
   /// We add the default LUTs.

@@ -48,7 +48,7 @@ public:
 public:
   static vtkSlicerSubjectHierarchyModuleLogic *New();
   vtkTypeMacro(vtkSlicerSubjectHierarchyModuleLogic,vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 public:
   /// Place series in subject hierarchy. Create subject and study node if needed
@@ -81,7 +81,7 @@ public:
   /// Apply transform node as parent transform on subject hierarchy node and on all children, recursively
   /// \param shNode Subject hierarchy where item can be found
   /// \param itemID Subject hierarchy item defining branch to apply transform on
-  /// \param transformNode Transform node to apply. If NULL, then any existing transform is removed
+  /// \param transformNode Transform node to apply. If nullptr, then any existing transform is removed
   /// \param hardenExistingTransforms Mode of handling already transformed nodes. If true (default), then the possible parent transforms
   ///   of target nodes are hardened before applying the specified transform. If false, then the already applied parent transforms are
   ///   transformed with the specified transform (Note: this latter approach may result in unwanted transformations of other nodes)
@@ -98,25 +98,25 @@ public:
   /// \param name Custom name. If omitted, then default postfix is added from \sa node
   /// \return Clone subject hierarchy node
   static vtkIdType CloneSubjectHierarchyItem(
-    vtkMRMLSubjectHierarchyNode* shNode, vtkIdType itemID, const char* name=NULL );
+    vtkMRMLSubjectHierarchyNode* shNode, vtkIdType itemID, const char* name=nullptr );
 
   /// Convenience function to get subject hierarchy node from the logic
   vtkMRMLSubjectHierarchyNode* GetSubjectHierarchyNode();
 
 protected:
   /// Called each time a new scene is set
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
   /// Called every time the scene has been significantly changed.
-  virtual void UpdateFromMRMLScene() VTK_OVERRIDE;
+  void UpdateFromMRMLScene() override;
 
 protected:
   vtkSlicerSubjectHierarchyModuleLogic();
-  virtual ~vtkSlicerSubjectHierarchyModuleLogic();
+  ~vtkSlicerSubjectHierarchyModuleLogic() override;
 
 private:
-  vtkSlicerSubjectHierarchyModuleLogic(const vtkSlicerSubjectHierarchyModuleLogic&); // Not implemented
-  void operator=(const vtkSlicerSubjectHierarchyModuleLogic&); // Not implemented
+  vtkSlicerSubjectHierarchyModuleLogic(const vtkSlicerSubjectHierarchyModuleLogic&) = delete;
+  void operator=(const vtkSlicerSubjectHierarchyModuleLogic&) = delete;
 };
 
 #endif

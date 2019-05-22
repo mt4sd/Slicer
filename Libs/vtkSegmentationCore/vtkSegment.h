@@ -53,7 +53,7 @@ public:
 
   static vtkSegment* New();
   vtkTypeMacro(vtkSegment, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Set attributes from name/value pairs
   virtual void ReadXMLAttributes(const char** atts);
@@ -74,14 +74,16 @@ public:
   /// Get representation of a given type. This class is not responsible for conversion, only storage!
   /// \param name Representation name. Default representation names can be queried from \sa vtkSegmentationConverter,
   ///   for example by calling vtkSegmentationConverter::GetSegmentationBinaryLabelmapRepresentationName()
-  /// \return The specified representation object, NULL if not present
+  /// \return The specified representation object, nullptr if not present
   vtkDataObject* GetRepresentation(std::string name);
 
   /// Add representation
-  void AddRepresentation(std::string type, vtkDataObject* representation);
+  /// \return True if the representation is changed.
+  bool AddRepresentation(std::string type, vtkDataObject* representation);
 
-  /// Remove representation of given type
-  void RemoveRepresentation(std::string name);
+  /// Remove representation of given type.
+  /// \return True if there was a representation that was removed.
+  bool RemoveRepresentation(std::string name);
 
   /// Remove all representations except one if specified. Fires only one Modified event
   /// \param exceptionRepresentationName Exception name that will not be removed
@@ -126,7 +128,7 @@ public:
 
 protected:
   vtkSegment();
-  ~vtkSegment();
+  ~vtkSegment() override;
   void operator=(const vtkSegment&);
 
 protected:

@@ -1,10 +1,11 @@
+from __future__ import print_function
 import os
 import vtk
 import qt
 import ctk
 import slicer
-from EditUtil import EditUtil
-import Effect
+from . import EditUtil
+from . import EffectOptions, EffectTool, EffectLogic, Effect
 
 __all__ = [
   'LabelEffectOptions',
@@ -32,7 +33,7 @@ comment = """
 # LabelEffectOptions - see EditOptions and Effect for superclasses
 #
 
-class LabelEffectOptions(Effect.EffectOptions):
+class LabelEffectOptions(EffectOptions):
   """ LabelEffect-specfic gui
   """
 
@@ -158,7 +159,7 @@ class LabelEffectOptions(Effect.EffectOptions):
 # LabelEffectTool
 #
 
-class LabelEffectTool(Effect.EffectTool):
+class LabelEffectTool(EffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -200,7 +201,7 @@ class LabelEffectTool(Effect.EffectTool):
 # LabelEffectLogic
 #
 
-class LabelEffectLogic(Effect.EffectLogic):
+class LabelEffectLogic(EffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an LabelEffectTool
@@ -385,7 +386,7 @@ class LabelEffectLogic(Effect.EffectLogic):
     br = [0,] * 3
     corners = ((tlIJK, tl),(trIJK, tr),(blIJK, bl),(brIJK, br))
     for corner,clampedCorner in corners:
-      for d in xrange(3):
+      for d in range(3):
         clamped = int(round(corner[d]))
         if clamped < 0: clamped = 0
         if clamped >= dims[d]: clamped = dims[d]-1
@@ -487,7 +488,7 @@ class LabelEffectLogic(Effect.EffectLogic):
 # The LabelEffect class definition
 #
 
-class LabelEffect(Effect.Effect):
+class LabelEffect(Effect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

@@ -17,23 +17,23 @@ class  VTK_SLICER_ANNOTATIONS_MODULE_MRML_EXPORT vtkMRMLAnnotationHierarchyNode 
 public:
   static vtkMRMLAnnotationHierarchyNode *New();
   vtkTypeMacro(vtkMRMLAnnotationHierarchyNode,vtkMRMLDisplayableHierarchyNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   virtual const char* GetIcon() {return ":/Icons/Medium/SlicerHierarchy.png";};
 
   // Description:
   // Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   // Description:
   // Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   // Description:
   // Get node XML tag name (like Volume, Annotation)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE;
+  const char* GetNodeTagName() override;
 
   // Description:
   // Get all top level children associated to this node.
@@ -60,7 +60,7 @@ public:
 
 protected:
   vtkMRMLAnnotationHierarchyNode();
-  ~vtkMRMLAnnotationHierarchyNode();
+  ~vtkMRMLAnnotationHierarchyNode() override;
   vtkMRMLAnnotationHierarchyNode(const vtkMRMLAnnotationHierarchyNode&);
   void operator=(const vtkMRMLAnnotationHierarchyNode&);
 

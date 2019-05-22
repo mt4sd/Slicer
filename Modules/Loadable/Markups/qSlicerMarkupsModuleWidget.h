@@ -41,14 +41,14 @@ class Q_SLICER_QTMODULES_MARKUPS_EXPORT qSlicerMarkupsModuleWidget :
 public:
 
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerMarkupsModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerMarkupsModuleWidget();
+  qSlicerMarkupsModuleWidget(QWidget *parent=nullptr);
+  ~qSlicerMarkupsModuleWidget() override;
 
   /// Set up the GUI from mrml when entering
   /// \sa updateMaximumScaleFromVolumes()
-  virtual void enter();
+  void enter() override;
   /// Disconnect from scene when exiting
-  virtual void exit();
+  void exit() override;
 
   /// Manage short cuts that allow key bindings for certain functions
   void installShortcuts();
@@ -77,10 +77,7 @@ public:
 
   /// Add observations to the markups node, and remove them from other markups
   /// nodes (from all nodes if markupsNode is null)
-  void observeMarkupsNode(vtkMRMLNode *markupsNode);
-
-  /// Reset the GUI elements: clear out the table
-  void clearGUI();
+  void setMRMLMarkupsNode(vtkMRMLMarkupsNode* markupsNode);
 
   /// Set up the logic default display settings from the application settings
   void updateLogicFromSettings();
@@ -89,8 +86,8 @@ public:
   /// the slice composite nodes
   bool sliceIntersectionsVisible();
 
-  virtual bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString());
-  virtual double nodeEditable(vtkMRMLNode* node);
+  bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString()) override;
+  double nodeEditable(vtkMRMLNode* node) override;
 
 public slots:
 
@@ -120,16 +117,6 @@ public slots:
   /// Uses the Logic to do the conversion from annotation fiducials, moving
   /// them from hierarchies to Markups list nodes
   void convertAnnotationFiducialsToMarkups();
-
-  /// Display property slots
-  void onSelectedColorPickerButtonChanged(QColor qcolor);
-  void onUnselectedColorPickerButtonChanged(QColor qcolor);
-  void onGlyphTypeComboBoxChanged(QString value);
-  void onGlyphScaleSliderWidgetChanged(double value);
-  void onTextScaleSliderWidgetChanged(double value);
-  void onOpacitySliderWidgetChanged(double value);
-
-  void onMarkupScaleSliderWidgetValueChanged(double value);
 
   /// Display property button slots
   void onResetToDefaultDisplayPropertiesPushButtonClicked();
@@ -162,8 +149,6 @@ public slots:
 
   /// Toggle the markups node visibility flag
   void onListVisibileInvisiblePushButtonClicked();
-  /// Update the icon and tool tip on the list visibility button
-  void updateListVisibileInvisiblePushButton(int visibleFlag);
 
   /// Toggle the markups node locked flag
   void onListLockedUnlockedPushButtonClicked();
@@ -204,19 +189,18 @@ public slots:
   void copySelectedToClipboard();
   void pasteSelectedFromClipboard();
 
+  /// Update table when markups node is modified
+  void onActiveMarkupsNodeModifiedEvent();
   /// Enable/disable editing the table if the markups node is un/locked
   void onActiveMarkupsNodeLockModifiedEvent();
   /// Update the format text entry from the node
   void onActiveMarkupsNodeLabelFormatModifiedEvent();
-  /// Update the table with the modified point information if the node is
-  /// active
+  /// Update the table with the modified point information if the node is active
   void onActiveMarkupsNodePointModifiedEvent(vtkObject *caller, vtkObject *callData);
-  /// Update the table with the new markup if the node is active
-  void onActiveMarkupsNodeMarkupAddedEvent(vtkObject *caller, vtkObject *callData);
-  /// Update the table for the removed markup if the node is active
-  void onActiveMarkupsNodeMarkupRemovedEvent();//vtkMRMLNode *markupsNode);
-  /// Update a table row from a modified markup
-  void onActiveMarkupsNodeNthMarkupModifiedEvent(vtkObject *caller, vtkObject *callData);
+  /// Update the table with the new point information if the node is active
+  void onActiveMarkupsNodePointAddedEvent();
+  /// Update the table for the removed point if the node is active
+  void onActiveMarkupsNodePointRemovedEvent(vtkObject *caller, vtkObject *callData);
   /// Update the display properties widgets when the display node is modified
   void onActiveMarkupsNodeDisplayModifiedEvent();
   /// Update the transform related elements of the gui when the transform node is modified
@@ -240,7 +224,7 @@ public slots:
 protected:
   QScopedPointer<qSlicerMarkupsModuleWidgetPrivate> d_ptr;
 
-  virtual void setup();
+  void setup() override;
 
   /// A multiplication factor to apply to the maximum volume slice spacing when determining what the maximum value for the scale sliders should be.
   /// \sa updateMaximumScaleFromVolumes

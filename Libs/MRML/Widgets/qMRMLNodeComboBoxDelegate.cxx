@@ -62,23 +62,11 @@ void qMRMLNodeComboBoxDelegate::paint(QPainter *painter,
     if (this->isSeparator(index))
       {
       QRect rect = option.rect;
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-      if (const QStyleOptionViewItemV3 *v3 =
-          qstyleoption_cast<const QStyleOptionViewItemV3*>(&option))
-        {
-        if (const QAbstractItemView *view =
-            qobject_cast<const QAbstractItemView*>(v3->widget))
-          {
-          rect.setWidth(view->viewport()->width());
-          }
-        }
-#else
       if (const QAbstractItemView *view =
           qobject_cast<const QAbstractItemView*>(option.widget))
         {
         rect.setWidth(view->viewport()->width());
         }
-#endif
       QStyleOption opt;
       opt.rect = rect;
       this->mCombo->style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator,
@@ -97,7 +85,7 @@ QSize qMRMLNodeComboBoxDelegate::sizeHint(const QStyleOptionViewItem &option,
   if (this->isSeparator(index))
     {
     int pm = this->mCombo->style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
-                                                0, this->mCombo);
+                                                nullptr, this->mCombo);
     return QSize(pm, pm);
     }
   return this->Superclass::sizeHint(option, index);

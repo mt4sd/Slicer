@@ -36,7 +36,7 @@ class VTK_SLICER_MODELS_MODULE_LOGIC_EXPORT vtkSlicerModelsLogic
   /// The Usual vtk class functions
   static vtkSlicerModelsLogic *New();
   vtkTypeMacro(vtkSlicerModelsLogic, vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// The color logic is used to retrieve the default color node ID for
@@ -53,13 +53,13 @@ class VTK_SLICER_MODELS_MODULE_LOGIC_EXPORT vtkSlicerModelsLogic
   /// Add into the scene a new mrml model node with an existing polydata
   /// A display node is also added into the scene.
   /// \todo Should the function AddModel also add a storage node ?
-  vtkMRMLModelNode* AddModel(vtkPolyData* polyData = 0);
+  vtkMRMLModelNode* AddModel(vtkPolyData* polyData = nullptr);
 
   ///
   /// Add into the scene a new mrml model node with an existing polydata
   /// A display node is also added into the scene.
   /// \todo Should the function AddModel also add a storage node ?
-  vtkMRMLModelNode* AddModel(vtkAlgorithmOutput* polyData = 0);
+  vtkMRMLModelNode* AddModel(vtkAlgorithmOutput* polyData = nullptr);
 
   ///
   /// Add into the scene a new mrml model node and
@@ -94,16 +94,16 @@ class VTK_SLICER_MODELS_MODULE_LOGIC_EXPORT vtkSlicerModelsLogic
 
 protected:
   vtkSlicerModelsLogic();
-  ~vtkSlicerModelsLogic();
+  ~vtkSlicerModelsLogic() override;
   vtkSlicerModelsLogic(const vtkSlicerModelsLogic&);
   void operator=(const vtkSlicerModelsLogic&);
 
   /// Reimplemented to observe the NodeRemovedEvent scene event.
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
   /// Reimplemented to make sure the singleton vtkMRMLClipModelsNode is
   /// instantiated.
-  virtual void ObserveMRMLScene() VTK_OVERRIDE;
+  void ObserveMRMLScene() override;
 
   //
   vtkMRMLModelNode *ActiveModelNode;

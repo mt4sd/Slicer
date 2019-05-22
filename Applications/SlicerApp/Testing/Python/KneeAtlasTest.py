@@ -1,8 +1,9 @@
+from __future__ import print_function
 import unittest
 import slicer
 import AtlasTests
 
-class testClass():
+class testClass(object):
   """ Run the knee atlas test by itself
   """
 

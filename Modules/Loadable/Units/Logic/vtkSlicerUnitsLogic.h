@@ -46,10 +46,10 @@ public:
   static vtkSlicerUnitsLogic *New();
   typedef vtkSlicerUnitsLogic Self;
   vtkTypeMacro(vtkSlicerUnitsLogic, vtkMRMLAbstractLogic);
-  virtual void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Add unit node to the scene.
-  /// Returns NULL if the logic has no scene.
+  /// Returns nullptr if the logic has no scene.
   vtkMRMLUnitNode* AddUnitNode(const char* name,
     const char* quantity = "length",
     const char* prefix = "",
@@ -128,16 +128,16 @@ public:
 
 protected:
   vtkSlicerUnitsLogic();
-  virtual ~vtkSlicerUnitsLogic();
+  ~vtkSlicerUnitsLogic() override;
 
   /// Reimplemented to initialize the scene with unit nodes.
-  virtual void ObserveMRMLScene() VTK_OVERRIDE;
+  void ObserveMRMLScene() override;
   /// Reimplemented to save the selection node unit nodes.
   /// \sa SaveDefaultUnits(), RestoreDefaultUnits()
-  virtual void OnMRMLSceneStartBatchProcess() VTK_OVERRIDE;
+  void OnMRMLSceneStartBatchProcess() override;
   /// Reimplemented to restore the selection node unit nodes.
   /// \sa SaveDefaultUnits(), RestoreDefaultUnits()
-  virtual void OnMRMLNodeModified(vtkMRMLNode* modifiedNode) VTK_OVERRIDE;
+  void OnMRMLNodeModified(vtkMRMLNode* modifiedNode) override;
 
   /// Add the built in units in the units logic scene.
   virtual void AddDefaultsUnits();
@@ -146,12 +146,12 @@ protected:
   virtual void AddBuiltInUnits(vtkMRMLScene* scene);
 
   /// Overloaded to add the defaults units in the application scene.
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
   /// Register MRML Node classes to Scene.
   /// Gets called automatically when the MRMLScene is attached to this
   /// logic class.
-  virtual void RegisterNodes() VTK_OVERRIDE;
+  void RegisterNodes() override;
   virtual void RegisterNodesInternal(vtkMRMLScene* scene);
 
   /// \brief Add a unit node to the given scene.
@@ -205,8 +205,8 @@ protected:
   // Variables
   vtkMRMLScene* UnitsScene;
 private:
-  vtkSlicerUnitsLogic(const vtkSlicerUnitsLogic&); // Not implemented
-  void operator=(const vtkSlicerUnitsLogic&); // Not implemented
+  vtkSlicerUnitsLogic(const vtkSlicerUnitsLogic&) = delete;
+  void operator=(const vtkSlicerUnitsLogic&) = delete;
 
   /// This variable contains the units of the singleton before the last scene
   /// batch process.

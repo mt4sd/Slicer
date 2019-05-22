@@ -71,7 +71,7 @@ public:
 //-----------------------------------------------------------------------------
 qMRMLSegmentSelectorWidgetPrivate::qMRMLSegmentSelectorWidgetPrivate(qMRMLSegmentSelectorWidget& object)
   : q_ptr(&object)
-  , SegmentationNode(NULL)
+  , SegmentationNode(nullptr)
   , MultiSelection(false)
 {
 }
@@ -127,8 +127,7 @@ qMRMLSegmentSelectorWidget::qMRMLSegmentSelectorWidget(QWidget* _parent)
 
 //-----------------------------------------------------------------------------
 qMRMLSegmentSelectorWidget::~qMRMLSegmentSelectorWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qMRMLSegmentSelectorWidget::onCurrentNodeChanged(vtkMRMLNode* node)

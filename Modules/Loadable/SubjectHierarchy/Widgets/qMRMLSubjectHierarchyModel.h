@@ -59,21 +59,27 @@ class Q_SLICER_MODULE_SUBJECTHIERARCHY_WIDGETS_EXPORT qMRMLSubjectHierarchyModel
   /// If no property is set in a column, nothing is displayed.
   Q_PROPERTY (int nameColumn READ nameColumn WRITE setNameColumn)
   /// Control in which column data MRML node visibility are displayed (Qt::DecorationRole).
-  /// A value of -1 hides it. Hidden by default (value of -1).
+  /// A value of -1 (default) hides the column
   Q_PROPERTY (int visibilityColumn READ visibilityColumn WRITE setVisibilityColumn)
-  /// Control in which column the parent transforms are displayed
+  /// Control in which column data MRML node color is displayed.
+  /// A value of -1 (default) hides the column
+  Q_PROPERTY(int colorColumn READ colorColumn WRITE setColorColumn)
+    /// Control in which column the parent transforms are displayed
   /// A MRML node combobox is displayed in the row of the transformable nodes, in which
   /// the current transform is selected. The user can change the transform using the combobox.
   /// A value of -1 (default) hides the column
   Q_PROPERTY (int transformColumn READ transformColumn WRITE setTransformColumn)
+  /// Control in which column the node descriptions are displayed
+  /// A value of -1 (default) hides the column
+  Q_PROPERTY (int descriptionColumn READ descriptionColumn WRITE setDescriptionColumn)
   /// Control in which column the data MRML node IDs are displayed (Qt::DisplayRole).
   /// A value of -1 hides it. Hidden by default (value of -1)
   Q_PROPERTY (int idColumn READ idColumn WRITE setIDColumn)
 
 public:
   typedef QStandardItemModel Superclass;
-  qMRMLSubjectHierarchyModel(QObject *parent=0);
-  virtual ~qMRMLSubjectHierarchyModel();
+  qMRMLSubjectHierarchyModel(QObject *parent=nullptr);
+  ~qMRMLSubjectHierarchyModel() override;
 
   enum ItemDataRole
     {
@@ -100,20 +106,23 @@ public:
   int transformColumn()const;
   void setTransformColumn(int column);
 
+  int descriptionColumn()const;
+  void setDescriptionColumn(int column);
+
   int idColumn()const;
   void setIDColumn(int column);
 
-  virtual Qt::DropActions supportedDropActions()const;
-  virtual QMimeData* mimeData(const QModelIndexList& indexes)const;
-  virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action,
-                            int row, int column, const QModelIndex &parent);
+  Qt::DropActions supportedDropActions()const override;
+  QMimeData* mimeData(const QModelIndexList& indexes)const override;
+  bool dropMimeData(const QMimeData *data, Qt::DropAction action,
+                            int row, int column, const QModelIndex &parent) override;
 
   Q_INVOKABLE virtual void setMRMLScene(vtkMRMLScene* scene);
   Q_INVOKABLE vtkMRMLScene* mrmlScene()const;
 
   vtkMRMLSubjectHierarchyNode* subjectHierarchyNode()const;
 
-  /// NULL until a valid scene is set
+  /// nullptr until a valid scene is set
   QStandardItem* subjectHierarchySceneItem()const;
   /// Invalid until a valid scene is set
   QModelIndex subjectHierarchySceneIndex()const;
@@ -188,7 +197,7 @@ protected slots:
   void updateColumnCount();
 
 protected:
-  qMRMLSubjectHierarchyModel(qMRMLSubjectHierarchyModelPrivate* pimpl, QObject *parent=0);
+  qMRMLSubjectHierarchyModel(qMRMLSubjectHierarchyModelPrivate* pimpl, QObject *parent=nullptr);
 
   /// Set the subject hierarchy node found in the given scene. Called only internally.
   virtual void setSubjectHierarchyNode(vtkMRMLSubjectHierarchyNode* shNode);

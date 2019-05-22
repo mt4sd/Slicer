@@ -31,12 +31,7 @@
 #include <QResource>
 #include <QSettings>
 #include <QTranslator>
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QDesktopServices>
-#else
 #include <QStandardPaths>
-#endif
 
 // For:
 //  - Slicer_QTLOADABLEMODULES_LIB_DIR
@@ -137,14 +132,14 @@ qSlicerCoreApplicationPrivate::qSlicerCoreApplicationPrivate(
   qSlicerCoreIOManager * coreIOManager) : q_ptr(&object)
 {
   qRegisterMetaType<qSlicerCoreApplication::ReturnCode>("qSlicerCoreApplication::ReturnCode");
-  this->DefaultSettings = 0;
-  this->UserSettings = 0;
-  this->RevisionUserSettings = 0;
+  this->DefaultSettings = nullptr;
+  this->UserSettings = nullptr;
+  this->RevisionUserSettings = nullptr;
   this->ReturnCode = qSlicerCoreApplication::ExitNotRequested;
   this->CoreCommandOptions = QSharedPointer<qSlicerCoreCommandOptions>(coreCommandOptions);
   this->CoreIOManager = QSharedPointer<qSlicerCoreIOManager>(coreIOManager);
 #ifdef Slicer_BUILD_DICOM_SUPPORT
-  this->DICOMDatabase = 0;
+  this->DICOMDatabase = nullptr;
 #endif
   this->NextResourceHandle = 0;
 }
@@ -156,7 +151,7 @@ qSlicerCoreApplicationPrivate::~qSlicerCoreApplicationPrivate()
   // python references. (I.e calling Py_DECREF, ...)
   // - The PythonManager takes care of initializing and terminating the
   // python embedded interpreter
-  // => Di facto, it's important to make sure PythonManager is destructed
+  // => De facto, it's important to make sure PythonManager is destructed
   // after the ModuleManager.
   // To do so, the associated SharedPointer are cleared in the appropriate order
   this->ModuleManager->factoryManager()->unloadModules();
@@ -202,7 +197,7 @@ void qSlicerCoreApplicationPrivate::init()
     {
     QString msg("This message box is here to give you time to attach "
                 "your debugger to process [PID %1]");
-    QMessageBox::information(0, "Attach process", msg.arg(QCoreApplication::applicationPid()));
+    QMessageBox::information(nullptr, "Attach process", msg.arg(QCoreApplication::applicationPid()));
     }
 
   QCoreApplication::setOrganizationDomain(Slicer_ORGANIZATION_DOMAIN);
@@ -319,6 +314,10 @@ void qSlicerCoreApplicationPrivate::init()
               q, SLOT(onSlicerApplicationLogicRequest(vtkObject*,void*,ulong)));
   q->qvtkConnect(this->AppLogic, vtkSlicerApplicationLogic::RequestWriteDataEvent,
               q, SLOT(onSlicerApplicationLogicRequest(vtkObject*,void*,ulong)));
+  q->qvtkConnect(this->AppLogic, vtkMRMLApplicationLogic::PauseRenderEvent,
+              q, SLOT(pauseRender()));
+  q->qvtkConnect(this->AppLogic, vtkMRMLApplicationLogic::ResumeRenderEvent,
+              q, SLOT(resumeRender()));
   q->qvtkConnect(this->AppLogic->GetUserInformation(), vtkCommand::ModifiedEvent,
     q, SLOT(onUserInformationModified()));
 
@@ -331,7 +330,7 @@ void qSlicerCoreApplicationPrivate::init()
   // -- allows any dependent nodes to be created
   // Note that Interaction and Selection Node are now created
   // in MRMLApplicationLogic.
-  //this->AppLogic->ProcessMRMLEvents(scene, vtkCommand::ModifiedEvent, NULL);
+  //this->AppLogic->ProcessMRMLEvents(scene, vtkCommand::ModifiedEvent, nullptr);
   //this->AppLogic->SetAndObserveMRMLScene(scene);
   this->AppLogic->CreateProcessingThread();
 
@@ -891,14 +890,19 @@ void qSlicerCoreApplication::handleCommandLineArguments()
       }
 
     // Set 'argv' so that python script can retrieve its associated arguments
+
+    // TODO do we need validation here?
+
     int pythonArgc = 1 /*scriptname*/ + scriptArgs.count();
-    char** pythonArgv = new char*[pythonArgc];
-    pythonArgv[0] = new char[pythonScript.size() + 1];
-    strcpy(pythonArgv[0], pythonScript.toLatin1());
+    wchar_t** pythonArgv = new wchar_t*[pythonArgc];
+    //pythonArgv[0] = new wchar_t[pythonScript.size() + 1];
+    //pythonScript.toWCharArray(pythonArgv[0]);
+    pythonArgv[0] = Py_DecodeLocale(pythonScript.toLatin1(), nullptr);
     for(int i = 0; i < scriptArgs.count(); ++i)
       {
-      pythonArgv[i + 1] = new char[scriptArgs.at(i).size() + 1];
-      strcpy(pythonArgv[i + 1], scriptArgs.at(i).toLatin1());
+      //pythonArgv[i + 1] = new wchar_t[scriptArgs.at(i).size() + 1];
+      //scriptArgs.at(i).toWCharArray(pythonArgv[i + 1]);
+      pythonArgv[i + 1] = Py_DecodeLocale(scriptArgs.at(i).toLatin1(), nullptr);
       }
 
     // See http://docs.python.org/c-api/init.html
@@ -906,16 +910,17 @@ void qSlicerCoreApplication::handleCommandLineArguments()
 
     // Set 'sys.executable' so that Slicer can be used as a "regular" python interpreter
     this->corePythonManager()->executeString(
-          #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
           QString("import sys; sys.executable = '%1'; del sys").arg(QStandardPaths::findExecutable("PythonSlicer"))
-          #else
-          QString("import sys, distutils.spawn; sys.executable = distutils.spawn.find_executable('PythonSlicer'); del sys, distutils")
-          #endif
           );
 
     // Clean memory
-    for(int i = 0; i < pythonArgc; ++i){ delete[] pythonArgv[i];}
+    for (int i = 0; i < pythonArgc; i++)
+      {
+      PyMem_RawFree(pythonArgv[i]);
+      }
     delete[] pythonArgv;
+    pythonArgv = nullptr;
+    pythonArgc = 0;
 
     // Attempt to load Slicer RC file only if 'display...AndExit' options are not True
     if (!(options->displayMessageAndExit() ||
@@ -963,7 +968,7 @@ QSettings* qSlicerCoreApplication::defaultSettings()const
   Q_D(const qSlicerCoreApplication);
   if (!QFile(this->slicerDefaultSettingsFilePath()).exists())
     {
-    return 0;
+    return nullptr;
     }
   qSlicerCoreApplication* mutable_self =
     const_cast<qSlicerCoreApplication*>(this);
@@ -1084,13 +1089,8 @@ QString qSlicerCoreApplication::defaultScenePath() const
 {
   QSettings* appSettings = this->userSettings();
   Q_ASSERT(appSettings);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  QString defaultScenePath = appSettings->value(
-        "DefaultScenePath", QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)).toString();
-#else
   QString defaultScenePath = appSettings->value(
         "DefaultScenePath", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
-#endif
 
   return defaultScenePath;
 }
@@ -1329,6 +1329,13 @@ qSlicerExtensionsManagerModel* qSlicerCoreApplication::extensionsManagerModel()c
 }
 
 #endif
+
+//-----------------------------------------------------------------------------
+ctkErrorLogAbstractModel* qSlicerCoreApplication::errorLogModel()const
+{
+  Q_D(const qSlicerCoreApplication);
+  return d->ErrorLogModel.data();
+}
 
 //-----------------------------------------------------------------------------
 qSlicerModuleManager* qSlicerCoreApplication::moduleManager()const

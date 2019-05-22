@@ -39,8 +39,7 @@ vtkITKLevelTracing3DImageFilter::vtkITKLevelTracing3DImageFilter()
 }
 
 vtkITKLevelTracing3DImageFilter::~vtkITKLevelTracing3DImageFilter()
-{
-}
+= default;
 
 
 template <class T>
@@ -128,13 +127,13 @@ int vtkITKLevelTracing3DImageFilter::RequestData(
   // Initialize and check input
   //
   vtkPointData *pd=input->GetPointData();
-  if (pd ==NULL)
+  if (pd ==nullptr)
   {
     vtkErrorMacro(<<"PointData is NULL");
     return 1;
   }
   inScalars=pd->GetScalars();
-  if ( inScalars == NULL )
+  if ( inScalars == nullptr )
   {
     vtkErrorMacro(<<"Scalars must be defined for level tracing");
     return 1;

@@ -1,10 +1,13 @@
+from __future__ import print_function
 import os
 import vtk
 import qt
 import slicer
-from EditOptions import EditOptions
-import EditUtil
+
 from slicer.util import NodeModify
+
+from . import EditOptions
+from . import EditUtil
 
 __all__ = ['EffectOptions', 'EffectTool', 'EffectLogic', 'Effect']
 
@@ -159,7 +162,7 @@ class EffectTool(object):
     self.interactor = self.sliceView.interactorStyle().GetInteractor()
     self.renderWindow = self.sliceWidget.sliceView().renderWindow()
     self.renderer = self.renderWindow.GetRenderers().GetItemAsObject(0)
-    self.editUtil = EditUtil.EditUtil()
+    self.editUtil = EditUtil()  # Kept for backward compatibility
 
     # optionally set by users of the class
     self.undoRedo = None
@@ -209,7 +212,7 @@ class EffectTool(object):
       if key.lower() == 'backslash':
         xy = self.interactor.GetEventPosition()
         if self.interactor.FindPokedRenderer(*xy):
-          self.editUtil.setLabel(self.logic.labelAtXY(xy))
+          EditUtil.setLabel(self.logic.labelAtXY(xy))
         else:
           print('not in viewport')
         self.abortEvent(event)
@@ -271,7 +274,7 @@ class EffectLogic(object):
 
   def __init__(self,sliceLogic):
     self.sliceLogic = sliceLogic
-    self.editUtil = EditUtil.EditUtil()
+    self.editUtil = EditUtil()  # Kept for backward compatibility
     # optionally set by users of the class
     self.undoRedo = None
     self.scope = 'All'
@@ -328,7 +331,7 @@ class EffectLogic(object):
     imageData = volumeNode.GetImageData()
     if not imageData: return 0
     dims = imageData.GetDimensions()
-    for ele in xrange(3):
+    for ele in range(3):
       if ijk[ele] < 0 or ijk[ele] >= dims[ele]: return 0
     return int(imageData.GetScalarComponentAsDouble(ijk[0], ijk[1], ijk[2], 0))
 
@@ -346,7 +349,7 @@ class EffectLogic(object):
     if volumeDisplayNode:
       colorNode = volumeDisplayNode.GetColorNode()
       lut = colorNode.GetLookupTable()
-      index = self.editUtil.getLabel()
+      index = EditUtil.getLabel()
       return(lut.GetTableValue(index))
     return (0,0,0,0)
 
@@ -410,7 +413,7 @@ class EffectLogic(object):
       self.scopedSlicePaint.Paint()
     else:
       print("Invalid scope option %s" % self.scope)
-    self.editUtil.markVolumeNodeAsModified(volumeNode)
+    EditUtil.markVolumeNodeAsModified(volumeNode)
 
   def getVisibleCorners(self,layerLogic,slicePaint=None):
     """return a nested list of ijk coordinates representing
@@ -424,7 +427,7 @@ class EffectLogic(object):
     ijkCorners = []
     for xy in xyCorners:
       ijk = xyToIJK.TransformDoublePoint(xy + (0,))
-      ijkCorners.append(map(round, ijk))
+      ijkCorners.append(list(map(round, ijk)))
 
     if slicePaint:
       slicePaint.SetTopLeft(ijkCorners[0])

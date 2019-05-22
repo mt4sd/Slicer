@@ -99,6 +99,11 @@ if(NOT PACKAGEUPLOAD)
   include(SlicerMacroExtractRepositoryInfo)
   SlicerMacroExtractRepositoryInfo(VAR_PREFIX Slicer SOURCE_DIR ${Slicer_SOURCE_DIR})
 
+  # Given a date formatted like "2019-01-15 22:08:54 -0500 (Tue, 15 Jan 2019)", only
+  # keep "2019-01-15 22:08:54".
+  string(REGEX REPLACE "^([0-9][0-9][0-9][0-9]\\-[0-9][0-9]\\-[0-9][0-9] [0-9][0-9]\\:[0-9][0-9]\\:[0-9][0-9]).*"
+    "\\1" Slicer_WC_LAST_CHANGED_DATE "${Slicer_WC_LAST_CHANGED_DATE}")
+
   set(script_arg_list)
   foreach(varname
     ${script_vars}
@@ -160,9 +165,13 @@ endforeach()
 # of generated packages from its standard output and create a file PACKAGES.txt
 # containing the list of package paths.
 
-# The following variable can be used when testing this module. It avoids
-# to wait for a rebuild of the project.
+# Setting the environment variable SLICER_PACKAGE_UPLOAD_SKIP_PACKAGING_TARGET to
+# any non empty value can be used when testing this module. It avoids to wait for a rebuild
+# of the project.
 set(_build_target 1)
+if(NOT "$ENV{SLICER_PACKAGE_UPLOAD_SKIP_PACKAGING_TARGET}" STREQUAL "")
+  set(_build_target 0)
+endif()
 
 if(_build_target)
   execute_process(

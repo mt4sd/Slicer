@@ -53,7 +53,7 @@ class VTK_SLICER_BASE_LOGIC_EXPORT vtkSlicerGlyphSource2D : public vtkPolyDataAl
 {
 public:
   vtkTypeMacro(vtkSlicerGlyphSource2D,vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Construct a vertex glyph centered at the origin, scale 1.0, white in
@@ -135,9 +135,9 @@ public:
 
 protected:
   vtkSlicerGlyphSource2D();
-  ~vtkSlicerGlyphSource2D() {};
+  ~vtkSlicerGlyphSource2D() override  = default;
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
 
   double Center[3];
   double Scale;
@@ -179,8 +179,8 @@ protected:
                        vtkCellArray *polys, vtkUnsignedCharArray *colors, double scale);
 
 private:
-  vtkSlicerGlyphSource2D(const vtkSlicerGlyphSource2D&);  /// Not implemented.
-  void operator=(const vtkSlicerGlyphSource2D&);  /// Not implemented.
+  vtkSlicerGlyphSource2D(const vtkSlicerGlyphSource2D&) = delete;
+  void operator=(const vtkSlicerGlyphSource2D&) = delete;
 };
 
 #endif

@@ -37,12 +37,6 @@
 #include <vtkMRMLScene.h>
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerSubjectHierarchyModule, qSlicerSubjectHierarchyModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_SubjectHierarchy
 class qSlicerSubjectHierarchyModulePrivate
 {
@@ -58,7 +52,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyModulePrivate::qSlicerSubjectHierarchyModulePrivate()
-  : PluginLogic(NULL)
+  : PluginLogic(nullptr)
 {
 }
 
@@ -68,7 +62,7 @@ qSlicerSubjectHierarchyModulePrivate::~qSlicerSubjectHierarchyModulePrivate()
   if (this->PluginLogic)
     {
     delete this->PluginLogic;
-    this->PluginLogic = NULL;
+    this->PluginLogic = nullptr;
     }
 }
 
@@ -84,8 +78,7 @@ qSlicerSubjectHierarchyModule::qSlicerSubjectHierarchyModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyModule::~qSlicerSubjectHierarchyModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerSubjectHierarchyModule::helpText()const

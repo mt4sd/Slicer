@@ -48,7 +48,7 @@ public:
   /// Constructor
   /// If \li parent is null, qMRMLRangeWidget will be a top-level widget
   /// \note The \li parent can be set later using QWidget::setParent()
-  explicit qMRMLRangeWidget(QWidget* parent = 0);
+  explicit qMRMLRangeWidget(QWidget* parent = nullptr);
 
   QPalette minimumHandlePalette()const;
   QPalette maximumHandlePalette()const;
@@ -107,7 +107,7 @@ class QMRML_WIDGETS_EXPORT qMRMLRangeSlider : public ctkRangeSlider
   Q_OBJECT;
 public:
   qMRMLRangeSlider(QWidget* parentWidget);
-  virtual ~qMRMLRangeSlider();
+  ~qMRMLRangeSlider() override;
   QPalette minimumHandlePalette()const;
   QPalette maximumHandlePalette()const;
 
@@ -118,8 +118,8 @@ public slots:
   /// Set the palette of the minimum handle
   void setMaximumHandlePalette(const QPalette& palette);
 protected:
-  virtual void initMinimumSliderStyleOption(QStyleOptionSlider* option) const;
-  virtual void initMaximumSliderStyleOption(QStyleOptionSlider* option) const;
+  void initMinimumSliderStyleOption(QStyleOptionSlider* option) const override;
+  void initMaximumSliderStyleOption(QStyleOptionSlider* option) const override;
 
 protected:
   QScopedPointer<qMRMLRangeSliderPrivate> d_ptr;

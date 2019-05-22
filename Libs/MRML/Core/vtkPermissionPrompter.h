@@ -14,7 +14,7 @@ class VTK_MRML_EXPORT vtkPermissionPrompter : public vtkObject
   /// The Usual vtk class functions
   static vtkPermissionPrompter *New();
   vtkTypeMacro(vtkPermissionPrompter, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Member for storing a user name, if required
@@ -58,7 +58,7 @@ class VTK_MRML_EXPORT vtkPermissionPrompter : public vtkObject
 
  protected:
   vtkPermissionPrompter();
-  virtual ~vtkPermissionPrompter();
+  ~vtkPermissionPrompter() override;
   vtkPermissionPrompter(const vtkPermissionPrompter&);
   void operator=(const vtkPermissionPrompter&);
 

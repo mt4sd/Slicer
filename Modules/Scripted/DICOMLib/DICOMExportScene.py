@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import glob
 import tempfile
@@ -111,12 +112,12 @@ class DICOMExportScene(object):
     lnodes = slicer.mrmlScene.GetNodesByClass("vtkMRMLLinearTransformNode")
     lnodes.UnRegister(slicer.mrmlScene)
     lnum = lnodes.GetNumberOfItems()
-    for itemNum in xrange(lnum):
+    for itemNum in range(lnum):
       print(itemNum)
       node = lnodes.GetItemAsObject(itemNum)
       snode = node.GetStorageNode()
       if snode is None:
-        print "something is none"
+        print("something is none")
         snode = node.CreateDefaultStorageNode()
         slicer.mrmlScene.AddNode(snode)
         node.SetAndObserveStorageNodeID(snode.GetID())

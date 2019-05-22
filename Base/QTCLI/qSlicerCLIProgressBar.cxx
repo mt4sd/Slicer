@@ -82,7 +82,7 @@ private:
 qSlicerCLIProgressBarPrivate::qSlicerCLIProgressBarPrivate(qSlicerCLIProgressBar& object)
   :q_ptr(&object)
 {
-  this->CommandLineModuleNode = 0;
+  this->CommandLineModuleNode = nullptr;
   this->NameVisibility = qSlicerCLIProgressBar::AlwaysHidden;
   this->StatusVisibility = qSlicerCLIProgressBar::AlwaysVisible;
   this->ProgressVisibility = qSlicerCLIProgressBar::VisibleAfterCompletion;
@@ -194,8 +194,7 @@ qSlicerCLIProgressBar::qSlicerCLIProgressBar(QWidget* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerCLIProgressBar::~qSlicerCLIProgressBar()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 vtkMRMLCommandLineModuleNode * qSlicerCLIProgressBar::commandLineModuleNode()const

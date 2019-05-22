@@ -56,8 +56,7 @@ qSlicerMarkupsReader::qSlicerMarkupsReader(vtkSlicerMarkupsLogic* logic, QObject
 
 //-----------------------------------------------------------------------------
 qSlicerMarkupsReader::~qSlicerMarkupsReader()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerMarkupsReader::setMarkupsLogic(vtkSlicerMarkupsLogic* logic)
@@ -108,7 +107,7 @@ bool qSlicerMarkupsReader::load(const IOProperties& properties)
     name = properties["name"].toString();
     }
 
-  if (d->MarkupsLogic.GetPointer() == 0)
+  if (d->MarkupsLogic.GetPointer() == nullptr)
     {
     return false;
     }
@@ -125,7 +124,7 @@ bool qSlicerMarkupsReader::load(const IOProperties& properties)
     while (ptr)
       {
       nodeIDList.append(ptr);
-      ptr = strtok(NULL, ",");
+      ptr = strtok(nullptr, ",");
       }
     this->setLoadedNodes(nodeIDList);
     }
@@ -135,5 +134,5 @@ bool qSlicerMarkupsReader::load(const IOProperties& properties)
     return false;
     }
 
-  return nodeIDs != 0;
+  return nodeIDs != nullptr;
 }

@@ -287,7 +287,7 @@ class RSNAVisTutorialTest(ScriptedLoadableModuleTest):
       logic.takeScreenshot('VolumeRendering-BothKidneys','Rendered both kidneys',-1)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -365,14 +365,14 @@ class RSNAVisTutorialTest(ScriptedLoadableModuleTest):
       clip.SetGreenSliceClipState(2)
       logic.takeScreenshot('Head-SkullClipping','Turn on clipping for skull model',-1)
 
-      for offset in xrange(-20,20,2):
+      for offset in range(-20,20,2):
         greenController.setSliceOffsetValue(offset)
       logic.takeScreenshot('Head-ScrollCoronal','Scroll through coronal slices',-1)
 
       skull.GetDisplayNode().SetVisibility(0)
       logic.takeScreenshot('Head-HideSkull','Make the skull invisible',-1)
 
-      for offset in xrange(-40,-20,2):
+      for offset in range(-40,-20,2):
         greenController.setSliceOffsetValue(offset)
       logic.takeScreenshot('Head-ScrollCoronalWhiteMatter','Scroll through coronal slices to show white matter',-1)
 
@@ -389,7 +389,7 @@ class RSNAVisTutorialTest(ScriptedLoadableModuleTest):
       logic.takeScreenshot('Head-Zoom','Zoom',-1)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -463,7 +463,7 @@ class RSNAVisTutorialTest(ScriptedLoadableModuleTest):
       logic.takeScreenshot('Liver-MiddleHepatic','Middle Hepatic',-1)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -536,7 +536,7 @@ class RSNAVisTutorialTest(ScriptedLoadableModuleTest):
       logic.takeScreenshot('Lung-Question4','View Question 4',-1)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))

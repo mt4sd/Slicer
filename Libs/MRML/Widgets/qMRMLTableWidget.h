@@ -51,8 +51,8 @@ public:
   typedef qMRMLWidget Superclass;
 
   /// Constructors
-  explicit qMRMLTableWidget(QWidget* parent = 0);
-  virtual ~qMRMLTableWidget();
+  explicit qMRMLTableWidget(QWidget* parent = nullptr);
+  ~qMRMLTableWidget() override;
 
   /// Get the tabl node observed by view.
   vtkMRMLTableViewNode* mrmlTableViewNode()const;

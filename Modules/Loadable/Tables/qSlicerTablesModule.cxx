@@ -37,12 +37,6 @@
 #include "qSlicerSubjectHierarchyTablesPlugin.h"
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerTablesModule, qSlicerTablesModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class qSlicerTablesModulePrivate
 {
@@ -55,8 +49,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerTablesModulePrivate::qSlicerTablesModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerTablesModule methods
@@ -70,8 +63,7 @@ qSlicerTablesModule::qSlicerTablesModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerTablesModule::~qSlicerTablesModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QIcon qSlicerTablesModule::icon()const

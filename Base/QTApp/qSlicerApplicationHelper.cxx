@@ -85,15 +85,13 @@ qSlicerApplicationHelper::qSlicerApplicationHelper(QObject * parent) : Superclas
 
 //----------------------------------------------------------------------------
 qSlicerApplicationHelper::~qSlicerApplicationHelper()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void qSlicerApplicationHelper::preInitializeApplication(
     const char* argv0, ctkProxyStyle* style)
 {
   itk::itkFactoryRegistration();
-#if QT_VERSION >= 0x040803
 #ifdef Q_OS_MACX
   if (QSysInfo::MacintoshVersion > QSysInfo::MV_10_8)
     {
@@ -101,7 +99,6 @@ void qSlicerApplicationHelper::preInitializeApplication(
     // https://bugreports.qt-project.org/browse/QTBUG-32789
     QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
     }
-#endif
 #endif
 
 #ifdef Slicer_VTK_USE_QVTKOPENGLWIDGET
@@ -113,7 +110,6 @@ void qSlicerApplicationHelper::preInitializeApplication(
   QSurfaceFormat::setDefaultFormat(format);
 #endif
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
 #ifdef _WIN32
   // Qt windows defaults to the PROCESS_PER_MONITOR_DPI_AWARE for DPI display
   // on windows. Unfortunately, this doesn't work well on multi-screens setups.
@@ -124,7 +120,9 @@ void qSlicerApplicationHelper::preInitializeApplication(
 
   // Enable automatic scaling based on the pixel density of the monitor
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
+
+  // Enables resource sharing between the OpenGL contexts used by classes like QOpenGLWidget and QQuickWidget
+  QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
   // Allow a custom application name so that the settings
   // can be distinct for differently named applications
@@ -250,7 +248,7 @@ void qSlicerApplicationHelper::setupModuleFactoryManager(qSlicerModuleFactoryMan
 //----------------------------------------------------------------------------
 void qSlicerApplicationHelper::showMRMLEventLoggerWidget()
 {
-  qMRMLEventLoggerWidget* logger = new qMRMLEventLoggerWidget(0);
+  qMRMLEventLoggerWidget* logger = new qMRMLEventLoggerWidget(nullptr);
   logger->setAttribute(Qt::WA_DeleteOnClose);
   logger->setConsoleOutputEnabled(false);
   logger->setMRMLScene(qSlicerApplication::application()->mrmlScene());
@@ -283,7 +281,7 @@ bool qSlicerApplicationHelper::checkRenderingCapabilities()
     "Graphics capabilities of this computer:\n\n");
   details += systemInfo->GetRenderingCapabilitiesDetails().c_str();
 
-  ctkMessageBox *messageBox = new ctkMessageBox(0);
+  ctkMessageBox *messageBox = new ctkMessageBox(nullptr);
   messageBox->setAttribute(Qt::WA_DeleteOnClose, true);
   messageBox->setIcon(QMessageBox::Warning);
   messageBox->setWindowTitle(tr("Insufficient graphics capability"));
@@ -315,15 +313,15 @@ bool qSlicerApplicationHelper::checkRenderingCapabilities()
     SHELLEXECUTEINFO shExecInfo;
     shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
     shExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-    shExecInfo.hwnd = NULL;
+    shExecInfo.hwnd = nullptr;
     // tscon requires administrator access, therefore "runas" verb is needed.
     // UAC popup will be displayed.
     shExecInfo.lpVerb = "runas";
     shExecInfo.lpFile = "tscon.exe";
     shExecInfo.lpParameters = "1 /dest:console";
-    shExecInfo.lpDirectory = NULL;
+    shExecInfo.lpDirectory = nullptr;
     shExecInfo.nShow = SW_MAXIMIZE;
-    shExecInfo.hInstApp = NULL;
+    shExecInfo.hInstApp = nullptr;
     ShellExecuteEx(&shExecInfo);
     WaitForSingleObject(shExecInfo.hProcess, INFINITE);
 

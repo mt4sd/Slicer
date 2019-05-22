@@ -32,7 +32,7 @@ class VTK_Teem_EXPORT vtkImageLabelCombine : public vtkThreadedImageAlgorithm
 public:
   static vtkImageLabelCombine *New();
   vtkTypeMacro(vtkImageLabelCombine,vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Set/Get the Operation to perform.
@@ -52,26 +52,26 @@ public:
 
 protected:
   vtkImageLabelCombine();
-  ~vtkImageLabelCombine() {};
+  ~vtkImageLabelCombine() override  = default;
 
   int OverwriteInput;
 
-  virtual int RequestInformation (vtkInformation *,
+  int RequestInformation (vtkInformation *,
                                   vtkInformationVector **,
-                                  vtkInformationVector *) VTK_OVERRIDE;
+                                  vtkInformationVector *) override;
 
-  virtual void ThreadedRequestData(vtkInformation *request,
+  void ThreadedRequestData(vtkInformation *request,
                                    vtkInformationVector **inputVector,
                                    vtkInformationVector *outputVector,
                                    vtkImageData ***inData,
                                    vtkImageData **outData,
-                                   int extent[6], int threadId) VTK_OVERRIDE;
+                                   int extent[6], int threadId) override;
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
 private:
-  vtkImageLabelCombine(const vtkImageLabelCombine&);  /// Not implemented.
-  void operator=(const vtkImageLabelCombine&);  /// Not implemented.
+  vtkImageLabelCombine(const vtkImageLabelCombine&) = delete;
+  void operator=(const vtkImageLabelCombine&) = delete;
 };
 
 #endif

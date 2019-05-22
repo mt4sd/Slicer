@@ -173,8 +173,7 @@ qMRMLModelDisplayNodeWidget::qMRMLModelDisplayNodeWidget(QWidget *_parent)
 
 //------------------------------------------------------------------------------
 qMRMLModelDisplayNodeWidget::~qMRMLModelDisplayNodeWidget()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 vtkMRMLModelDisplayNode* qMRMLModelDisplayNodeWidget::mrmlModelDisplayNode()const
@@ -200,7 +199,7 @@ void qMRMLModelDisplayNodeWidget::setMRMLModelOrHierarchyNode(vtkMRMLNode* node)
   // can be set from a model node or a model hierarchy node
   vtkMRMLModelNode* modelNode = vtkMRMLModelNode::SafeDownCast(node);
   vtkMRMLModelHierarchyNode *hierarchyNode = vtkMRMLModelHierarchyNode::SafeDownCast(node);
-  vtkMRMLModelDisplayNode *modelDisplayNode = 0;
+  vtkMRMLModelDisplayNode *modelDisplayNode = nullptr;
   if (modelNode)
     {
     vtkMRMLSelectionNode* selectionNode = this->getSelectionNode(modelNode->GetScene());
@@ -282,7 +281,7 @@ void qMRMLModelDisplayNodeWidget::setActiveScalarName(const QString& arrayName)
 
   // if there's no color node set for a non empty array name, use a default
   if (!arrayName.isEmpty() &&
-      d->MRMLModelDisplayNode->GetColorNodeID() == NULL)
+      d->MRMLModelDisplayNode->GetColorNodeID() == nullptr)
     {
     const char *colorNodeID = "vtkMRMLColorTableNodeFileViridis.txt";
 
@@ -315,7 +314,7 @@ void qMRMLModelDisplayNodeWidget::setScalarsColorNode(vtkMRMLColorNode* colorNod
     return;
     }
 
-  d->MRMLModelDisplayNode->SetAndObserveColorNodeID(colorNode ? colorNode->GetID() : NULL);
+  d->MRMLModelDisplayNode->SetAndObserveColorNodeID(colorNode ? colorNode->GetID() : nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -491,7 +490,7 @@ void qMRMLModelDisplayNodeWidget::updateWidgetFromMRML()
   bool wasBlocking;
 
   Q_D(qMRMLModelDisplayNodeWidget);
-  this->setEnabled(d->MRMLModelDisplayNode.GetPointer() != 0);
+  this->setEnabled(d->MRMLModelDisplayNode.GetPointer() != nullptr);
   if (!d->MRMLModelDisplayNode.GetPointer())
     {
     emit displayNodeChanged();
@@ -502,7 +501,7 @@ void qMRMLModelDisplayNodeWidget::updateWidgetFromMRML()
   d->DisplayNodeViewComboBox->setMRMLDisplayNode(d->MRMLModelDisplayNode);
   d->ClippingCheckBox->setChecked(d->MRMLModelDisplayNode->GetClipping());
   d->SliceIntersectionVisibilityCheckBox->setChecked(
-    d->MRMLModelDisplayNode->GetSliceIntersectionVisibility());
+    d->MRMLModelDisplayNode->GetVisibility2D());
   d->SliceIntersectionThicknessSpinBox->setValue(
     d->MRMLModelDisplayNode->GetSliceIntersectionThickness());
   bool showSliceIntersectionThickness =
@@ -731,7 +730,7 @@ void qMRMLModelDisplayNodeWidget::updateWidgetFromMRML()
 //------------------------------------------------------------------------------
 vtkMRMLSelectionNode* qMRMLModelDisplayNodeWidget::getSelectionNode(vtkMRMLScene *mrmlScene)
 {
-  vtkMRMLSelectionNode* selectionNode = 0;
+  vtkMRMLSelectionNode* selectionNode = nullptr;
   if (mrmlScene)
     {
     selectionNode =
@@ -785,7 +784,7 @@ void qMRMLModelDisplayNodeWidget::setSliceIntersectionVisible(bool visible)
     {
     return;
     }
-  d->MRMLModelDisplayNode->SetSliceIntersectionVisibility(visible);
+  d->MRMLModelDisplayNode->SetVisibility2D(visible);
 }
 
 //------------------------------------------------------------------------------
@@ -893,7 +892,7 @@ void qMRMLModelDisplayNodeWidget::setSliceDisplayMode(int newMode)
   if (d->MRMLModelDisplayNode->GetSliceDisplayMode()
     != vtkMRMLModelDisplayNode::SliceDisplayDistanceEncodedProjection
     && newMode == vtkMRMLModelDisplayNode::SliceDisplayDistanceEncodedProjection
-    && d->MRMLModelDisplayNode->GetDistanceEncodedProjectionColorNodeID() == NULL)
+    && d->MRMLModelDisplayNode->GetDistanceEncodedProjectionColorNodeID() == nullptr)
     {
     d->MRMLModelDisplayNode->SetAndObserveDistanceEncodedProjectionColorNodeID("vtkMRMLFreeSurferProceduralColorNodeRedGreen");
     }
@@ -1027,7 +1026,7 @@ void qMRMLModelDisplayNodeWidget::setDistanceToColorNode(vtkMRMLNode* colorNode)
     return;
     }
   d->MRMLModelDisplayNode->SetAndObserveDistanceEncodedProjectionColorNodeID(
-    colorNode ? colorNode->GetID() : NULL);
+    colorNode ? colorNode->GetID() : nullptr);
 }
 
 // --------------------------------------------------------------------------

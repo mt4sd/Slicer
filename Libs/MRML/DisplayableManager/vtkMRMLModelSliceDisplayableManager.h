@@ -40,7 +40,7 @@ public:
   static vtkMRMLModelSliceDisplayableManager* New();
   vtkTypeMacro(vtkMRMLModelSliceDisplayableManager,
                        vtkMRMLAbstractSliceViewDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // DisplayableNode handling customizations
   void AddDisplayableNode(vtkMRMLDisplayableNode* displayableNode);
@@ -49,27 +49,27 @@ public:
 protected:
 
   vtkMRMLModelSliceDisplayableManager();
-  virtual ~vtkMRMLModelSliceDisplayableManager();
+  ~vtkMRMLModelSliceDisplayableManager() override;
 
-  virtual void UnobserveMRMLScene() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) VTK_OVERRIDE;
+  void UnobserveMRMLScene() override;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) override;
+  void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) override;
 
-  virtual void UpdateFromMRML() VTK_OVERRIDE;
-  virtual void OnMRMLSceneStartClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndBatchProcess() VTK_OVERRIDE;
+  void UpdateFromMRML() override;
+  void OnMRMLSceneStartClose() override;
+  void OnMRMLSceneEndClose() override;
+  void OnMRMLSceneEndBatchProcess() override;
 
   /// Initialize the displayable manager based on its associated
   /// vtkMRMLSliceNode
-  virtual void Create() VTK_OVERRIDE;
+  void Create() override;
   int AddingDisplayableNode;
 
 private:
 
-  vtkMRMLModelSliceDisplayableManager(const vtkMRMLModelSliceDisplayableManager&);// Not implemented
-  void operator=(const vtkMRMLModelSliceDisplayableManager&);                     // Not Implemented
+  vtkMRMLModelSliceDisplayableManager(const vtkMRMLModelSliceDisplayableManager&) = delete;
+  void operator=(const vtkMRMLModelSliceDisplayableManager&) = delete;
 
   class vtkInternal;
   vtkInternal * Internal;

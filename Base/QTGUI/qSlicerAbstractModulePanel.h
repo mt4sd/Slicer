@@ -32,8 +32,8 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerAbstractModulePanel: public qSlicerWidge
 {
   Q_OBJECT
 public:
-  qSlicerAbstractModulePanel(QWidget* parent = 0, Qt::WindowFlags f = 0);
-  virtual ~qSlicerAbstractModulePanel();
+  qSlicerAbstractModulePanel(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
+  ~qSlicerAbstractModulePanel() override;
 
   void addModule(const QString& moduleName);
   void removeModule(const QString& moduleName);

@@ -45,7 +45,7 @@ class Q_SLICER_BASE_QTCLI_EXPORT qSlicerWidgetValueWrapper: public QObject
   Q_OBJECT
 public:
   qSlicerWidgetValueWrapper(const QString& _name, const QString& _label, QObject* parent);
-  virtual ~qSlicerWidgetValueWrapper();
+  ~qSlicerWidgetValueWrapper() override;
   virtual QVariant value() = 0;
   QString label(){ return this->Label; }
   QString name(){ return this->Name; }
@@ -85,7 +85,7 @@ class Q_SLICER_BASE_QTCLI_EXPORT ButtonGroupWidgetWrapper: public QWidget
 {
   Q_OBJECT
 public:
-  ButtonGroupWidgetWrapper(QWidget* parentWidget = 0);
+  ButtonGroupWidgetWrapper(QWidget* parentWidget = nullptr);
 
   QButtonGroup* buttonGroup()const;
   QString checkedValue();
@@ -106,7 +106,7 @@ class Q_SLICER_BASE_QTCLI_EXPORT qSlicerCLIModuleUIHelper: public QObject
 public:
 
   qSlicerCLIModuleUIHelper(qSlicerCLIModuleWidget* cliModuleWidget);
-  virtual ~qSlicerCLIModuleUIHelper();
+  ~qSlicerCLIModuleUIHelper() override;
 
   /// Create the widget associated with the given \a moduleParameter
   /// The caller is responsible to delete the widget.

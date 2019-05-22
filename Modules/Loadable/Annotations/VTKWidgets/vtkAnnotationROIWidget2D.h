@@ -109,13 +109,13 @@ public:
   ///
   /// Standard class methods for type information and printing.
   vtkTypeMacro(vtkAnnotationROIWidget2D,vtkAnnotationROIWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// Specify an instance of vtkWidgetRepresentation used to represent this
   /// widget in the scene. Note that the representation is a subclass of vtkProp
   /// so it can be added to the renderer independent of the widget.
-  virtual void SetRepresentation(vtkAnnotationROIRepresentation *r) VTK_OVERRIDE
+  void SetRepresentation(vtkAnnotationROIRepresentation *r) override
     {
     this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
     }
@@ -123,15 +123,15 @@ public:
   ///
   /// Create the default widget representation if one is not set. By default,
   /// this is an instance of the vtkAnnotationROIRepresentation class.
-  virtual void CreateDefaultRepresentation() VTK_OVERRIDE;
+  void CreateDefaultRepresentation() override;
 
 protected:
   vtkAnnotationROIWidget2D();
-  ~vtkAnnotationROIWidget2D();
+  ~vtkAnnotationROIWidget2D() override;
 
 private:
-  vtkAnnotationROIWidget2D(const vtkAnnotationROIWidget2D&);  //Not implemented
-  void operator=(const vtkAnnotationROIWidget2D&);  //Not implemented
+  vtkAnnotationROIWidget2D(const vtkAnnotationROIWidget2D&) = delete;
+  void operator=(const vtkAnnotationROIWidget2D&) = delete;
 };
 
 #endif

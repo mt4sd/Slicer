@@ -72,8 +72,7 @@ qSlicerCropVolumeModuleWidgetPrivate::qSlicerCropVolumeModuleWidgetPrivate(qSlic
 
 //-----------------------------------------------------------------------------
 qSlicerCropVolumeModuleWidgetPrivate::~qSlicerCropVolumeModuleWidgetPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 vtkSlicerCropVolumeLogic* qSlicerCropVolumeModuleWidgetPrivate::logic() const
@@ -88,7 +87,7 @@ bool qSlicerCropVolumeModuleWidgetPrivate::checkInputs(bool& autoFixAvailable, Q
   message.clear();
   autoFixAvailable = false;
 
-  if (this->ParametersNode == NULL)
+  if (this->ParametersNode == nullptr)
     {
     message = QObject::tr("Select or create a new parameter node.");
     autoFixAvailable = true;
@@ -99,7 +98,7 @@ bool qSlicerCropVolumeModuleWidgetPrivate::checkInputs(bool& autoFixAvailable, Q
     return false;
     }
 
-  if (this->ParametersNode->GetInputVolumeNode() == NULL)
+  if (this->ParametersNode->GetInputVolumeNode() == nullptr)
     {
     message = QObject::tr("Select an input volume.");
     return false;
@@ -168,7 +167,7 @@ bool qSlicerCropVolumeModuleWidgetPrivate::checkInputs(bool& autoFixAvailable, Q
   // Non-interpolated cropping problem
   if (!inputVolumeTransformValid)
     {
-    this->ParametersNode->GetInputVolumeNode()->SetAndObserveTransformNodeID(NULL);
+    this->ParametersNode->GetInputVolumeNode()->SetAndObserveTransformNodeID(nullptr);
     if (this->ParametersNode->GetVoxelBased())
       {
       this->logic()->SnapROIToVoxelGrid(this->ParametersNode);
@@ -181,7 +180,7 @@ bool qSlicerCropVolumeModuleWidgetPrivate::checkInputs(bool& autoFixAvailable, Q
     }
   if (!outputVolumeTransformValid)
     {
-    const char* newParentTransformNodeID = NULL;
+    const char* newParentTransformNodeID = nullptr;
     if (this->ParametersNode->GetInputVolumeNode())
       {
       newParentTransformNodeID = this->ParametersNode->GetInputVolumeNode()->GetTransformNodeID();
@@ -204,8 +203,7 @@ qSlicerCropVolumeModuleWidget::qSlicerCropVolumeModuleWidget(QWidget* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerCropVolumeModuleWidget::~qSlicerCropVolumeModuleWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerCropVolumeModuleWidget::setup()
@@ -297,7 +295,7 @@ void qSlicerCropVolumeModuleWidget::enter()
         {
         qMRMLSliceWidget* sliceWidget = app->layoutManager()->sliceWidget(sliceViewName);
         const char* backgroundVolumeNodeID = sliceWidget->sliceLogic()->GetSliceCompositeNode()->GetBackgroundVolumeID();
-        if (backgroundVolumeNodeID != NULL)
+        if (backgroundVolumeNodeID != nullptr)
           {
           parametersNode->SetInputVolumeNodeID(backgroundVolumeNodeID);
           break;
@@ -306,7 +304,7 @@ void qSlicerCropVolumeModuleWidget::enter()
       }
 
     // Use first visible ROI node (or last ROI node, if all are invisible)
-    vtkMRMLAnnotationROINode* foundROINode = NULL;
+    vtkMRMLAnnotationROINode* foundROINode = nullptr;
     std::vector<vtkMRMLNode *> roiNodes;
     scene->GetNodesByClass("vtkMRMLAnnotationROINode", roiNodes);
     for (unsigned int i = 0; i < roiNodes.size(); ++i)
@@ -333,7 +331,7 @@ void qSlicerCropVolumeModuleWidget::enter()
     {
     // There is at least one parameter node.
     // If none is selected then select the first one.
-    if (d->ParametersNodeComboBox->currentNode() == NULL)
+    if (d->ParametersNodeComboBox->currentNode() == nullptr)
       {
       d->ParametersNodeComboBox->setCurrentNode(scene->GetFirstNodeByClass("vtkMRMLCropVolumeParametersNode"));
       }
@@ -424,7 +422,7 @@ void qSlicerCropVolumeModuleWidget::setInputVolume(vtkMRMLNode* volumeNode)
 
   qvtkReconnect(d->InputVolumeNode, volumeNode, vtkCommand::ModifiedEvent, this, SLOT(updateVolumeInfo()));
   d->InputVolumeNode = volumeNode;
-  d->ParametersNode->SetInputVolumeNodeID(volumeNode ? volumeNode->GetID() : NULL);
+  d->ParametersNode->SetInputVolumeNodeID(volumeNode ? volumeNode->GetID() : nullptr);
 }
 
 //-----------------------------------------------------------------------------
@@ -435,14 +433,14 @@ void qSlicerCropVolumeModuleWidget::setOutputVolume(vtkMRMLNode* volumeNode)
   vtkMRMLCropVolumeParametersNode *parametersNode = vtkMRMLCropVolumeParametersNode::SafeDownCast(d->ParametersNodeComboBox->currentNode());
   if (!parametersNode)
     {
-    if (volumeNode != NULL)
+    if (volumeNode != nullptr)
       {
       qWarning() << Q_FUNC_INFO << ": invalid parameter node";
       }
     return;
     }
 
-  parametersNode->SetOutputVolumeNodeID(volumeNode ? volumeNode->GetID() : NULL);
+  parametersNode->SetOutputVolumeNodeID(volumeNode ? volumeNode->GetID() : nullptr);
 }
 
 //-----------------------------------------------------------------------------
@@ -452,7 +450,7 @@ void qSlicerCropVolumeModuleWidget::setInputROI(vtkMRMLNode* node)
 
   if (!d->ParametersNode.GetPointer())
     {
-    if (node != NULL)
+    if (node != nullptr)
       {
       qWarning() << Q_FUNC_INFO << ": invalid parameter node";
       }
@@ -461,7 +459,7 @@ void qSlicerCropVolumeModuleWidget::setInputROI(vtkMRMLNode* node)
   vtkMRMLAnnotationROINode* roiNode = vtkMRMLAnnotationROINode::SafeDownCast(node);
   qvtkReconnect(d->InputROINode, roiNode, vtkCommand::ModifiedEvent, this, SLOT(updateVolumeInfo()));
   d->InputROINode = roiNode;
-  d->ParametersNode->SetROINodeID(roiNode ? roiNode->GetID() : NULL);
+  d->ParametersNode->SetROINodeID(roiNode ? roiNode->GetID() : nullptr);
 }
 
 //-----------------------------------------------------------------------------
@@ -610,9 +608,9 @@ void qSlicerCropVolumeModuleWidget::updateWidgetFromMRML()
   if (!d->ParametersNode)
     {
     // reset widget to defaults from node class
-    d->InputVolumeComboBox->setCurrentNode(NULL);
-    d->InputROIComboBox->setCurrentNode(NULL);
-    d->OutputVolumeComboBox->setCurrentNode(NULL);
+    d->InputVolumeComboBox->setCurrentNode(nullptr);
+    d->InputROIComboBox->setCurrentNode(nullptr);
+    d->OutputVolumeComboBox->setCurrentNode(nullptr);
 
     d->InterpolationEnabledCheckBox->setChecked(true);
     d->VisibilityButton->setChecked(true);
@@ -688,12 +686,12 @@ void qSlicerCropVolumeModuleWidget::updateVolumeInfo()
     return;
     }
 
-  vtkMRMLVolumeNode* inputVolumeNode = NULL;
-  if (d->ParametersNode != NULL)
+  vtkMRMLVolumeNode* inputVolumeNode = nullptr;
+  if (d->ParametersNode != nullptr)
     {
     inputVolumeNode = d->ParametersNode->GetInputVolumeNode();
     }
-  if (inputVolumeNode != NULL && inputVolumeNode->GetImageData() != NULL)
+  if (inputVolumeNode != nullptr && inputVolumeNode->GetImageData() != nullptr)
     {
     int *dimensions = inputVolumeNode->GetImageData()->GetDimensions();
     d->InputDimensionsWidget->setCoordinates(dimensions[0], dimensions[1], dimensions[2]);
@@ -707,7 +705,7 @@ void qSlicerCropVolumeModuleWidget::updateVolumeInfo()
 
   int outputExtent[6] = { 0, -1, -0, -1, 0, -1 };
   double outputSpacing[3] = { 0 };
-  if (d->ParametersNode != NULL && d->ParametersNode->GetInputVolumeNode())
+  if (d->ParametersNode != nullptr && d->ParametersNode->GetInputVolumeNode())
     {
     if (d->ParametersNode->GetVoxelBased())
       {

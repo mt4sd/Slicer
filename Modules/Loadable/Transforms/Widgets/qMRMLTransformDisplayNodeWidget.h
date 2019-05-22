@@ -47,8 +47,8 @@ qMRMLTransformDisplayNodeWidget
 
 public:
   typedef qMRMLWidget Superclass;
-  qMRMLTransformDisplayNodeWidget(QWidget *newParent = 0);
-  virtual ~qMRMLTransformDisplayNodeWidget();
+  qMRMLTransformDisplayNodeWidget(QWidget *newParent = nullptr);
+  ~qMRMLTransformDisplayNodeWidget() override;
 
 public slots:
 
@@ -60,8 +60,9 @@ public slots:
   /// It's useful to connect to vtkMRMLNode* signals
   void setMRMLTransformNode(vtkMRMLNode* node);
 
-  void setVisible2d(bool);
-  void setVisible3d(bool);
+  void setVisibility(bool);
+  void setVisibility2d(bool);
+  void setVisibility3d(bool);
 
   void setGlyphVisualizationMode(bool);
   void setGridVisualizationMode(bool);

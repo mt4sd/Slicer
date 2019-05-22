@@ -38,24 +38,22 @@ class Q_SLICER_QTMODULES_VIEWCONTROLLERS_EXPORT qSlicerViewControllersModule
   : public qSlicerLoadableModule
 {
   Q_OBJECT
-#ifdef Slicer_HAVE_QT5
   Q_PLUGIN_METADATA(IID "org.slicer.modules.loadable.qSlicerLoadableModule/1.0");
-#endif
   Q_INTERFACES(qSlicerLoadableModule);
 
 public:
 
   typedef qSlicerLoadableModule Superclass;
-  qSlicerViewControllersModule(QObject *parent=0);
-  virtual ~qSlicerViewControllersModule();
+  qSlicerViewControllersModule(QObject *parent=nullptr);
+  ~qSlicerViewControllersModule() override;
 
   qSlicerGetTitleMacro(QTMODULE_TITLE);
 
-  virtual QStringList categories()const;
-  virtual QIcon icon()const;
-  virtual QString helpText()const;
-  virtual QString acknowledgementText()const;
-  virtual QStringList contributors()const;
+  QStringList categories()const override;
+  QIcon icon()const override;
+  QString helpText()const override;
+  QString acknowledgementText()const override;
+  QStringList contributors()const override;
 
   /// Read default slice view settings from application settings (.ini file)
   /// into defaultViewNode.
@@ -83,17 +81,17 @@ public:
 
   /// Set MRML scene for the module. Updates the default view settings based on
   /// the application settings.
-  virtual void setMRMLScene(vtkMRMLScene* scene);
+  void setMRMLScene(vtkMRMLScene* scene) override;
 
 protected:
   /// Initialize the module. Register the volumes reader/writer
-  virtual void setup();
+  void setup() override;
 
   /// Create and return the widget representation associated to this module
-  virtual qSlicerAbstractModuleRepresentation * createWidgetRepresentation();
+  qSlicerAbstractModuleRepresentation * createWidgetRepresentation() override;
 
   /// Create and return the logic associated to this module
-  virtual vtkMRMLAbstractLogic* createLogic();
+  vtkMRMLAbstractLogic* createLogic() override;
 
   /// Helper functions to read/write common view settings
   static void readCommonViewSettings(vtkMRMLAbstractViewNode* defaultViewNode, QSettings& settings);

@@ -46,8 +46,8 @@ class QMRML_WIDGETS_EXPORT qMRMLTableView : public QTableView
   Q_PROPERTY(bool firstRowLocked READ firstRowLocked WRITE setFirstRowLocked)
   Q_PROPERTY(bool firstColumnLocked READ firstColumnLocked WRITE setFirstColumnLocked)
 public:
-  qMRMLTableView(QWidget *parent=0);
-  virtual ~qMRMLTableView();
+  qMRMLTableView(QWidget *parent=nullptr);
+  ~qMRMLTableView() override;
 
   /// Return a pointer on the current MRML scene
   Q_INVOKABLE vtkMRMLScene* mrmlScene() const;
@@ -72,7 +72,7 @@ public slots:
   /// If scene is set then scene has to be set before MRMLTableNode is set.
   void setMRMLScene(vtkMRMLScene* newScene);
 
-  /// Set the current \a viewNode to observe. If NULL then view properties are not stored in the scene.
+  /// Set the current \a viewNode to observe. If nullptr then view properties are not stored in the scene.
   void setMRMLTableViewNode(vtkMRMLTableViewNode* newTableViewNode);
 
   void setMRMLTableNode(vtkMRMLTableNode* tableNode);
@@ -108,11 +108,11 @@ signals:
   void selectionChanged();
 
 protected:
-  virtual void keyPressEvent(QKeyEvent* event);
+  void keyPressEvent(QKeyEvent* event) override;
 
   QScopedPointer<qMRMLTableViewPrivate> d_ptr;
 
-  virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+  void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected) override;
 
 private:
   Q_DECLARE_PRIVATE(qMRMLTableView);

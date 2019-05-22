@@ -34,34 +34,32 @@ class Q_SLICER_QTMODULES_DATA_EXPORT qSlicerDataModule
   : public qSlicerLoadableModule
 {
   Q_OBJECT
-#ifdef Slicer_HAVE_QT5
   Q_PLUGIN_METADATA(IID "org.slicer.modules.loadable.qSlicerLoadableModule/1.0");
-#endif
   Q_INTERFACES(qSlicerLoadableModule);
 public:
   typedef qSlicerLoadableModule Superclass;
-  qSlicerDataModule(QObject *parent=0);
-  virtual ~qSlicerDataModule();
+  qSlicerDataModule(QObject *parent=nullptr);
+  ~qSlicerDataModule() override;
 
-  virtual void setup();
+  void setup() override;
 
-  virtual QIcon icon()const;
-  virtual QStringList categories()const;
-  virtual QStringList dependencies()const;
+  QIcon icon()const override;
+  QStringList categories()const override;
+  QStringList dependencies()const override;
 
   qSlicerGetTitleMacro(QTMODULE_TITLE);
 
   /// Return help/acknowledgement text
-  virtual QString helpText()const;
-  virtual QString acknowledgementText()const;
-  virtual QStringList contributors()const;
+  QString helpText()const override;
+  QString acknowledgementText()const override;
+  QStringList contributors()const override;
 protected:
 
   /// Create and return the widget representation associated to this module
-  virtual qSlicerAbstractModuleRepresentation * createWidgetRepresentation();
+  qSlicerAbstractModuleRepresentation * createWidgetRepresentation() override;
 
   /// Create and return the logic associated to this module
-  virtual vtkMRMLAbstractLogic* createLogic();
+  vtkMRMLAbstractLogic* createLogic() override;
 
 protected:
   QScopedPointer<qSlicerDataModulePrivate> d_ptr;

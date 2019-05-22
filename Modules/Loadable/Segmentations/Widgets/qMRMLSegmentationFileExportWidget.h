@@ -54,9 +54,9 @@ class Q_SLICER_MODULE_SEGMENTATIONS_WIDGETS_EXPORT qMRMLSegmentationFileExportWi
 
 public:
   /// Constructor
-  explicit qMRMLSegmentationFileExportWidget(QWidget* parent = 0);
+  explicit qMRMLSegmentationFileExportWidget(QWidget* parent = nullptr);
   /// Destructor
-  virtual ~qMRMLSegmentationFileExportWidget();
+  ~qMRMLSegmentationFileExportWidget() override;
 
   QString settingsKey()const;
   void setSettingsKey(const QString& key);

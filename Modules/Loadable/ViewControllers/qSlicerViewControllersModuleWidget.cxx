@@ -80,8 +80,7 @@ qSlicerViewControllersModuleWidgetPrivate::qSlicerViewControllersModuleWidgetPri
 
 //-----------------------------------------------------------------------------
 qSlicerViewControllersModuleWidgetPrivate::~qSlicerViewControllersModuleWidgetPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void
@@ -96,7 +95,7 @@ qSlicerViewControllersModuleWidgetPrivate::createController(vtkMRMLNode *n, qSli
     }
 
   // create the ControllerWidget and wire it to the appropriate node
-  qMRMLViewControllerBar *barWidget = 0;
+  qMRMLViewControllerBar *barWidget = nullptr;
   vtkMRMLSliceNode *sn = vtkMRMLSliceNode::SafeDownCast(n);
   if (sn)
     {
@@ -223,8 +222,7 @@ qSlicerViewControllersModuleWidget::qSlicerViewControllersModuleWidget(QWidget* 
 
 //-----------------------------------------------------------------------------
 qSlicerViewControllersModuleWidget::~qSlicerViewControllersModuleWidget()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerViewControllersModuleWidget::setup()
@@ -445,7 +443,7 @@ void qSlicerViewControllersModuleWidget::onLayoutChanged(int)
 
   // show Controllers for Nodes not currently being managed
   // by this widget
-  vtkObject *v = NULL;
+  vtkObject *v = nullptr;
   vtkCollectionSimpleIterator it;
   for (visibleViews->InitTraversal(it);
     (v = visibleViews->GetNextItemAsObject(it));)
@@ -469,6 +467,6 @@ void qSlicerViewControllersModuleWidget::onAdvancedViewNodeChanged(vtkMRMLNode* 
 {
   Q_D(qSlicerViewControllersModuleWidget);
   // Only show widget corresponding to selected view node type
-  d->MRMLSliceInformationWidget->setVisible(vtkMRMLSliceNode::SafeDownCast(viewNode) != 0);
-  d->MRMLThreeDViewInformationWidget->setVisible(vtkMRMLViewNode::SafeDownCast(viewNode) != 0);
+  d->MRMLSliceInformationWidget->setVisible(vtkMRMLSliceNode::SafeDownCast(viewNode) != nullptr);
+  d->MRMLThreeDViewInformationWidget->setVisible(vtkMRMLViewNode::SafeDownCast(viewNode) != nullptr);
 }

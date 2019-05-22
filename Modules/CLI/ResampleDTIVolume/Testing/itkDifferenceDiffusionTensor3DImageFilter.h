@@ -99,11 +99,10 @@ protected:
   MatrixType GetMetaDataDictionary( const InputImageType* image );
 
   DifferenceDiffusionTensor3DImageFilter();
-  virtual ~DifferenceDiffusionTensor3DImageFilter()
-  {
-  }
+  ~DifferenceDiffusionTensor3DImageFilter() override
+   = default;
 
-  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  void PrintSelf(std::ostream& os, Indent indent) const override;
 
   /** DifferenceImageFilter can be implemented as a multithreaded
    * filter.  Therefore, this implementation provides a
@@ -116,11 +115,11 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData()  */
-  void ThreadedGenerateData(const OutputImageRegionType& threadRegion, ThreadIdType threadId) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& threadRegion, ThreadIdType threadId) override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
   InputPixelType ApplyMeasurementFrameToTensor( InputPixelType tensor, const MatrixType & measurementFrame );
 
@@ -135,8 +134,8 @@ protected:
   MatrixType            m_MeasurementFrameValid;
   MatrixType            m_MeasurementFrameTest;
 private:
-  DifferenceDiffusionTensor3DImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);                         // purposely not implemented
+  DifferenceDiffusionTensor3DImageFilter(const Self &) = delete;
+  void operator=(const Self &) = delete;
 
   bool m_IgnoreBoundaryPixels;
 };

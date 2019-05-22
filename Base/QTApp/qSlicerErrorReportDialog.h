@@ -38,8 +38,8 @@ class Q_SLICER_BASE_QTAPP_EXPORT qSlicerErrorReportDialog :
 {
   Q_OBJECT
 public:
-  qSlicerErrorReportDialog(QWidget *parentWidget = 0);
-  virtual ~qSlicerErrorReportDialog();
+  qSlicerErrorReportDialog(QWidget *parentWidget = nullptr);
+  ~qSlicerErrorReportDialog() override;
 
 protected slots:
   void onLogFileOpen();

@@ -43,8 +43,7 @@ qSlicerFileReader::qSlicerFileReader(QObject* _parent)
 
 //----------------------------------------------------------------------------
 qSlicerFileReader::~qSlicerFileReader()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 QStringList qSlicerFileReader::extensions()const
@@ -60,7 +59,7 @@ bool qSlicerFileReader::canLoadFile(const QString& fileName)const
 }
 
 //----------------------------------------------------------------------------
-QStringList qSlicerFileReader::supportedNameFilters(const QString& fileName, int* longestExtensionMatchPtr /* =NULL */)const
+QStringList qSlicerFileReader::supportedNameFilters(const QString& fileName, int* longestExtensionMatchPtr /* =nullptr */)const
 {
   if (longestExtensionMatchPtr)
     {
@@ -123,5 +122,8 @@ QStringList qSlicerFileReader::loadedNodes()const
 //----------------------------------------------------------------------------
 bool qSlicerFileReader::examineFileInfoList(QFileInfoList &fileInfoList, QFileInfo &archetypeFileInfo, qSlicerIO::IOProperties &ioProperties)const
 {
+  Q_UNUSED(fileInfoList);
+  Q_UNUSED(archetypeFileInfo);
+  Q_UNUSED(ioProperties);
   return(false);
 }

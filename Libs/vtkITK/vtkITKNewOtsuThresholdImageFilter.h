@@ -70,12 +70,12 @@ public:
 protected:
   typedef itk::NewOtsuThresholdImageFilter<Superclass::InputImageType, Superclass::OutputImageType> ImageFilterType;
   vtkITKNewOtsuThresholdImageFilter() : Superclass ( ImageFilterType::New() ){};
-  ~vtkITKNewOtsuThresholdImageFilter() {};
+  ~vtkITKNewOtsuThresholdImageFilter() override  = default;
   ImageFilterType* GetImageFilterPointer() { return dynamic_cast<ImageFilterType*> ( m_Filter.GetPointer() ); }
 
 private:
-  vtkITKNewOtsuThresholdImageFilter(const vtkITKNewOtsuThresholdImageFilter&);  /// Not implemented.
-  void operator=(const vtkITKNewOtsuThresholdImageFilter&);  /// Not implemented.
+  vtkITKNewOtsuThresholdImageFilter(const vtkITKNewOtsuThresholdImageFilter&) = delete;
+  void operator=(const vtkITKNewOtsuThresholdImageFilter&) = delete;
 };
 
 //vtkStandardNewMacro(vtkITKNewOtsuThresholdImageFilter);

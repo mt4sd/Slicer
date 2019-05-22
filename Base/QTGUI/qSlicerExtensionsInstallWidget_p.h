@@ -24,11 +24,7 @@
 // Qt includes
 #include <QObject>
 #include <QUrl>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 6, 0))
-class QWebChannel;
-#else
 #include <QWebChannel>
-#endif
 
 // Slicer includes
 class qSlicerExtensionsInstallWidget;
@@ -40,7 +36,7 @@ class ExtensionInstallWidgetWebChannelProxy : public QObject
 {
   Q_OBJECT
 public:
-  ExtensionInstallWidgetWebChannelProxy():InstallWidget(0){}
+  ExtensionInstallWidgetWebChannelProxy():InstallWidget(nullptr){}
   qSlicerExtensionsInstallWidget* InstallWidget;
 public slots:
   void refresh();
@@ -58,7 +54,7 @@ protected:
 public:
   typedef qSlicerWebWidgetPrivate Superclass;
   qSlicerExtensionsInstallWidgetPrivate(qSlicerExtensionsInstallWidget& object);
-  virtual ~qSlicerExtensionsInstallWidgetPrivate();
+  ~qSlicerExtensionsInstallWidgetPrivate() override;
 
   /// Return the URL allowing to retrieve the extension list page
   /// associated with the current architecture, operating system and slicer revision.
@@ -66,8 +62,8 @@ public:
 
   void setFailurePage(const QStringList &errors);
 
-  virtual void initializeWebChannel(QWebChannel* webChannel);
-  virtual void initializeWebChannelTransport(QByteArray& webChannelScript);
+  void initializeWebChannel(QWebChannel* webChannel) override;
+  void initializeWebChannelTransport(QByteArray& webChannelScript) override;
   void registerExtensionsManagerModel(qSlicerExtensionsManagerModel* oldModel, qSlicerExtensionsManagerModel* newModel);
 
   qSlicerExtensionsManagerModel * ExtensionsManagerModel;

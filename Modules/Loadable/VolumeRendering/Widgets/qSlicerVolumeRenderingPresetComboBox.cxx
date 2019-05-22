@@ -25,9 +25,6 @@
 
 // Qt includes
 #include <QDebug>
-#if QT_VERSION < 0x040700
-#include <QPixmapCache>
-#endif
 
 // CTK includes
 #include <ctkUtils.h>
@@ -75,14 +72,13 @@ qSlicerVolumeRenderingPresetComboBoxPrivate::qSlicerVolumeRenderingPresetComboBo
   qSlicerVolumeRenderingPresetComboBox& object)
   : q_ptr(&object)
   , OldPresetPosition(0.0)
-  , VolumePropertyNode(NULL)
+  , VolumePropertyNode(nullptr)
 {
 }
 
 //-----------------------------------------------------------------------------
 qSlicerVolumeRenderingPresetComboBoxPrivate::~qSlicerVolumeRenderingPresetComboBoxPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerVolumeRenderingPresetComboBoxPrivate::init()
@@ -104,8 +100,8 @@ void qSlicerVolumeRenderingPresetComboBoxPrivate::init()
   QObject::connect(this->PresetOffsetSlider, SIGNAL(sliderReleased()),
     q, SLOT(endInteraction()));
 
-  this->PresetComboBox->setMRMLScene(NULL);
-  this->PresetComboBox->setCurrentNode(NULL);
+  this->PresetComboBox->setMRMLScene(nullptr);
+  this->PresetComboBox->setCurrentNode(nullptr);
 }
 
 // --------------------------------------------------------------------------
@@ -142,8 +138,7 @@ qSlicerVolumeRenderingPresetComboBox::qSlicerVolumeRenderingPresetComboBox(QWidg
 
 // --------------------------------------------------------------------------
 qSlicerVolumeRenderingPresetComboBox::~qSlicerVolumeRenderingPresetComboBox()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 vtkMRMLNode* qSlicerVolumeRenderingPresetComboBox::currentNode()const

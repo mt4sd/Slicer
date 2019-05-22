@@ -16,12 +16,6 @@
 #include "qSlicerCropVolumeModuleWidget.h"
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerCropVolumeModule, qSlicerCropVolumeModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_CropVolume
 class qSlicerCropVolumeModulePrivate
 {
@@ -34,8 +28,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerCropVolumeModulePrivate::qSlicerCropVolumeModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerCropVolumeModule methods
@@ -49,8 +42,7 @@ qSlicerCropVolumeModule::qSlicerCropVolumeModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerCropVolumeModule::~qSlicerCropVolumeModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerCropVolumeModule::helpText()const

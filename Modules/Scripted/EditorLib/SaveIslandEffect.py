@@ -4,9 +4,10 @@ import vtkITK
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import Effect
-import IslandEffect
+
+from . import EditUtil
+from . import HelpButton
+from . import IslandEffectOptions, IslandEffectTool, IslandEffectLogic, IslandEffect
 
 __all__ = [
   'SaveIslandEffectOptions',
@@ -32,7 +33,7 @@ comment = """
 # SaveIslandEffectOptions - see Effect for superclasses
 #
 
-class SaveIslandEffectOptions(IslandEffect.IslandEffectOptions):
+class SaveIslandEffectOptions(IslandEffectOptions):
   """ SaveIslandEffect-specfic gui
   """
 
@@ -67,7 +68,7 @@ class SaveIslandEffectOptions(IslandEffect.IslandEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.SaveObserver(self.parameterNodeTag)
@@ -87,7 +88,7 @@ class SaveIslandEffectOptions(IslandEffect.IslandEffectOptions):
 # SaveIslandEffectTool
 #
 
-class SaveIslandEffectTool(IslandEffect.IslandEffectTool):
+class SaveIslandEffectTool(IslandEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -123,7 +124,7 @@ class SaveIslandEffectTool(IslandEffect.IslandEffectTool):
 # SaveIslandEffectLogic
 #
 
-class SaveIslandEffectLogic(IslandEffect.IslandEffectLogic):
+class SaveIslandEffectLogic(IslandEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an SaveIslandEffectTool
@@ -144,7 +145,7 @@ class SaveIslandEffectLogic(IslandEffect.IslandEffectLogic):
     labelLogic = self.sliceLogic.GetLabelLayer()
     xyToIJK = labelLogic.GetXYToIJKTransform()
     ijk = xyToIJK.TransformDoublePoint( xy + (0,) )
-    ijk = map(lambda v: int(round(v)), ijk)
+    ijk = [int(round(v)) for v in ijk]
 
     connectivity = slicer.vtkImageConnectivity()
     connectivity.SetFunctionToSaveIsland()
@@ -161,7 +162,7 @@ class SaveIslandEffectLogic(IslandEffect.IslandEffectLogic):
 # The SaveIslandEffect class definition
 #
 
-class SaveIslandEffect(IslandEffect.IslandEffect):
+class SaveIslandEffect(IslandEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

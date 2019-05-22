@@ -39,15 +39,15 @@ public:
 
   /// Method to query the mapping from an id of a LightBox frame to
   /// the Renderer for that frame
-  virtual vtkRenderer *GetRenderer(int vtkNotUsed(id)) { return NULL; };
+  virtual vtkRenderer *GetRenderer(int vtkNotUsed(id)) { return nullptr; };
 
 protected:
   vtkMRMLLightBoxRendererManagerProxy() ;
-  virtual ~vtkMRMLLightBoxRendererManagerProxy() ;
+  ~vtkMRMLLightBoxRendererManagerProxy() override ;
 
 private:
-  vtkMRMLLightBoxRendererManagerProxy(const vtkMRMLLightBoxRendererManagerProxy&); // Not implemented
-  void operator=(const vtkMRMLLightBoxRendererManagerProxy&);                    // Not implemented
+  vtkMRMLLightBoxRendererManagerProxy(const vtkMRMLLightBoxRendererManagerProxy&) = delete;
+  void operator=(const vtkMRMLLightBoxRendererManagerProxy&) = delete;
 
 
 };

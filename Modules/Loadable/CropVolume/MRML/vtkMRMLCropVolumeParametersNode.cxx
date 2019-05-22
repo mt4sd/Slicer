@@ -66,8 +66,7 @@ vtkMRMLCropVolumeParametersNode::vtkMRMLCropVolumeParametersNode()
 
 //----------------------------------------------------------------------------
 vtkMRMLCropVolumeParametersNode::~vtkMRMLCropVolumeParametersNode()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLCropVolumeParametersNode::ReadXMLAttributes(const char** atts)
@@ -76,7 +75,7 @@ void vtkMRMLCropVolumeParametersNode::ReadXMLAttributes(const char** atts)
 
   const char* attName;
   const char* attValue;
-  while (*atts != NULL)
+  while (*atts != nullptr)
   {
     attName = *(atts++);
     attValue = *(atts++);
@@ -244,7 +243,7 @@ void vtkMRMLCropVolumeParametersNode::DeleteROIAlignmentTransformNode()
   vtkMRMLTransformNode* transformNode = this->GetROIAlignmentTransformNode();
   if (transformNode)
     {
-    this->SetROIAlignmentTransformNodeID(NULL);
+    this->SetROIAlignmentTransformNodeID(nullptr);
     if (this->GetScene())
       {
       this->GetScene()->RemoveNode(transformNode);

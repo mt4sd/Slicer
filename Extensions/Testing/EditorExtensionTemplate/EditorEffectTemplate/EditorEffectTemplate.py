@@ -1,10 +1,11 @@
+from __future__ import print_function
 import os
 import vtk, qt, ctk, slicer
 import EditorLib
-from EditorLib.EditOptions import HelpButton
-from EditorLib.EditOptions import EditOptions
+from EditorLib import HelpButton
+from EditorLib import EditOptions
 from EditorLib import EditUtil
-from EditorLib import LabelEffect
+from EditorLib import LabelEffectOptions, LabelEffectTool, LabelEffectLogic, LabelEffect
 
 #
 # The Editor Extension itself.
@@ -16,7 +17,7 @@ from EditorLib import LabelEffect
 # EditorEffectTemplateOptions - see LabelEffect, EditOptions and Effect for superclasses
 #
 
-class EditorEffectTemplateOptions(EditorLib.LabelEffectOptions):
+class EditorEffectTemplateOptions(LabelEffectOptions):
   """ EditorEffectTemplate-specfic gui
   """
 
@@ -55,7 +56,7 @@ class EditorEffectTemplateOptions(EditorLib.LabelEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = EditUtil.EditUtil().getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.RemoveObserver(self.parameterNodeTag)
@@ -120,7 +121,7 @@ class EditorEffectTemplateTool(LabelEffect.LabelEffectTool):
       sliceLogic = self.sliceWidget.sliceLogic()
       logic = EditorEffectTemplateLogic(sliceLogic)
       logic.apply(xy)
-      print("Got a %s at %s in %s", (event,str(xy),self.sliceWidget.sliceLogic().GetSliceNode().GetName()))
+      print(("Got a %s at %s in %s", (event,str(xy),self.sliceWidget.sliceLogic().GetSliceNode().GetName())))
       self.abortEvent(event)
     else:
       pass
@@ -185,7 +186,7 @@ pet = EditorLib.EditorEffectTemplateTool(sw)
 # EditorEffectTemplate
 #
 
-class EditorEffectTemplate:
+class EditorEffectTemplate(object):
   """
   This class is the 'hook' for slicer to detect and recognize the extension
   as a loadable scripted module
@@ -224,7 +225,7 @@ class EditorEffectTemplate:
 # EditorEffectTemplateWidget
 #
 
-class EditorEffectTemplateWidget:
+class EditorEffectTemplateWidget(object):
   def __init__(self, parent = None):
     self.parent = parent
 

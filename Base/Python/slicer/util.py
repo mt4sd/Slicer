@@ -85,12 +85,13 @@ def startupEnvironment():
   import slicer
   startupEnv = slicer.app.startupEnvironment()
   import os
+  # "if varname" is added to reject empty key (it is invalid)
   if os.name == 'nt':
     # On Windows, subprocess functions expect environment to contain strings
     # and Qt provide us unicode strings, so we need to convert them.
-    return {str(varname): str(startupEnv.value(varname)) for varname in startupEnv.keys()}
+    return {str(varname): str(startupEnv.value(varname)) for varname in list(startupEnv.keys()) if varname}
   else:
-    return {varname: startupEnv.value(varname) for varname in startupEnv.keys()}
+    return {varname: startupEnv.value(varname) for varname in list(startupEnv.keys()) if varname}
 
 #
 # Custom Import
@@ -221,7 +222,7 @@ def findChildren(widget=None, name="", text="", title="", className=""):
   parents = [widget]
   kwargs = {'name': name, 'text': text, 'title': title, 'className': className}
   expected_matches = []
-  for kwarg in kwargs.iterkeys():
+  for kwarg in kwargs.keys():
     if kwargs[kwarg]:
       expected_matches.append(kwarg)
   while parents:
@@ -242,7 +243,7 @@ def findChildren(widget=None, name="", text="", title="", className=""):
         # Objects may have text attributes with non-string value (for example,
         # QUndoStack objects have text attribute of 'builtin_qt_slot' type.
         # We only consider string type attributes.
-        if isinstance(attr_name, basestring):
+        if isinstance(attr_name, str):
           if fnmatch.fnmatchcase(attr_name, kwargs[attribute]):
             matched_filter_criteria = matched_filter_criteria + 1
     if matched_filter_criteria == len(expected_matches):
@@ -294,7 +295,7 @@ def startQtDesigner(args = None):
     executableFilePath += ".exe"
   cmdLineArguments = []
   if args is not None:
-    if isinstance(args, basestring):
+    if isinstance(args, str):
       cmdLineArguments.append(args)
     else:
       cmdLineArguments.extend(args)
@@ -359,7 +360,7 @@ def setSliceViewerLayers(background='keep-current', foreground='keep-current', l
     layoutManager = slicer.app.layoutManager()
     if layoutManager is not None:
       sliceLogics = layoutManager.mrmlSliceLogics()
-      for i in xrange(sliceLogics.GetNumberOfItems()):
+      for i in range(sliceLogics.GetNumberOfItems()):
         sliceLogic = sliceLogics.GetItemAsObject(i)
         if sliceLogic:
           sliceLogic.FitSliceToAll()
@@ -553,7 +554,7 @@ def moduleSelector():
 
 def selectModule(module):
   moduleName = module
-  if not isinstance(module, basestring):
+  if not isinstance(module, str):
     moduleName = module.name
   selector = moduleSelector()
   if not selector:
@@ -584,7 +585,7 @@ def getModule(moduleName):
   return module
 
 def getModuleGui(module):
-  if isinstance(module, basestring):
+  if isinstance(module, str):
     module = getModule(module)
   widgetRepr = module.widgetRepresentation()
   if not widgetRepr:
@@ -593,7 +594,7 @@ def getModuleGui(module):
   return widgetRepr
 
 def getNewModuleGui(module):
-  if isinstance(module, basestring):
+  if isinstance(module, str):
     module = getModule(module)
   widgetRepr = module.createNewWidgetRepresentation()
   if not widgetRepr:
@@ -707,8 +708,8 @@ def getNode(pattern="*", index=0, scene=None):
   """
   nodes = getNodes(pattern, scene)
   if not nodes:
-    raise MRMLNodeNotFoundException("could not find nodes in the scene by name or id '%s'" % (pattern if (type(pattern) == str) else ""))
-  return nodes.values()[index]
+    raise MRMLNodeNotFoundException("could not find nodes in the scene by name or id '%s'" % (pattern if (isinstance(pattern, str)) else ""))
+  return list(nodes.values())[index]
 
 def getNodesByClass(className, scene=None):
   """Return all nodes in the scene of the specified class.
@@ -742,7 +743,7 @@ def getFirstNodeByName(name, className=None):
   scene = slicer.mrmlScene
   return scene.GetFirstNode(name, className, False, False)
 
-class NodeModify:
+class NodeModify(object):
   """Context manager to conveniently compress mrml node modified event.
   """
   def __init__(self, node):
@@ -958,11 +959,11 @@ def updateTableFromArray(tableNode, narrays, columnNames=None):
 
   if tableNode is None:
     tableNode = slicer.mrmlScene.AddNewNodeByClass("vtkMRMLTableNode")
-  if type(narrays) == np.ndarray and len(narrays.shape) == 1:
+  if isinstance(narrays, np.ndarray) and len(narrays.shape) == 1:
     ncolumns = [narrays]
-  elif type(narrays) == np.ndarray and len(narrays.shape) == 2:
+  elif isinstance(narrays, np.ndarray) and len(narrays.shape) == 2:
     ncolumns = narrays.T
-  elif type(narrays) == tuple or type(narrays) == list:
+  elif isinstance(narrays, tuple) or isinstance(narrays, list):
     ncolumns = narrays
   else:
     raise ValueError('Expected narrays is a numpy ndarray, or tuple or list of numpy ndarrays, got %s instead.' % (str(type(narrays))))
@@ -970,7 +971,7 @@ def updateTableFromArray(tableNode, narrays, columnNames=None):
   # Convert single string to a single-element string list
   if columnNames is None:
     columnNames = []
-  if isinstance(columnNames, basestring):
+  if isinstance(columnNames, str):
     columnNames = [columnNames]
   for columnIndex, ncolumn in enumerate(ncolumns):
     vcolumn = vtk.util.numpy_support.numpy_to_vtk(num_array=ncolumn.ravel(),deep=True,array_type=vtk.VTK_FLOAT)
@@ -1019,14 +1020,14 @@ class VTKObservationMixin(object):
         return o
     return None
 
-def toVTKString(str):
+def toVTKString(text):
   """Convert unicode string into 8-bit encoded ascii string.
   Unicode characters without ascii equivalent will be stripped out.
   """
   vtkStr = ""
-  for c in str:
+  for c in text:
     try:
-      cc = c.encode("latin1", "ignore")
+      cc = c.encode("latin1", "ignore").decode()
     except (UnicodeDecodeError):
       cc = "?"
     vtkStr = vtkStr + cc
@@ -1051,16 +1052,6 @@ def tempDirectory(key='__SlicerTemp__',tempDir=None,includeDateTime=True):
   dirPath = fileInfo.absoluteFilePath()
   qt.QDir().mkpath(dirPath)
   return dirPath
-
-#
-# Misc. Utility methods
-#
-def unicodeify(s):
-  """
-  Avoid UnicodeEncodeErrors using the technique described here:
-  http://stackoverflow.com/questions/9942594/unicodeencodeerror-ascii-codec-cant-encode-character-u-xa0-in-position-20
-  """
-  return u' '.join(s).encode('utf-8').strip()
 
 def delayDisplay(message,autoCloseMsec=1000):
   """Display an information message in a popup window for a short time.
@@ -1165,7 +1156,7 @@ def messageBox(text, parent=None, **kwargs):
   import ctk
   mbox = ctk.ctkMessageBox(parent if parent else mainWindow())
   mbox.text = text
-  for key, value in kwargs.iteritems():
+  for key, value in kwargs.items():
     if hasattr(mbox, key):
       setattr(mbox, key, value)
   # Windows 10 peek feature in taskbar shows all hidden but not destroyed windows
@@ -1192,7 +1183,7 @@ def createProgressDialog(parent=None, value=0, maximum=100, labelText="", window
   progressIndicator.value = value
   progressIndicator.windowTitle = windowTitle
   progressIndicator.labelText = labelText
-  for key, value in kwargs.iteritems():
+  for key, value in kwargs.items():
     if hasattr(progressIndicator, key):
       setattr(progressIndicator, key, value)
   return progressIndicator
@@ -1218,7 +1209,7 @@ def toBool(value):
   try:
     return bool(int(value))
   except (ValueError, TypeError):
-    return value.lower() in ['true'] if isinstance(value, basestring) else bool(value)
+    return value.lower() in ['true'] if isinstance(value, str) else bool(value)
 
 def settingsValue(key, default, converter=lambda v: v, settings=None):
   """Return settings value associated with key if it exists or the provided default otherwise.
@@ -1274,7 +1265,7 @@ interactor.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, onClick)
     interactor.SetEventPosition(end[0], end[1])
     interactor.MouseMoveEvent()
   else:
-    for step in xrange(steps):
+    for step in range(steps):
       frac = float(step)/(steps-1)
       x = int(start[0] + frac*(end[0]-start[0]))
       y = int(start[1] + frac*(end[1]-start[1]))
@@ -1294,9 +1285,9 @@ def downloadFile(url, targetFilePath):
   if not os.path.exists(targetFilePath) or os.stat(targetFilePath).st_size == 0:
     logging.info('Downloading from\n  %s\nas file\n  %s\nIt may take a few minutes...' % (url,targetFilePath))
     try:
-      import urllib
-      urllib.urlretrieve(url, targetFilePath)
-    except Exception, e:
+      import urllib.request, urllib.parse, urllib.error
+      urllib.request.urlretrieve(url, targetFilePath)
+    except Exception as e:
       import traceback
       traceback.print_exc()
       logging.error('Failed to download file from ' + url)
@@ -1446,11 +1437,11 @@ def plot(narray, xColumnIndex = -1, columnNames = None, title = None, show = Tru
 
   # Retrieve nodes that must be reused
   if nodes is not None:
-    if nodes.has_key('chart'):
+    if 'chart' in nodes:
       chartNode = nodes['chart']
-    if nodes.has_key('table'):
+    if 'table' in nodes:
       tableNode = nodes['table']
-    if nodes.has_key('series'):
+    if 'series' in nodes:
       seriesNodes = nodes['series']
 
   # Create table node

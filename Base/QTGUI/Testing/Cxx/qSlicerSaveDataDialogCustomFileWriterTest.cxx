@@ -41,17 +41,17 @@
 class qSlicerDummyFileWriter: public qSlicerFileWriter
 {
 public:
-  qSlicerDummyFileWriter(qSlicerIO::IOFileType fileType, QObject* parent = 0)
+  qSlicerDummyFileWriter(qSlicerIO::IOFileType fileType, QObject* parent = nullptr)
     : qSlicerFileWriter(parent)
     , FileType(fileType)
     {}
-  virtual ~qSlicerDummyFileWriter(){}
+  ~qSlicerDummyFileWriter() override = default;
   virtual QStringList nodeTags()const {return QStringList() << "LinearTransform";}
-  virtual QString description()const{return "Dummy";}
-  virtual qSlicerIO::IOFileType fileType()const{return this->FileType;}
-  virtual QStringList extensions(vtkObject*)const{return QStringList(QString("MyType(*.mhd *.vtk)"));}
+  QString description()const override{return "Dummy";}
+  qSlicerIO::IOFileType fileType()const override{return this->FileType;}
+  QStringList extensions(vtkObject*)const override{return QStringList(QString("MyType(*.mhd *.vtk)"));}
 
-  virtual bool write(const IOProperties& properties);
+  bool write(const IOProperties& properties) override;
 
   qSlicerIO::IOFileType FileType;
 };
@@ -69,7 +69,7 @@ bool qSlicerDummyFileWriter::write(const IOProperties& properties)
 int qSlicerSaveDataDialogCustomFileWriterTest(int argc, char * argv[] )
 {
   qSlicerApplication app(argc, argv);
-  app.coreIOManager()->registerIO(new qSlicerDummyFileWriter(QString("TransformFile"), 0));
+  app.coreIOManager()->registerIO(new qSlicerDummyFileWriter(QString("TransformFile"), nullptr));
 
   vtkNew<vtkMRMLTransformStorageNode> storageNode;
   app.mrmlScene()->AddNode(storageNode.GetPointer());

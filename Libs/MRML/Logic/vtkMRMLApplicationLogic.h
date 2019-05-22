@@ -51,7 +51,7 @@ class VTK_MRML_LOGIC_EXPORT vtkMRMLApplicationLogic
 public:
 
   static vtkMRMLApplicationLogic *New();
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkMRMLApplicationLogic, vtkMRMLAbstractLogic);
 
   /// Get default Selection node
@@ -163,7 +163,7 @@ public:
   /// \sa qSlicerCoreIOManager::saveScene
   /// If screenShot is not null, use it as the screen shot for a scene view
   /// Returns false if the save failed
-  bool SaveSceneToSlicerDataBundleDirectory(const char* sdbDir, vtkImageData* screenShot = NULL);
+  bool SaveSceneToSlicerDataBundleDirectory(const char* sdbDir, vtkImageData* screenShot = nullptr);
 
   /// Open the file into a temp directory and load the scene file
   /// inside.  Note that the first mrml file found in the extracted
@@ -189,7 +189,9 @@ public:
 
   /// List of custom events fired by the class.
   enum Events{
-    RequestInvokeEvent = vtkCommand::UserEvent + 1
+    RequestInvokeEvent = vtkCommand::UserEvent + 1,
+    PauseRenderEvent = vtkCommand::UserEvent + 101,
+    ResumeRenderEvent
   };
   /// Structure passed as calldata pointer in the RequestEvent invoked event.
   struct InvokeRequest{
@@ -207,7 +209,7 @@ public:
   void InvokeEventWithDelay(unsigned int delayInMs,
                             vtkObject* caller,
                             unsigned long eventID = vtkCommand::ModifiedEvent,
-                            void* callData = 0);
+                            void* callData = nullptr);
 
   /// Return the temporary path that was set by the application
   const char* GetTemporaryPath();
@@ -219,12 +221,26 @@ public:
   /// Uses current scene's URL property, so the URL must be up-to-date when calling this method.
   void SaveSceneScreenshot(vtkImageData* screenshot);
 
+  /// Pauses rendering for all views in the current layout.
+  /// It should be used in situations where multiple nodes are modified, and it is undesirable to display an intermediate
+  /// state.
+  /// The caller is responsible for making sure that each PauseRender() is paired with
+  /// ResumeRender().
+  /// \sa vtkMRMLApplicationLogic::ResumeRender()
+  /// \sa qSlicerApplication::setRenderPaused()
+  virtual void PauseRender();
+
+  /// Resumes rendering for all views in the current layout.
+  /// \sa vtkMRMLApplicationLogic::PauseRender()
+  /// \sa qSlicerApplication::setRenderPaused()
+  virtual void ResumeRender();
+
 protected:
 
   vtkMRMLApplicationLogic();
-  virtual ~vtkMRMLApplicationLogic();
+  ~vtkMRMLApplicationLogic() override;
 
-  virtual void SetMRMLSceneInternal(vtkMRMLScene *newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene *newScene) override;
 
   void SetSelectionNode(vtkMRMLSelectionNode* );
   void SetInteractionNode(vtkMRMLInteractionNode* );
@@ -239,8 +255,8 @@ private:
   /// from GetNthFileName(n)
   std::map<vtkMRMLStorageNode*, std::vector<std::string> > OriginalStorageNodeFileNames;
 
-  vtkMRMLApplicationLogic(const vtkMRMLApplicationLogic&);
-  void operator=(const vtkMRMLApplicationLogic&);
+  vtkMRMLApplicationLogic(const vtkMRMLApplicationLogic&) = delete;
+  void operator=(const vtkMRMLApplicationLogic&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

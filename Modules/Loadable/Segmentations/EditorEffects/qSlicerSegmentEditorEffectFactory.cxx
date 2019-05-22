@@ -28,7 +28,7 @@
 #include <QDebug>
 
 //----------------------------------------------------------------------------
-qSlicerSegmentEditorEffectFactory *qSlicerSegmentEditorEffectFactory::m_Instance = NULL;
+qSlicerSegmentEditorEffectFactory *qSlicerSegmentEditorEffectFactory::m_Instance = nullptr;
 
 //----------------------------------------------------------------------------
 /// \ingroup SlicerRt_QtModules_Segmentations
@@ -41,7 +41,7 @@ public:
     {
     if (qSlicerSegmentEditorEffectFactory::m_Instance)
       {
-      qSlicerSegmentEditorEffectFactory::setInstance(NULL);
+      qSlicerSegmentEditorEffectFactory::setInstance(nullptr);
       }
     }
 };
@@ -70,7 +70,7 @@ void qSlicerSegmentEditorEffectFactory::setInstance(qSlicerSegmentEditorEffectFa
     {
     return;
     }
-  // Preferably this will be NULL
+  // Preferably this will be nullptr
   if (qSlicerSegmentEditorEffectFactory::m_Instance)
     {
     delete qSlicerSegmentEditorEffectFactory::m_Instance;
@@ -102,7 +102,7 @@ qSlicerSegmentEditorEffectFactory::~qSlicerSegmentEditorEffectFactory()
 //---------------------------------------------------------------------------
 bool qSlicerSegmentEditorEffectFactory::registerEffect(qSlicerSegmentEditorAbstractEffect* effectToRegister)
 {
-  if (effectToRegister == NULL)
+  if (effectToRegister == nullptr)
     {
     qCritical() << Q_FUNC_INFO << ": Invalid effect to register!";
     return false;
@@ -114,7 +114,7 @@ bool qSlicerSegmentEditorEffectFactory::registerEffect(qSlicerSegmentEditorAbstr
     }
 
   // Check if the same effect has already been registered
-  qSlicerSegmentEditorAbstractEffect* currentEffect = NULL;
+  qSlicerSegmentEditorAbstractEffect* currentEffect = nullptr;
   foreach (currentEffect, this->m_RegisteredEffects)
     {
     if (effectToRegister->name().compare(currentEffect->name()) == 0)
@@ -155,7 +155,7 @@ QList<qSlicerSegmentEditorAbstractEffect*> qSlicerSegmentEditorEffectFactory::co
     qSlicerSegmentEditorAbstractEffect* clonedEffect = effect->clone();
     if (!clonedEffect)
       {
-      // make sure we don't put a NULL pointer in the effect list
+      // make sure we don't put a nullptr pointer in the effect list
       qCritical() << Q_FUNC_INFO << " failed to clone effect: " << effect->name();
       continue;
       }

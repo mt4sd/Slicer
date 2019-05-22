@@ -37,29 +37,29 @@ class VTK_MRML_EXPORT vtkMRMLDiffusionTensorDisplayPropertiesNode : public vtkMR
  public:
   static vtkMRMLDiffusionTensorDisplayPropertiesNode *New();
   vtkTypeMacro(vtkMRMLDiffusionTensorDisplayPropertiesNode,vtkMRMLColorTableNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Read node attributes from a MRML file in XML format.
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object.
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "DiffusionTensorDisplayProperties";}
+  const char* GetNodeTagName() override {return "DiffusionTensorDisplayProperties";}
 
   //--------------------------------------------------------------------------
   /// Display Information: Types of scalars that may be generated from tensors.
@@ -447,14 +447,14 @@ class VTK_MRML_EXPORT vtkMRMLDiffusionTensorDisplayPropertiesNode : public vtkMR
   static int GetLastScalarInvariant();
 
   ///
-  /// Create default storage node or NULL if does not have one
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE {
-    return 0;
+  /// Create default storage node or nullptr if does not have one
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override {
+    return nullptr;
   }
 
  protected:
   vtkMRMLDiffusionTensorDisplayPropertiesNode();
-  ~vtkMRMLDiffusionTensorDisplayPropertiesNode();
+  ~vtkMRMLDiffusionTensorDisplayPropertiesNode() override;
   vtkMRMLDiffusionTensorDisplayPropertiesNode(const vtkMRMLDiffusionTensorDisplayPropertiesNode&);
   void operator=(const vtkMRMLDiffusionTensorDisplayPropertiesNode&);
 

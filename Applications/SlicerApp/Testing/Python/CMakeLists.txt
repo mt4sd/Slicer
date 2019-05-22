@@ -242,12 +242,6 @@ if(Slicer_USE_SimpleITK)
 endif()
 
 slicer_add_python_unittest(
-  SCRIPT ${Slicer_SOURCE_DIR}/Base/Python/tests/test_saferef.py
-  SLICER_ARGS --no-main-window --disable-modules
-  TESTNAME_PREFIX nomainwindow_
-  )
-
-slicer_add_python_unittest(
   SCRIPT ${Slicer_SOURCE_DIR}/Base/Python/tests/test_PythonManager.py
   SLICER_ARGS --no-main-window --disable-modules
   TESTNAME_PREFIX nomainwindow_
@@ -317,12 +311,12 @@ if(Slicer_USE_PYTHONQT_WITH_OPENSSL)
   add_test(
     NAME py_SlicerSslTest
     COMMAND ${Slicer_LAUNCHER_EXECUTABLE}
-    --ignore-slicerrc -c "import urllib2; urllib2.urlopen('https://www.eff.org/https-everywhere')"
+    --ignore-slicerrc -c "from urllib.request import urlopen; urlopen('https://www.eff.org/https-everywhere')"
     )
   add_test(
     NAME py_PythonSslTest
     COMMAND ${PYTHON_EXECUTABLE}
-    -c "import urllib2; urllib2.urlopen('https://www.eff.org/https-everywhere')"
+    -c "from urllib.request import urlopen; urlopen('https://www.eff.org/https-everywhere')"
     )
 endif()
 
@@ -375,7 +369,9 @@ if(Slicer_USE_QtTesting AND Slicer_USE_PYTHONQT)
   slicer_add_python_unittest(SCRIPT Slicer4Minute.py)
   slicer_add_python_unittest(SCRIPT SlicerBoundsTest.py)
   slicer_add_python_unittest(SCRIPT Charting.py)
-  slicer_add_python_unittest(SCRIPT WebEngine.py)
+  if(Slicer_BUILD_WEBENGINE_SUPPORT)
+    slicer_add_python_unittest(SCRIPT WebEngine.py)
+  endif()
   slicer_add_python_unittest(SCRIPT SliceLinkLogic.py)
   slicer_add_python_unittest(SCRIPT ScenePerformance.py)
   slicer_add_python_unittest(SCRIPT SlicerCreateRulerCrashIssue4199.py)

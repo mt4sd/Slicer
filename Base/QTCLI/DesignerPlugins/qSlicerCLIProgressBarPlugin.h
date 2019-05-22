@@ -29,13 +29,13 @@ class Q_SLICER_BASE_QTCLI_PLUGINS_EXPORT qSlicerCLIProgressBarPlugin
 {
   Q_OBJECT
 public:
-  qSlicerCLIProgressBarPlugin(QObject* parent = 0);
+  qSlicerCLIProgressBarPlugin(QObject* parent = nullptr);
 
-  QWidget *createWidget(QWidget* parent);
-  QString domXml() const;
-  QString includeFile() const;
-  bool isContainer() const;
-  QString name() const;
+  QWidget *createWidget(QWidget* parent) override;
+  QString domXml() const override;
+  QString includeFile() const override;
+  bool isContainer() const override;
+  QString name() const override;
 };
 
 #endif

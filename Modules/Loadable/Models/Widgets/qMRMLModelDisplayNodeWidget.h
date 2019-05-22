@@ -50,8 +50,8 @@ class Q_SLICER_QTMODULES_MODELS_WIDGETS_EXPORT qMRMLModelDisplayNodeWidget : pub
 
 public:
 
-  qMRMLModelDisplayNodeWidget(QWidget *parent=0);
-  virtual ~qMRMLModelDisplayNodeWidget();
+  qMRMLModelDisplayNodeWidget(QWidget *parent=nullptr);
+  ~qMRMLModelDisplayNodeWidget() override;
 
   vtkMRMLModelDisplayNode* mrmlModelDisplayNode()const;
   vtkMRMLNode* mrmlDisplayableNode()const;

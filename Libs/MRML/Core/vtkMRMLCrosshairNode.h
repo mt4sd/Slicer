@@ -27,7 +27,7 @@ class VTK_MRML_EXPORT vtkMRMLCrosshairNode : public vtkMRMLNode
   public:
   static vtkMRMLCrosshairNode *New();
   vtkTypeMacro(vtkMRMLCrosshairNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// CursorPositionModifiedEvent is invoked when the cursor position is modified,
   /// for example a mouse pointer is moved in a slice view.
@@ -36,23 +36,23 @@ class VTK_MRML_EXPORT vtkMRMLCrosshairNode : public vtkMRMLNode
       CursorPositionModifiedEvent = 22000
     };
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Crosshair";};
+  const char* GetNodeTagName() override {return "Crosshair";};
 
   ///
   /// configures the crosshair appearance and behavior
@@ -70,7 +70,7 @@ class VTK_MRML_EXPORT vtkMRMLCrosshairNode : public vtkMRMLNode
   /// Set cursor position in 3D.
   /// This should be called whenever the cursor is moved by using a 3D positioning device
   /// (that does not have an associated slice viewer).
-  /// GetCursorPositionXYZ returns with NULL if SetCursorPositionRAS is used for setting the
+  /// GetCursorPositionXYZ returns with nullptr if SetCursorPositionRAS is used for setting the
   /// cursor position, so if slice position is available then SetCursorPositionXYZ method should
   /// be used instead (it sets both XYZ and RAS position, too).
   void SetCursorPositionRAS(double ras[3]);
@@ -91,7 +91,7 @@ class VTK_MRML_EXPORT vtkMRMLCrosshairNode : public vtkMRMLNode
   bool GetCursorPositionRAS(double ras[3]);
 
   /// Get the position of the cursor in the current view in XYZ coordinate system.
-  /// Returns NULL if the cursor is not in a slice viewer.
+  /// Returns nullptr if the cursor is not in a slice viewer.
   /// This is typically called by other classes to get the current cursor position after receiving
   /// CursorPositionModifiedEvent event.
   vtkMRMLSliceNode* GetCursorPositionXYZ(double xyz[3]);
@@ -110,7 +110,7 @@ class VTK_MRML_EXPORT vtkMRMLCrosshairNode : public vtkMRMLNode
 
 
   ///
-  /// Deprecated. This member has no effect anymore and will be removed in the future.
+  /// \deprecated This member has no effect anymore and will be removed in the future.
   vtkSetMacro(Navigation, int);
   vtkGetMacro(Navigation, int);
   vtkBooleanMacro(Navigation, int);
@@ -147,13 +147,13 @@ class VTK_MRML_EXPORT vtkMRMLCrosshairNode : public vtkMRMLNode
       NoAction = 0,
       OffsetJumpSlice = 1,
       CenteredJumpSlice = 2,
-      Normal = 1,   // Deprecated
-      JumpSlice = 1 // Deprecated
+      Normal = 1,   ///< \deprecated Use OffsetJumpSlice instead
+      JumpSlice = 1 ///< \deprecated Use CenterdJumpSlice instead
     };
 
 protected:
   vtkMRMLCrosshairNode();
-  ~vtkMRMLCrosshairNode();
+  ~vtkMRMLCrosshairNode() override;
   vtkMRMLCrosshairNode(const vtkMRMLCrosshairNode&);
   void operator=(const vtkMRMLCrosshairNode&);
 
@@ -170,7 +170,7 @@ protected:
   /// If CursorPositionValid is false then this position is not up-to-date anymore.
   double CursorPositionRAS[3];
   /// Last known cursor position in XYZ coordinate system.
-  /// If CursorSliceNode is NULL then this position is not up-to-date anymore.
+  /// If CursorSliceNode is nullptr then this position is not up-to-date anymore.
   double CursorPositionXYZ[3];
   /// CursorSliceNode points to the slice where the cursor is. It is not stored as a MRML node reference
   /// as its value is not saved with the scene and also it changes frequently therefore it is better

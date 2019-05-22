@@ -45,9 +45,9 @@
 qMRMLNodeComboBoxPrivate::qMRMLNodeComboBoxPrivate(qMRMLNodeComboBox& object)
   : q_ptr(&object)
 {
-  this->ComboBox = 0;
-  this->MRMLNodeFactory = 0;
-  this->MRMLSceneModel = 0;
+  this->ComboBox = nullptr;
+  this->MRMLNodeFactory = nullptr;
+  this->MRMLSceneModel = nullptr;
   this->NoneEnabled = false;
   this->AddEnabled = true;
   this->RemoveEnabled = true;
@@ -61,14 +61,13 @@ qMRMLNodeComboBoxPrivate::qMRMLNodeComboBoxPrivate(qMRMLNodeComboBox& object)
 
 // --------------------------------------------------------------------------
 qMRMLNodeComboBoxPrivate::~qMRMLNodeComboBoxPrivate()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLNodeComboBoxPrivate::init(QAbstractItemModel* model)
 {
   Q_Q(qMRMLNodeComboBox);
-  Q_ASSERT(this->MRMLNodeFactory == 0);
+  Q_ASSERT(this->MRMLNodeFactory == nullptr);
 
   q->setLayout(new QHBoxLayout);
   q->layout()->setContentsMargins(0,0,0,0);
@@ -76,7 +75,7 @@ void qMRMLNodeComboBoxPrivate::init(QAbstractItemModel* model)
                                QSizePolicy::Fixed,
                                QSizePolicy::ComboBox));
 
-  if (this->ComboBox == 0)
+  if (this->ComboBox == nullptr)
     {
     ctkComboBox* comboBox = new ctkComboBox(q);
     comboBox->setElideMode(Qt::ElideMiddle);
@@ -85,7 +84,7 @@ void qMRMLNodeComboBoxPrivate::init(QAbstractItemModel* model)
   else
     {
     QComboBox* comboBox = this->ComboBox;
-    this->ComboBox = 0;
+    this->ComboBox = nullptr;
     q->setComboBox(comboBox);
     }
 
@@ -110,14 +109,14 @@ void qMRMLNodeComboBoxPrivate::init(QAbstractItemModel* model)
   // nodeTypeLabel() works only when the model is set.
   this->updateDefaultText();
 
-  q->setEnabled(q->mrmlScene() != 0);
+  q->setEnabled(q->mrmlScene() != nullptr);
 }
 
 // --------------------------------------------------------------------------
 void qMRMLNodeComboBoxPrivate::setModel(QAbstractItemModel* model)
 {
   Q_Q(qMRMLNodeComboBox);
-  if (model == 0)
+  if (model == nullptr)
     {// it's invalid to set a null model to a combobox
     return;
     }
@@ -174,10 +173,10 @@ vtkMRMLNode* qMRMLNodeComboBoxPrivate::mrmlNodeFromIndex(const QModelIndex& inde
     this->ComboBox->model()->data(index, qMRMLSceneModel::UIDRole).toString();
   if (nodeId.isEmpty())
     {
-    return 0;
+    return nullptr;
     }
   vtkMRMLScene* scene = q->mrmlScene();
-  return scene ? scene->GetNodeByID(nodeId.toLatin1()) : 0;
+  return scene ? scene->GetNodeByID(nodeId.toLatin1()) : nullptr;
 }
 
 // --------------------------------------------------------------------------
@@ -381,8 +380,7 @@ qMRMLNodeComboBox::qMRMLNodeComboBox(qMRMLNodeComboBoxPrivate* pimpl, QWidget* p
 
 // --------------------------------------------------------------------------
 qMRMLNodeComboBox::~qMRMLNodeComboBox()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qMRMLNodeComboBox::activateExtraItem(const QModelIndex& index)
@@ -584,15 +582,15 @@ vtkMRMLNode* qMRMLNodeComboBox::addNode(QString nodeType)
   if (!this->nodeTypes().contains(nodeType))
     {
     qWarning("qMRMLNodeComboBox::addNode() attempted with node type %s, which is not among the allowed node types", qPrintable(nodeType));
-    return NULL;
+    return nullptr;
     }
   // Create the MRML node via the MRML Scene
   vtkMRMLNode * newNode = d->MRMLNodeFactory->createNode(nodeType);
   // The created node is appended at the bottom of the current list
-  if (newNode==NULL)
+  if (newNode==nullptr)
     {
     qWarning("qMRMLNodeComboBox::addNode() failed with node type %s", qPrintable(nodeType));
-    return NULL;
+    return nullptr;
     }
   if (this->selectNodeUponCreation())
     {// select the created node.
@@ -607,7 +605,7 @@ vtkMRMLNode* qMRMLNodeComboBox::addNode()
 {
   if (this->nodeTypes().isEmpty())
     {
-    return NULL;
+    return nullptr;
     }
   return this->addNode(this->nodeTypes()[0]);
 }
@@ -674,7 +672,7 @@ void qMRMLNodeComboBox::emitCurrentNodeChanged()
   else
     {
     emit currentNodeChanged(node);
-    emit currentNodeChanged(node != 0);
+    emit currentNodeChanged(node != nullptr);
     emit currentNodeIDChanged(node ? node->GetID() : "");
     }
 }
@@ -740,7 +738,7 @@ void qMRMLNodeComboBox::setMRMLScene(vtkMRMLScene* scene)
   // The Add button is valid only if the scene is non-empty
   //this->setAddEnabled(scene != 0);
   QString oldCurrentNode = d->ComboBox->itemData(d->ComboBox->currentIndex(), qMRMLSceneModel::UIDRole).toString();
-  bool oldNodeCount = this->nodeCount();
+  bool previousSceneWasValid = (this->nodeCount() > 0);
 
   // Update factory
   d->MRMLNodeFactory->setMRMLScene(scene);
@@ -760,7 +758,7 @@ void qMRMLNodeComboBox::setMRMLScene(vtkMRMLScene* scene)
   // set it back. Please consider make it a behavior property if it doesn't fit
   // your need, as this behavior is currently wanted for some cases (
   // vtkMRMLClipModels selector in the Models module)
-  if (oldNodeCount)
+  if (previousSceneWasValid)
     {
     this->setCurrentNodeID(oldCurrentNode);
     }
@@ -769,15 +767,32 @@ void qMRMLNodeComboBox::setMRMLScene(vtkMRMLScene* scene)
   // would be selected and "Scene" would be displayed (see vtkMRMLNodeComboboxTest5)
   else
     {
-    this->setCurrentNodeID(this->currentNodeID());
+    QString newNodeID = this->currentNodeID();
+    if (!d->RequestedNodeID.isEmpty())
+      {
+      newNodeID = d->RequestedNodeID;
+      }
+    else if (d->RequestedNode != nullptr && d->RequestedNode->GetID() != nullptr)
+      {
+      newNodeID = d->RequestedNode->GetID();
+      }
+    this->setCurrentNodeID(newNodeID);
     }
+  d->RequestedNodeID.clear();
+  d->RequestedNode = nullptr;
 
-  this->setEnabled(scene != 0);
+  this->setEnabled(scene != nullptr);
 }
 
 // --------------------------------------------------------------------------
 void qMRMLNodeComboBox::setCurrentNode(vtkMRMLNode* newCurrentNode)
 {
+  Q_D(qMRMLNodeComboBox);
+  if (!this->mrmlScene())
+    {
+    d->RequestedNodeID.clear();
+    d->RequestedNode = newCurrentNode;
+    }
   this->setCurrentNodeID(newCurrentNode ? newCurrentNode->GetID() : "");
 }
 
@@ -792,6 +807,11 @@ void qMRMLNodeComboBox::setCurrentNode(const QString& nodeID)
 void qMRMLNodeComboBox::setCurrentNodeID(const QString& nodeID)
 {
   Q_D(qMRMLNodeComboBox);
+  if (!this->mrmlScene())
+    {
+    d->RequestedNodeID = nodeID;
+    d->RequestedNode = nullptr;
+    }
   // A straight forward implementation of setCurrentNode would be:
   //    int index = !nodeID.isEmpty() ? d->ComboBox->findData(nodeID, qMRMLSceneModel::UIDRole) : -1;
   //    if (index == -1 && d->NoneEnabled)
@@ -1043,7 +1063,7 @@ qMRMLSortFilterProxyModel* qMRMLNodeComboBox::sortFilterProxyModel()const
 QAbstractItemModel* qMRMLNodeComboBox::model()const
 {
   Q_D(const qMRMLNodeComboBox);
-  return d->ComboBox ? d->ComboBox->model() : 0;
+  return d->ComboBox ? d->ComboBox->model() : nullptr;
 }
 
 //--------------------------------------------------------------------------
@@ -1149,7 +1169,7 @@ void qMRMLNodeComboBox::refreshIfCurrentNodeHidden()
   vtkMRMLNode* node = this->currentNode();
   if (!node)
     {
-    this->setCurrentNode(0);
+    this->setCurrentNode(nullptr);
     }
 }
 

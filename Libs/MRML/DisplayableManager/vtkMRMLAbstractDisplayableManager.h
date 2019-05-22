@@ -26,6 +26,7 @@
 
 #include "vtkMRMLDisplayableManagerExport.h"
 
+class vtkMRMLInteractionEventData;
 class vtkMRMLInteractionNode;
 class vtkMRMLSelectionNode;
 class vtkMRMLDisplayableManagerGroup;
@@ -48,7 +49,7 @@ class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLAbstractDisplayableManager
 {
 public:
   static vtkMRMLAbstractDisplayableManager *New();
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkMRMLAbstractDisplayableManager, vtkMRMLAbstractLogic);
 
   /// Return True if Create() method has been invoked
@@ -90,10 +91,33 @@ public:
   virtual std::string GetDataProbeInfoStringForPosition(
       double vtkNotUsed(xyz)[3]) { return ""; }
 
+  /// Return true if the displayable manager can process the event.
+  /// Distance2 is the squared distance in display coordinates from the closest interaction position.
+  /// The displayable manager with the closest distance will get the chance to process the interaction event.
+  virtual bool CanProcessInteractionEvent(vtkMRMLInteractionEventData* eventData, double &distance2);
+
+  /// Process an interaction event.
+  /// Returns true if the event should be aborted (not processed any further by other event observers).
+  virtual bool ProcessInteractionEvent(vtkMRMLInteractionEventData* eventData);
+
+  /// Set if the widget gets/loses focus (interaction events are processed by this displayable manager).
+  virtual void SetHasFocus(bool hasFocus);
+
+  /// Displayable manager can indicate that it would like to get all events (even when mouse pointer is outside the window).
+  virtual bool GetGrabFocus();
+
+  /// Displayable manager can indicate that the window is in interactive mode (faster updates).
+  virtual bool GetInteractive();
+
+  /// Displayable manager returns ID of the mouse cursor shape that should be displayed
+  virtual int GetMouseCursor();
+
+  void SetMouseCursor(int cursor);
+
 protected:
 
   vtkMRMLAbstractDisplayableManager();
-  virtual ~vtkMRMLAbstractDisplayableManager();
+  ~vtkMRMLAbstractDisplayableManager() override;
 
   /// Get MRML Displayable Node
   vtkMRMLNode * GetMRMLDisplayableNode();
@@ -118,9 +142,9 @@ protected:
   /// the mouse moves set this to include Place and ViewTransform
   virtual int ActiveInteractionModes();
 
-  virtual void ProcessMRMLNodesEvents(vtkObject* caller,
+  void ProcessMRMLNodesEvents(vtkObject* caller,
                                       unsigned long event,
-                                      void * callData) VTK_OVERRIDE;
+                                      void * callData) override;
 
   /// Receives all the events fired by any graphical object interacted by the
   /// user (typically vtk widgets).
@@ -151,7 +175,7 @@ protected:
   /// Called by SetMRMLScene - Used to initialize the Scene
   /// Observe all the events of the scene and call OnMRMLSceneEndClose()
   /// or OnMRMLSceneEndImport() if the new scene is valid
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
 
   /// ProcessMRMLNodesEvents calls OnMRMLDisplayableNodeModifiedEvent when the
   /// displayable node (e.g. vtkMRMLSliceNode, vtkMRMLViewNode) is Modified.
@@ -253,8 +277,8 @@ protected:
 
 private:
 
-  vtkMRMLAbstractDisplayableManager(const vtkMRMLAbstractDisplayableManager&); // Not implemented
-  void operator=(const vtkMRMLAbstractDisplayableManager&);                    // Not implemented
+  vtkMRMLAbstractDisplayableManager(const vtkMRMLAbstractDisplayableManager&) = delete;
+  void operator=(const vtkMRMLAbstractDisplayableManager&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

@@ -4,9 +4,13 @@ import vtkITK
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import Effect
+
+from . import EditUtil
+from . import EffectOptions, EffectTool, EffectLogic, Effect
+from . import HelpButton
+
 import logging
+from functools import reduce
 
 __all__ = [
   'GrowCutEffectOptions',
@@ -33,13 +37,13 @@ comment = """
 # GrowCutEffectOptions - see Effect, EditOptions and Effect for superclasses
 #
 
-class GrowCutEffectOptions(Effect.EffectOptions):
+class GrowCutEffectOptions(EffectOptions):
   """ GrowCutEffect-specfic gui
   """
 
   def __init__(self, parent=0):
     super(GrowCutEffectOptions,self).__init__(parent)
-    self.logic = GrowCutEffectLogic(self.editUtil.getSliceLogic())
+    self.logic = GrowCutEffectLogic(EditUtil.getSliceLogic())
 
   def __del__(self):
     super(GrowCutEffectOptions,self).__del__()
@@ -70,7 +74,7 @@ class GrowCutEffectOptions(Effect.EffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.RemoveObserver(self.parameterNodeTag)
@@ -111,7 +115,7 @@ class GrowCutEffectOptions(Effect.EffectOptions):
 # GrowCutEffectTool
 #
 
-class GrowCutEffectTool(Effect.EffectTool):
+class GrowCutEffectTool(EffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -131,7 +135,7 @@ class GrowCutEffectTool(Effect.EffectTool):
 # GrowCutEffectLogic
 #
 
-class GrowCutEffectLogic(Effect.EffectLogic):
+class GrowCutEffectLogic(EffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an GrowCutEffectTool
@@ -214,7 +218,7 @@ class GrowCutEffectLogic(Effect.EffectLogic):
 # The GrowCutEffect class definition
 #
 
-class GrowCutEffect(Effect.Effect):
+class GrowCutEffect(Effect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

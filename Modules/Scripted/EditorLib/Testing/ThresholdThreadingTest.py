@@ -1,9 +1,10 @@
+from __future__ import print_function
 
 import unittest
 import qt
 import slicer
 import EditorLib
-from EditorLib.EditUtil import EditUtil
+from EditorLib import EditUtil
 from slicer.ScriptedLoadableModule import *
 
 #

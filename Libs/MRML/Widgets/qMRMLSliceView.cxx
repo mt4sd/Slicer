@@ -40,7 +40,8 @@
 #include <vtkMRMLDisplayableManagerGroup.h>
 #include <vtkMRMLLightBoxRendererManagerProxy.h>
 #include <vtkMRMLSliceViewDisplayableManagerFactory.h>
-#include <vtkSliceViewInteractorStyle.h>
+#include <vtkMRMLScalarBarDisplayableManager.h>
+#include <vtkMRMLSliceViewInteractorStyle.h>
 
 // MRML includes
 #include <vtkMRMLSliceNode.h>
@@ -88,13 +89,13 @@ qMRMLSliceViewPrivate::vtkInternalLightBoxRendererManagerProxy::New()
 //---------------------------------------------------------------------------
 qMRMLSliceViewPrivate::vtkInternalLightBoxRendererManagerProxy::vtkInternalLightBoxRendererManagerProxy()
 {
-  this->LightBoxRendererManager = 0;
+  this->LightBoxRendererManager = nullptr;
 }
 
 //---------------------------------------------------------------------------
 qMRMLSliceViewPrivate::vtkInternalLightBoxRendererManagerProxy::~vtkInternalLightBoxRendererManagerProxy()
 {
-  this->LightBoxRendererManager = 0;
+  this->LightBoxRendererManager = nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -104,7 +105,7 @@ vtkRenderer* qMRMLSliceViewPrivate::vtkInternalLightBoxRendererManagerProxy::Get
     {
     return this->LightBoxRendererManager->GetRenderer(id);
     }
-  return NULL;
+  return nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -120,9 +121,9 @@ void qMRMLSliceViewPrivate::vtkInternalLightBoxRendererManagerProxy::SetLightBox
 qMRMLSliceViewPrivate::qMRMLSliceViewPrivate(qMRMLSliceView& object)
   : q_ptr(&object)
 {
-  this->DisplayableManagerGroup = 0;
-  this->MRMLScene = 0;
-  this->MRMLSliceNode = 0;
+  this->DisplayableManagerGroup = nullptr;
+  this->MRMLScene = nullptr;
+  this->MRMLSliceNode = nullptr;
   this->InactiveBoxColor = QColor(95, 95, 113);
   this->LightBoxRendererManagerProxy = vtkInternalLightBoxRendererManagerProxy::New();
 }
@@ -148,14 +149,15 @@ void qMRMLSliceViewPrivate::init()
   // Highligh first RenderWindowItem
   q->setHighlightedBoxColor(this->InactiveBoxColor);
 
-  q->setRenderEnabled(this->MRMLScene != 0);
+  q->setRenderEnabled(this->MRMLScene != nullptr);
 
-  vtkNew<vtkSliceViewInteractorStyle> interactorStyle;
+  vtkNew<vtkMRMLSliceViewInteractorStyle> interactorStyle;
   q->interactor()->SetInteractorStyle(interactorStyle.GetPointer());
 
   this->LightBoxRendererManagerProxy->SetLightBoxRendererManager(
     q->lightBoxRendererManager());
   this->initDisplayableManagers();
+  interactorStyle->SetDisplayableManagers(this->DisplayableManagerGroup);
 
   // Force an initial render to ensure that the render window creates an OpenGL
   // context. If operations that require a context--such as hardware
@@ -180,6 +182,7 @@ void qMRMLSliceViewPrivate::initDisplayableManagers()
   displayableManagers << "vtkMRMLCrosshairDisplayableManager";
   displayableManagers << "vtkMRMLOrientationMarkerDisplayableManager";
   displayableManagers << "vtkMRMLRulerDisplayableManager";
+  displayableManagers << "vtkMRMLScalarBarDisplayableManager";
   foreach(const QString& displayableManager, displayableManagers)
     {
     if (!factory->IsDisplayableManagerRegistered(displayableManager.toLatin1()))
@@ -219,7 +222,7 @@ void qMRMLSliceViewPrivate::setMRMLScene(vtkMRMLScene* newScene)
 
   this->MRMLScene = newScene;
   q->setRenderEnabled(
-    this->MRMLScene != 0 && !this->MRMLScene->IsBatchProcessing());
+    this->MRMLScene != nullptr && !this->MRMLScene->IsBatchProcessing());
 }
 
 // --------------------------------------------------------------------------
@@ -266,8 +269,7 @@ qMRMLSliceView::qMRMLSliceView(QWidget* _parent) : Superclass(_parent)
 
 // --------------------------------------------------------------------------
 qMRMLSliceView::~qMRMLSliceView()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void qMRMLSliceView::addDisplayableManager(const QString& displayableManagerName)
@@ -304,7 +306,7 @@ void qMRMLSliceView::setMRMLScene(vtkMRMLScene* newScene)
 
   if (d->MRMLSliceNode && newScene != d->MRMLSliceNode->GetScene())
     {
-    this->setMRMLSliceNode(0);
+    this->setMRMLSliceNode(nullptr);
     }
 }
 
@@ -326,7 +328,7 @@ void qMRMLSliceView::setMRMLSliceNode(vtkMRMLSliceNode* newSliceNode)
 
   d->updateWidgetFromMRML();
   // Enable/disable widget
-  this->setEnabled(newSliceNode != 0);
+  this->setEnabled(newSliceNode != nullptr);
 }
 
 //---------------------------------------------------------------------------
@@ -337,9 +339,9 @@ vtkMRMLSliceNode* qMRMLSliceView::mrmlSliceNode()const
 }
 
 //---------------------------------------------------------------------------
-vtkSliceViewInteractorStyle* qMRMLSliceView::sliceViewInteractorStyle()const
+vtkMRMLSliceViewInteractorStyle* qMRMLSliceView::sliceViewInteractorStyle()const
 {
-  return vtkSliceViewInteractorStyle::SafeDownCast(this->interactorStyle());
+  return vtkMRMLSliceViewInteractorStyle::SafeDownCast(this->interactorStyle());
 }
 
 // --------------------------------------------------------------------------
@@ -417,4 +419,41 @@ QList<double> qMRMLSliceView::convertXYZToRAS(const QList<double>& xyz)const
   QList<double> ret;
   ret << 0. << 0. << 0.;
   return ret;
+}
+
+// --------------------------------------------------------------------------
+void qMRMLSliceView::setViewCursor(const QCursor &cursor)
+{
+  this->setCursor(cursor);
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2)
+  if (this->VTKWidget() != nullptr)
+    {
+    this->VTKWidget()->setQVTKCursor(cursor);
+    }
+#endif
+}
+
+// --------------------------------------------------------------------------
+void qMRMLSliceView::unsetViewCursor()
+{
+  this->unsetCursor();
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2)
+  if (this->VTKWidget() != nullptr)
+    {
+    // TODO: it would be better to restore default cursor, but QVTKOpenGLNativeWidget
+    // API does not have an accessor method to the default cursor.
+    this->VTKWidget()->setQVTKCursor(QCursor(Qt::ArrowCursor));
+    }
+#endif
+}
+
+// --------------------------------------------------------------------------
+void qMRMLSliceView::setDefaultViewCursor(const QCursor &cursor)
+{
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2)
+  if (this->VTKWidget() != nullptr)
+    {
+    this->VTKWidget()->setDefaultQVTKCursor(cursor);
+    }
+#endif
 }

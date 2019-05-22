@@ -41,10 +41,10 @@ class Q_SLICER_QTMODULES_PLOTS_EXPORT qSlicerPlotsModuleWidget :
 public:
 
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerPlotsModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerPlotsModuleWidget();
+  qSlicerPlotsModuleWidget(QWidget *parent=nullptr);
+  ~qSlicerPlotsModuleWidget() override;
 
-  virtual bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString());
+  bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString()) override;
 
 public slots:
   /// Select the specified node as the current node in the user interface
@@ -52,7 +52,7 @@ public slots:
 
 protected:
 
-  virtual void setup();
+  void setup() override;
 
 protected slots:
 

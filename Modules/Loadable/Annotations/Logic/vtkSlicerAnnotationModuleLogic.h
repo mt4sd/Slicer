@@ -26,15 +26,15 @@ public:
   };
   static vtkSlicerAnnotationModuleLogic *New();
   vtkTypeMacro(vtkSlicerAnnotationModuleLogic,vtkSlicerModuleLogic);
-  virtual void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Start the place mode for annotations.
   /// By default, the singleton interaction node is updated.
-  void StartPlaceMode(bool persistent=false, vtkMRMLInteractionNode* interactionNode = NULL);
+  void StartPlaceMode(bool persistent=false, vtkMRMLInteractionNode* interactionNode = nullptr);
 
   /// Exit the place mode for annotations.
   /// By default, the singleton interaction node is updated.
-  void StopPlaceMode(bool persistent=false, vtkMRMLInteractionNode* interactionNode = NULL);
+  void StopPlaceMode(bool persistent=false, vtkMRMLInteractionNode* interactionNode = nullptr);
 
   // Start adding a new annotation Node
   void AddAnnotationNode(const char * nodeDescriptor, bool persistent=false);
@@ -44,7 +44,7 @@ public:
 
   /// Cancel the current annotation placement or remove last annotation node.
   /// By default, the singleton interaction node is updated.
-  void CancelCurrentOrRemoveLastAddedAnnotationNode(vtkMRMLInteractionNode* interactionNode = NULL);
+  void CancelCurrentOrRemoveLastAddedAnnotationNode(vtkMRMLInteractionNode* interactionNode = nullptr);
 
   /// Remove an AnnotationNode and also its 1-1 IS-A hierarchyNode, if found.
   void RemoveAnnotationNode(vtkMRMLAnnotationNode* annotationNode);
@@ -53,7 +53,7 @@ public:
   // Annotation Properties (interface to MRML)
   //
   /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
-  virtual void RegisterNodes() VTK_OVERRIDE;
+  void RegisterNodes() override;
 
   /// Check if node id corresponds to an annotaton node
   bool IsAnnotationNode(const char* id);
@@ -213,7 +213,7 @@ public:
   /// Return the toplevel Annotation hierarchy node ID or create one and add it to the scene if there is none:
   /// If an optional annotationNode is given, insert the new toplevel hierarchy before it. If not,
   /// just add the new toplevel hierarchy node.
-  char * GetTopLevelHierarchyNodeID(vtkMRMLNode* node=0);
+  char * GetTopLevelHierarchyNodeID(vtkMRMLNode* node=nullptr);
 
   /// Return the top level annotation hierarchy node for this node's class, adding one under the top level annotation hierarchy if there is none. If the passed in node is null, return null
   char * GetTopLevelHierarchyNodeIDForNodeClass(vtkMRMLAnnotationNode *annotationNode);
@@ -244,14 +244,14 @@ public:
 
 
   /// Add a model display node to the scene for a passed in hierarchy node, if
-  /// it doesn't already have one, return the ID, NULL on failure
+  /// it doesn't already have one, return the ID, nullptr on failure
   const char* AddDisplayNodeForHierarchyNode(vtkMRMLAnnotationHierarchyNode *hnode);
 
   /// Legacy support: load a Slicer3 fiducial list from file. Uses FiducialsLogic to load into a legacy node first, then translates into annotation nodes
   /// returns a comma separated list of the annot nodes loaded
   char *LoadFiducialList(const char *filename);
 
-  /// Load an annotation from file, return NULL on error, node ID string
+  /// Load an annotation from file, return nullptr on error, node ID string
   /// otherwise. Adds the appropriate storage and display nodes to the scene
   /// as well. fileType is from this class's enum
   char *LoadAnnotation(const char *filename, const char *name, int fileType);
@@ -266,26 +266,26 @@ public:
 
   /// Add a new fiducial to the currently active hierarchy. Places the
   /// fiducial at the given RAS coordinates (default 0,0,0) with the
-  /// given label (if NULL, uses default naming convention).
+  /// given label (if nullptr, uses default naming convention).
   /// Returns the ID of the newly added node.
-  char *AddFiducial(double r=0.0, double a=0.0, double s=0.0, const char *label=NULL);
+  char *AddFiducial(double r=0.0, double a=0.0, double s=0.0, const char *label=nullptr);
 
 protected:
 
   vtkSlicerAnnotationModuleLogic();
 
-  virtual ~vtkSlicerAnnotationModuleLogic();
+  ~vtkSlicerAnnotationModuleLogic() override;
 
   // Initialize listening to MRML events
-  virtual void SetMRMLSceneInternal(vtkMRMLScene * newScene) VTK_OVERRIDE;
-  virtual void ObserveMRMLScene() VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene * newScene) override;
+  void ObserveMRMLScene() override;
 
   // MRML events
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndClose() VTK_OVERRIDE;
-  virtual void ProcessMRMLNodesEvents(vtkObject *caller,
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneEndClose() override;
+  void ProcessMRMLNodesEvents(vtkObject *caller,
                                       unsigned long event,
-                                      void *callData ) VTK_OVERRIDE;
+                                      void *callData ) override;
   virtual void OnMRMLAnnotationNodeModifiedEvent(vtkMRMLNode* node);
 
 private:
@@ -309,7 +309,7 @@ private:
   /// active hierarchy node, use the top-level annotation hierarchy node as the parent.
   /// If there is no top-level annotation hierarchy node, create additionally a top-level hierarchy node which serves as
   /// a parent to the new hierarchy node. Return true on success, false on failure.
-  bool AddHierarchyNodeForAnnotation(vtkMRMLAnnotationNode* annotationNode=0);
+  bool AddHierarchyNodeForAnnotation(vtkMRMLAnnotationNode* annotationNode=nullptr);
 
 
 };

@@ -31,7 +31,7 @@ class VTK_FreeSurfer_EXPORT vtkFSSurfaceLabelReader : public vtkDataReader
 public:
   static vtkFSSurfaceLabelReader *New();
   vtkTypeMacro(vtkFSSurfaceLabelReader,vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkFloatArray *GetOutput()
       {return this->Scalars; };
@@ -78,7 +78,7 @@ public:
 
 protected:
   vtkFSSurfaceLabelReader();
-  ~vtkFSSurfaceLabelReader();
+  ~vtkFSSurfaceLabelReader() override;
 
   vtkFloatArray *Scalars;
 
@@ -100,8 +100,8 @@ protected:
   int ReadFloat (FILE* iFile, float& oInt);
 */
 private:
-  vtkFSSurfaceLabelReader(const vtkFSSurfaceLabelReader&);  /// Not implemented.
-  void operator=(const vtkFSSurfaceLabelReader&);  /// Not implemented.
+  vtkFSSurfaceLabelReader(const vtkFSSurfaceLabelReader&) = delete;
+  void operator=(const vtkFSSurfaceLabelReader&) = delete;
 };
 
 #endif

@@ -26,11 +26,11 @@ public:
 
   vtkTypeMacro(vtkMRMLDiffusionTensorDisplayPropertiesNodeTestHelper1,vtkMRMLDiffusionTensorDisplayPropertiesNode);
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE
+  vtkMRMLNode* CreateNodeInstance() override
     {
     return vtkMRMLDiffusionTensorDisplayPropertiesNodeTestHelper1::New();
     }
-  virtual const char* GetNodeTagName() VTK_OVERRIDE
+  const char* GetNodeTagName() override
     {
     return "vtkMRMLDiffusionTensorDisplayPropertiesNodeTestHelper1";
     }

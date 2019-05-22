@@ -39,7 +39,7 @@ class VTK_SLICER_DATA_LOGIC_EXPORT vtkSlicerDataModuleLogic :
 public:
   static vtkSlicerDataModuleLogic *New();
   vtkTypeMacro(vtkSlicerDataModuleLogic, vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 public:
   vtkSetMacro( SceneChanged, bool );
@@ -48,17 +48,17 @@ public:
 
 protected:
   vtkSlicerDataModuleLogic();
-  virtual ~vtkSlicerDataModuleLogic();
+  ~vtkSlicerDataModuleLogic() override;
 
   /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
-  virtual void RegisterNodes() VTK_OVERRIDE;
+  void RegisterNodes() override;
 
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene) VTK_OVERRIDE;
-  virtual void UpdateFromMRMLScene() VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* newScene) override;
+  void UpdateFromMRMLScene() override;
 
   /// Reimplemented to delete the storage/display nodes when a displayable
   /// node is being removed.
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* removedNode) VTK_OVERRIDE;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* removedNode) override;
 
   ///
   /// This property controls whether the removal from the scene of a model node
@@ -71,8 +71,8 @@ protected:
   bool AutoRemoveDisplayAndStorageNodes;
 
 private:
-  vtkSlicerDataModuleLogic(const vtkSlicerDataModuleLogic&); // Not implemented
-  void operator=(const vtkSlicerDataModuleLogic&);               // Not implemented
+  vtkSlicerDataModuleLogic(const vtkSlicerDataModuleLogic&) = delete;
+  void operator=(const vtkSlicerDataModuleLogic&) = delete;
 
 protected:
   /// Flag indicating if the scene has recently changed (update of the module GUI if needed)

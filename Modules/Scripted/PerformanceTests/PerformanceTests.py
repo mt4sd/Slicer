@@ -1,3 +1,4 @@
+from __future__ import print_function
 import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
 
@@ -71,13 +72,13 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
   def timeSteps(self, iters, f):
     import time
     elapsedTime = 0
-    for i in xrange(iters):
+    for i in range(iters):
       startTime = time.time()
       f()
       slicer.app.processEvents()
       endTime = time.time()
       elapsedTime += (endTime - startTime)
-    fps = iters / elapsedTime
+    fps = int(iters / elapsedTime)
     result =  "fps = %g (%g ms per frame)" % (fps, 1000./fps)
     print (result)
     self.log.insertHtml('<i>%s</i>' % result)
@@ -100,7 +101,7 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
     renderingTimesSec = np.zeros(numerOfSweeps*offsetSteps*2)
     sampleIndex = 0
     startOffset = sliceNode.GetSliceOffset()
-    for i in xrange(numerOfSweeps):
+    for i in range(numerOfSweeps):
       for offset in ([sliceOffset]*offsetSteps + [-sliceOffset]*offsetSteps):
         startTime = time.time()
         sliceNode.SetSliceOffset(sliceNode.GetSliceOffset()+offset)
@@ -138,7 +139,7 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
     elapsedTime = 0
     startPoint = (int(dims[0]*0.3), int(dims[1]*0.3))
     endPoint = (int(dims[0]*0.6), int(dims[1]*0.6))
-    for i in xrange(iters):
+    for i in range(iters):
       startTime = time.time()
       slicer.util.clickAndDrag(firstSliceWidget, button = None, modifiers = ['Shift'], start=startPoint, end=endPoint, steps=2)
       slicer.app.processEvents()
@@ -148,7 +149,7 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
       endTime2 = time.time()
       delta = ((endTime1-startTime) + (endTime2 - endTime1)) / 2.
       elapsedTime += delta
-    fps = iters / elapsedTime
+    fps = int(iters / elapsedTime)
     result = "number of slice views = %d, fps = %g (%g ms per frame)" % (len(sliceViewNames), fps, 1000./fps)
     print (result)
     self.log.insertHtml('<i>%s</i>' % result)
@@ -214,14 +215,14 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
     cvn.SetChartNodeID(cn.GetID())
 
     cn = slicer.mrmlScene.AddNode(slicer.vtkMRMLChartNode())
-    print cn.GetID()
+    print(cn.GetID())
     cn.AddArray('Just one array', dn.GetID())
     cn.SetProperty('default', 'title', 'A simple chart with 1 curve')
     cn.SetProperty('default', 'xAxisLabel', 'Just x')
     cn.SetProperty('default', 'yAxisLabel', 'Just y')
 
     cn = slicer.mrmlScene.AddNode(slicer.vtkMRMLChartNode())
-    print cn.GetID()
+    print(cn.GetID())
     cn.AddArray('The other array', dn2.GetID())
     cn.SetProperty('default', 'title', 'A simple chart with another curve')
     cn.SetProperty('default', 'xAxisLabel', 'time')
@@ -231,7 +232,7 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
     cn.SetProperty('The other array', 'color', '#fe7d20')
 
     dn3 = slicer.mrmlScene.AddNode(slicer.vtkMRMLDoubleArrayNode())
-    print dn3.GetID()
+    print(dn3.GetID())
     a = dn3.GetArray()
     a.SetNumberOfTuples(12)
     x = range(0, 12)
@@ -241,7 +242,7 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
         a.SetComponent(i, 2, 0)
 
     cn = slicer.mrmlScene.AddNode(slicer.vtkMRMLChartNode())
-    print cn.GetID()
+    print(cn.GetID())
     cn.AddArray('Periodic', dn3.GetID())
     cn.SetProperty('default', 'title', 'A bar chart')
     cn.SetProperty('default', 'xAxisLabel', 'time')
@@ -312,7 +313,7 @@ class PerformanceTestsWidget(ScriptedLoadableModuleWidget):
     self.memoryCallback()
 
 
-class sliceLogicTest:
+class sliceLogicTest(object):
   def __init__(self):
     self.step = 0
     self.sliceLogic = slicer.vtkMRMLSliceLayerLogic()

@@ -20,9 +20,7 @@
 
 // Qt includes
 #include <QProcess>
-#if (QT_VERSION > QT_VERSION_CHECK(5, 0, 0))
 #include <QStandardPaths>
-#endif
 
 // SlicerQt includes
 #include "qSlicerCLIExecutableModuleFactory.h"
@@ -34,7 +32,6 @@
 //-----------------------------------------------------------------------------
 QString findPython()
 {
-#if (QT_VERSION > QT_VERSION_CHECK(5, 0, 0))
   QString python_path = QStandardPaths::findExecutable("python-real");
   if (python_path.isEmpty())
     {
@@ -47,9 +44,6 @@ QString findPython()
     return QString();
     }
   return python_path;
-#else
-  return QString(); // QStandardPaths is Qt5 only so this feature isn't available
-#endif
 
 }
 
@@ -90,7 +84,7 @@ qSlicerAbstractCoreModule* qSlicerCLIExecutableModuleFactoryItem::instanciator()
         {
         this->appendInstantiateErrorString(
           QString("Failed to find python interpreter for CLI: %1").arg(this->path()));
-        return 0;
+        return nullptr;
         }
 
       module->setEntryPoint("python");
@@ -124,7 +118,7 @@ qSlicerAbstractCoreModule* qSlicerCLIExecutableModuleFactoryItem::instanciator()
     }
   if (xmlDescription.isEmpty())
     {
-    return 0;
+    return nullptr;
     }
 
   module->setXmlModuleDescription(xmlDescription.toLatin1());
@@ -185,7 +179,7 @@ QString qSlicerCLIExecutableModuleFactoryItem::runCLIWithXmlArgument()
         break;
       }
     this->appendInstantiateErrorString(errorString);
-    return 0;
+    return nullptr;
     }
   QString errors = cli.readAllStandardError();
   if (!errors.isEmpty())
@@ -259,8 +253,7 @@ qSlicerCLIExecutableModuleFactory::qSlicerCLIExecutableModuleFactory()
 
 //-----------------------------------------------------------------------------
 qSlicerCLIExecutableModuleFactory::~qSlicerCLIExecutableModuleFactory()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerCLIExecutableModuleFactory::registerItems()

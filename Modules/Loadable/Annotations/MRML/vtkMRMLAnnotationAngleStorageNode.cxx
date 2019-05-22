@@ -10,13 +10,11 @@ vtkMRMLNodeNewMacro(vtkMRMLAnnotationAngleStorageNode);
 
 //----------------------------------------------------------------------------
 vtkMRMLAnnotationAngleStorageNode::vtkMRMLAnnotationAngleStorageNode()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 vtkMRMLAnnotationAngleStorageNode::~vtkMRMLAnnotationAngleStorageNode()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLAnnotationAngleStorageNode::PrintSelf(ostream& os, vtkIndent indent)
@@ -154,7 +152,7 @@ int vtkMRMLAnnotationAngleStorageNode::ReadAnnotationAngleProperties(vtkMRMLAnno
       numColumns = 0;
       char *columns = (char *)str.c_str();
       char *ptr = strtok(columns, "|");
-      while (ptr != NULL)
+      while (ptr != nullptr)
     {
       if (strcmp(ptr, "type") == 0)
         {
@@ -176,7 +174,7 @@ int vtkMRMLAnnotationAngleStorageNode::ReadAnnotationAngleProperties(vtkMRMLAnno
         {
           visColumn =  numColumns;
         }
-      ptr = strtok(NULL, "|");
+      ptr = strtok(nullptr, "|");
       numColumns++;
     }
       // set the total number of columns
@@ -192,7 +190,7 @@ int vtkMRMLAnnotationAngleStorageNode::ReadAnnotationAngleProperties(vtkMRMLAnno
 int vtkMRMLAnnotationAngleStorageNode::ReadAnnotation(vtkMRMLAnnotationAngleNode *refNode)
 {
 
-  if (refNode == NULL)
+  if (refNode == nullptr)
     {
       vtkErrorMacro("ReadAnnotation: unable to cast input node " << refNode->GetID() << " to a annotation node");
       return 0;
@@ -263,7 +261,7 @@ int vtkMRMLAnnotationAngleStorageNode::ReadDataInternal(vtkMRMLNode *refNode)
   vtkMRMLAnnotationAngleNode *aNode =
     vtkMRMLAnnotationAngleNode::SafeDownCast(refNode);
 
-  if (aNode == NULL)
+  if (aNode == nullptr)
     {
     vtkErrorMacro("ReadData: unable to cast input node " << refNode->GetID() << " to a annotation control point node");
     return 0;
@@ -286,7 +284,7 @@ int vtkMRMLAnnotationAngleStorageNode::ReadDataInternal(vtkMRMLNode *refNode)
 int vtkMRMLAnnotationAngleStorageNode::WriteAnnotationAngleProperties(fstream& of, vtkMRMLAnnotationAngleNode *refNode)
 {
    // put down a header
-  if (refNode == NULL)
+  if (refNode == nullptr)
     {
       return 0;
     }
@@ -326,7 +324,7 @@ int vtkMRMLAnnotationAngleStorageNode::WriteAnnotationDataInternal(vtkMRMLNode *
   vtkMRMLAnnotationAngleNode *aNode =
     vtkMRMLAnnotationAngleNode::SafeDownCast(refNode);
 
-  if (aNode == NULL)
+  if (aNode == nullptr)
     {
     vtkErrorMacro("WriteAnnotationDataInternal: unable to cast input node " << refNode->GetID() << " to a known annotation line node");
     return 0;

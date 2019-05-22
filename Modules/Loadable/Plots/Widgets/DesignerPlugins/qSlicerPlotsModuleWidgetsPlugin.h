@@ -21,14 +21,8 @@
 #ifndef __qSlicerPlotsModuleWidgetsPlugin_h
 #define __qSlicerPlotsModuleWidgetsPlugin_h
 
-#include "vtkSlicerConfigure.h" // For Slicer_HAVE_QT5
-
 // Qt includes
-#ifdef Slicer_HAVE_QT5
 #include <QtUiPlugin/QDesignerCustomWidgetCollectionInterface>
-#else
-#include <QDesignerCustomWidgetCollectionInterface>
-#endif
 
 // Plots includes
 #include "qMRMLPlotSeriesPropertiesWidgetPlugin.h"
@@ -40,13 +34,11 @@ class Q_SLICER_MODULE_PLOTS_WIDGETS_PLUGINS_EXPORT qSlicerPlotsModuleWidgetsPlug
   , public QDesignerCustomWidgetCollectionInterface
 {
   Q_OBJECT
-#ifdef Slicer_HAVE_QT5
   Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetCollectionInterface")
-#endif
   Q_INTERFACES(QDesignerCustomWidgetCollectionInterface);
 
 public:
-  QList<QDesignerCustomWidgetInterface*> customWidgets() const
+  QList<QDesignerCustomWidgetInterface*> customWidgets() const override
     {
     QList<QDesignerCustomWidgetInterface *> plugins;
     plugins << new qMRMLPlotChartPropertiesWidgetPlugin;

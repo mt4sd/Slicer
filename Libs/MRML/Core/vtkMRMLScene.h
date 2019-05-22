@@ -62,7 +62,7 @@ class VTK_MRML_EXPORT vtkMRMLScene : public vtkObject
 public:
   static vtkMRMLScene *New();
   vtkTypeMacro(vtkMRMLScene, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Set URL (file name) of the scene
   void SetURL(const char *url);
@@ -91,7 +91,7 @@ public:
 
   /// Save scene into URL
   /// Returns nonzero on success
-  int Commit(const char* url=NULL);
+  int Commit(const char* url=nullptr);
 
   /// Remove nodes and clear undo/redo stacks.
   /// \param removeSingletons If set to true then it removes
@@ -199,6 +199,15 @@ public:
   /// \sa GenerateUniqueName()
   vtkMRMLNode* AddNewNodeByClass(std::string className, std::string nodeBaseName = "");
 
+  /// \brief Instantiates and adds a new node to the scene with the specified ID
+  ///
+  /// If the node is reserved, or another node already exists with the same ID, then NULL will be returned
+  /// This should only be used if it is important that the node is added to the scene with a specific ID
+  ///
+  /// The method calls CreateNodeByClass(), vtkMRMLNode::SetName(), vtkMRMLNode::SetID(), and AddNode().
+  /// \sa AddNewNodeByClass(), CreateNodeByClass(), vtkMRMLNode::SetName(), vtkMRMLNode::SetID(), AddNode()
+  vtkMRMLNode* AddNewNodeByClassWithID(std::string className, std::string nodeBaseName, std::string nodeID);
+
   /// Add a copy of a node to the scene.
   vtkMRMLNode* CopyNode(vtkMRMLNode *n);
 
@@ -206,7 +215,7 @@ public:
   ///
   /// This function is used after adding a bunch of nodes with AddNodeNoNotify()
   void NodeAdded(vtkMRMLNode *n);
-  void NodeAdded() {this->NodeAdded(NULL);};
+  void NodeAdded() {this->NodeAdded(nullptr);};
 
   /// Remove a path from the list.
   void RemoveNode(vtkMRMLNode *n);
@@ -216,7 +225,7 @@ public:
   /// Returns its position in the list.
   int IsNodePresent(vtkMRMLNode *n);
 
-  /// This method is deprecated, kept for backward compatibility but it will be
+  /// \deprecated This method is deprecated, kept for backward compatibility but it will be
   /// removed in the future.
   /// The problem is that it changes the node collection's internal iterator,
   /// which may cause unintended side effects in caller functions that also
@@ -225,7 +234,7 @@ public:
   /// or traverse collection returned by GetNodes() using a collection iterator.
   void InitTraversal();
 
-  /// This method is deprecated, kept for backward compatibility but it will be
+  /// \deprecated This method is deprecated, kept for backward compatibility but it will be
   /// removed in the future.
   /// The problem is that it changes the node collection's internal iterator,
   /// which may cause unintended side effects in caller functions that also
@@ -234,7 +243,7 @@ public:
   /// or traverse collection returned by GetNodes() using a collection iterator.
   vtkMRMLNode *GetNextNode();
 
-  /// This method is deprecated, kept for backward compatibility but it will be
+  /// \deprecated This method is deprecated, kept for backward compatibility but it will be
   /// removed in the future.
   /// The problem is that it changes the node collection's internal iterator,
   /// which may cause unintended side effects in caller functions that also
@@ -258,8 +267,8 @@ public:
   /// \a byHideFromEditors is set, the function will only return the
   /// nodes that are either hidden from editors or the nodes that are
   /// visible in editors.
-  vtkMRMLNode *GetFirstNode(const char* byName = 0, const char* byClass = 0,
-                            const int* byHideFromEditors = 0,
+  vtkMRMLNode *GetFirstNode(const char* byName = nullptr, const char* byClass = nullptr,
+                            const int* byHideFromEditors = nullptr,
                             bool exactNameMatch = true);
 
   /// Get node given a unique ID
@@ -309,7 +318,7 @@ public:
   /// Get the number of registered node classes (is probably greater than the current number
   /// of nodes instantiated in the scene)
   int GetNumberOfRegisteredNodeClasses();
-  /// Get the nth registered node class, returns NULL if n is out of the range 0-GetNumberOfRegisteredNodeClasses
+  /// Get the nth registered node class, returns nullptr if n is out of the range 0-GetNumberOfRegisteredNodeClasses
   /// Useful for iterating through nodes to find all the possible storage nodes.
   vtkMRMLNode * GetNthRegisteredNodeClass(int n);
 
@@ -362,9 +371,17 @@ public:
   void SaveStateForUndo();
 
   /// Save current state of the node in the undo buffer
+  /// \deprecated Use SaveStateForUndo() instead.
+  /// Storing of only selected nodes may result in incomplete saving of
+  /// important changes in the scene. Instead, each node's UndoEnabled flag
+  /// will tell if that node's state must be stored or not.
   void SaveStateForUndo(vtkMRMLNode *node);
 
   /// Save current state of the nodes in the undo buffer
+  /// \deprecated Use SaveStateForUndo() instead.
+  /// Storing of only selected nodes may result in incomplete saving of
+  /// important changes in the scene. Instead, each node's UndoEnabled flag
+  /// will tell if that node's state must be stored or not.
   void SaveStateForUndo(vtkCollection *nodes);
   void SaveStateForUndo(std::vector<vtkMRMLNode *> nodes);
 
@@ -399,9 +416,9 @@ public:
   /// vtkMRMLNode::UpdateReferenceID() is called for all the nodes that refer
   /// to a node with a changed ID.
   ///
-  /// If \a checkNodes is not NULL, then only those nodes are notified that are
+  /// If \a checkNodes is not nullptr, then only those nodes are notified that are
   /// part of the checkNodes collection.
-  void UpdateNodeReferences(vtkCollection* checkNodes=NULL);
+  void UpdateNodeReferences(vtkCollection* checkNodes=nullptr);
 
   void CopyNodeReferences(vtkMRMLScene *scene);
 
@@ -419,7 +436,7 @@ public:
   void RemoveReservedIDs();
 
   /// get the new id of the node that is different from one in the mrml file
-  /// or NULL if id has not changed
+  /// or nullptr if id has not changed
   const char* GetChangedID(const char* id);
 
   /// \brief Return collection of all nodes referenced directly or indirectly by
@@ -505,7 +522,7 @@ public:
   /// \brief Find a URI handler in the collection that can work on the
   /// passed URI.
   ///
-  /// Returns NULL on failure
+  /// Returns nullptr on failure
   vtkURIHandler *FindURIHandler(const char *URI);
   /// Returns a URIhandler of a specific type if its name is known.
   vtkURIHandler *FindURIHandlerByName ( const char *name );
@@ -553,7 +570,9 @@ public:
     CloseState = 0x0002 | BatchProcessState,
     ImportState = 0x0004 | BatchProcessState,
     RestoreState = 0x0008 | BatchProcessState,
-    SaveState = 0x0010
+    SaveState = 0x0010,
+    UndoState = 0x0020,
+    RedoState = 0x0040,
     };
 
   /// \brief Returns the current state of the scene.
@@ -573,6 +592,10 @@ public:
   inline bool IsImporting()const;
   /// Return true if the scene is in Restore state, false otherwise
   inline bool IsRestoring()const;
+  /// Return true if the scene is in Undo state (in the process of undoing node changes), false otherwise
+  inline bool IsUndoing()const;
+  /// Return true if the scene is in Redo state (in the process of redoing node changes), false otherwise
+  inline bool IsRedoing()const;
 
   /// \brief Flag the scene as being in a \a state mode.
   ///
@@ -662,6 +685,15 @@ public:
     StartSaveEvent = StateEvent | StartEvent | SaveState,
     EndSaveEvent = StateEvent | EndEvent | SaveState,
     ProgressSaveEvent = StateEvent | ProgressEvent | SaveState,
+
+    StartUndoEvent = StateEvent | StartEvent | UndoState,
+    EndUndoEvent = StateEvent | EndEvent | UndoState,
+    ProgressUndoEvent = StateEvent | ProgressEvent | UndoState,
+
+    StartRedoEvent = StateEvent | StartEvent | RedoState,
+    EndRedoEvent = StateEvent | EndEvent | RedoState,
+    ProgressRedoEvent = StateEvent | ProgressEvent | RedoState,
+
     };
 
   /// The version of the last loaded scene file.
@@ -691,7 +723,7 @@ public:
   /// If \a modifiedStorableNodes is passed the modified nodes are appended.
   /// Note that the nodes see their reference count being incremented while
   /// being in the list. Don't forget to clear it as soon as you don't need it.
-  bool GetStorableNodesModifiedSinceRead(vtkCollection* modifiedStorableNodes = 0);
+  bool GetStorableNodesModifiedSinceRead(vtkCollection* modifiedStorableNodes = nullptr);
 
   /// \brief Search the scene for storable nodes that are not "ModifiedSinceRead".
   ///
@@ -704,12 +736,17 @@ public:
   /// and call StorableModified() on them.
   static void SetStorableNodesModifiedSinceRead(vtkCollection* storableNodes);
 
+  /// \brief Sets the maximum number of saved undo states and removes the oldest saved states so that the number of saved
+  /// states is less than the new maximum
+  void SetMaximumNumberOfSavedUndoStates(int stackSize);
+  vtkGetMacro(MaximumNumberOfSavedUndoStates, int);
+
 protected:
 
   typedef std::map< std::string, std::set<std::string> > NodeReferencesType;
 
   vtkMRMLScene();
-  virtual ~vtkMRMLScene();
+  ~vtkMRMLScene() override;
 
   void PushIntoUndoStack();
   void PushIntoRedoStack();
@@ -765,6 +802,18 @@ protected:
   /// Get a NodeReferences iterator for a node reference.
   NodeReferencesType::iterator FindNodeReference(const char* referencedId, vtkMRMLNode* referencingNode);
 
+  /// Clean up elements of the undo/redo stack beyond the maximum size
+  void TrimUndoStack();
+
+  /// Reserve all node reference ids for a node
+  void ReserveNodeReferenceIDs(vtkMRMLNode* node);
+
+  /// Returns all unique node reference IDs that are referenced within the undo stack
+  void GetNodeReferenceIDsFromUndoStack(std::set<std::string>& referenceIDs) const;
+
+  /// Returns true if a node is not referenced within the scene, but is referenced within the Undo stack.
+  bool IsNodeIDReservedByUndo(const std::string id) const;
+
   vtkCollection*  Nodes;
 
   /// data i/o handling members
@@ -775,9 +824,8 @@ protected:
 
   std::vector<unsigned long> States;
 
-  int  UndoStackSize;
+  int  MaximumNumberOfSavedUndoStates;
   bool UndoFlag;
-  bool InUndo;
 
   std::list< vtkCollection* >  UndoStack;
   std::list< vtkCollection* >  RedoStack;
@@ -860,6 +908,20 @@ bool vtkMRMLScene::IsRestoring()const
 {
   return (this->GetStates() & vtkMRMLScene::RestoreState)
          == vtkMRMLScene::RestoreState;
+}
+
+//------------------------------------------------------------------------------
+bool vtkMRMLScene::IsUndoing()const
+{
+  return (this->GetStates() & vtkMRMLScene::UndoState)
+    == vtkMRMLScene::UndoState;
+}
+
+//------------------------------------------------------------------------------
+bool vtkMRMLScene::IsRedoing()const
+{
+  return (this->GetStates() & vtkMRMLScene::RedoState)
+    == vtkMRMLScene::RedoState;
 }
 
 #endif

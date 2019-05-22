@@ -30,11 +30,11 @@ public:
 
   vtkTypeMacro(vtkMRMLStorageNodeTestHelper1,vtkMRMLStorageNode);
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE
+  vtkMRMLNode* CreateNodeInstance() override
     {
     return vtkMRMLStorageNodeTestHelper1::New();
     }
-  virtual const char* GetNodeTagName() VTK_OVERRIDE
+  const char* GetNodeTagName() override
     {
     return "vtkMRMLStorageNodeTestHelper1";
     }
@@ -42,11 +42,11 @@ public:
   virtual bool CanApplyNonLinearTransforms() { return false; }
   virtual void ApplyTransform(vtkAbstractTransform* vtkNotUsed(transform)) { return; }
 
-  bool CanReadInReferenceNode(vtkMRMLNode * refNode) VTK_OVERRIDE
+  bool CanReadInReferenceNode(vtkMRMLNode * refNode) override
     {
     return refNode->IsA(this->SupportedClass);
     }
-  int ReadDataInternal(vtkMRMLNode * vtkNotUsed(refNode)) VTK_OVERRIDE
+  int ReadDataInternal(vtkMRMLNode * vtkNotUsed(refNode)) override
     {
     return this->ReadDataReturnValue;
     }
@@ -55,7 +55,7 @@ public:
   int ReadDataReturnValue;
 protected:
   vtkMRMLStorageNodeTestHelper1()
-    :SupportedClass(0)
+    :SupportedClass(nullptr)
     ,ReadDataReturnValue(0)
   {}
 };
@@ -97,7 +97,7 @@ int TestReadData(int referenceNodeType,
   storageNode->SetFileName("file.ext");
   vtkNew<vtkMRMLLinearTransformNode> transformNode;
   vtkNew<vtkMRMLModelNode> modelNode;
-  vtkMRMLNode* referenceNode = (referenceNodeType == 0 ? vtkMRMLNode::SafeDownCast(0):
+  vtkMRMLNode* referenceNode = (referenceNodeType == 0 ? vtkMRMLNode::SafeDownCast(nullptr):
                                (referenceNodeType == 1 ? vtkMRMLNode::SafeDownCast(transformNode.GetPointer()) :
                                   vtkMRMLNode::SafeDownCast(modelNode.GetPointer())));
   int res = storageNode->ReadData(referenceNode);

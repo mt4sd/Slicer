@@ -43,8 +43,8 @@ class QMRML_WIDGETS_EXPORT qMRMLSceneDisplayableModel : public qMRMLSceneHierarc
 
 public:
   typedef qMRMLSceneHierarchyModel Superclass;
-  qMRMLSceneDisplayableModel(QObject *parent=0);
-  virtual ~qMRMLSceneDisplayableModel();
+  qMRMLSceneDisplayableModel(QObject *parent=nullptr);
+  ~qMRMLSceneDisplayableModel() override;
 
   int colorColumn()const;
   void setColorColumn(int column);
@@ -53,25 +53,25 @@ public:
   void setOpacityColumn(int column);
 
   ///
-  virtual vtkMRMLNode* parentNode(vtkMRMLNode* node)const;
+  vtkMRMLNode* parentNode(vtkMRMLNode* node)const override;
   //virtual int          nodeIndex(vtkMRMLNode* node)const;
   /// fast function that only check the type of the node to know if it can be a child.
-  virtual bool         canBeAChild(vtkMRMLNode* node)const;
+  bool         canBeAChild(vtkMRMLNode* node)const override;
   /// fast function that only check the type of the node to know if it can be a parent.
-  virtual bool         canBeAParent(vtkMRMLNode* node)const;
+  bool         canBeAParent(vtkMRMLNode* node)const override;
 
 protected:
   qMRMLSceneDisplayableModel(qMRMLSceneDisplayableModelPrivate* pimpl,
-                             QObject *parent=0);
+                             QObject *parent=nullptr);
 
   /// Reimplemented to listen to the displayable DisplayModifiedEvent event for
   /// visibility check state changes.
-  virtual void observeNode(vtkMRMLNode* node);
-  virtual QFlags<Qt::ItemFlag> nodeFlags(vtkMRMLNode* node, int column)const;
-  virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
-  virtual void updateNodeFromItemData(vtkMRMLNode* node, QStandardItem* item);
+  void observeNode(vtkMRMLNode* node) override;
+  QFlags<Qt::ItemFlag> nodeFlags(vtkMRMLNode* node, int column)const override;
+  void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column) override;
+  void updateNodeFromItemData(vtkMRMLNode* node, QStandardItem* item) override;
 
-  virtual int maxColumnId()const;
+  int maxColumnId()const override;
 private:
   Q_DECLARE_PRIVATE(qMRMLSceneDisplayableModel);
   Q_DISABLE_COPY(qMRMLSceneDisplayableModel);

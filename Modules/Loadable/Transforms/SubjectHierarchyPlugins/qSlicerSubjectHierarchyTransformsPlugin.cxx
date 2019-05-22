@@ -60,7 +60,7 @@ protected:
   qSlicerSubjectHierarchyTransformsPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyTransformsPluginPrivate(qSlicerSubjectHierarchyTransformsPlugin& object);
-  ~qSlicerSubjectHierarchyTransformsPluginPrivate();
+  ~qSlicerSubjectHierarchyTransformsPluginPrivate() override;
   void init();
 public:
   QIcon TransformIcon;
@@ -78,8 +78,8 @@ qSlicerSubjectHierarchyTransformsPluginPrivate::qSlicerSubjectHierarchyTransform
 {
   this->TransformIcon = QIcon(":Icons/Transform.png");
 
-  this->InvertAction = NULL;
-  this->IdentityAction = NULL;
+  this->InvertAction = nullptr;
+  this->IdentityAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -96,8 +96,7 @@ void qSlicerSubjectHierarchyTransformsPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyTransformsPluginPrivate::~qSlicerSubjectHierarchyTransformsPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyTransformsPlugin methods
@@ -115,8 +114,7 @@ qSlicerSubjectHierarchyTransformsPlugin::qSlicerSubjectHierarchyTransformsPlugin
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyTransformsPlugin::~qSlicerSubjectHierarchyTransformsPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchyTransformsPlugin::canReparentItemInsideSubjectHierarchy(vtkIdType itemID, vtkIdType parentItemID)const
@@ -170,7 +168,7 @@ bool qSlicerSubjectHierarchyTransformsPlugin::reparentItemInsideSubjectHierarchy
   if (shNode->IsAnyNodeInBranchTransformed(itemID))
     {
     QMessageBox::StandardButton answer =
-      QMessageBox::question(NULL, tr("Some nodes in the branch are already transformed"),
+      QMessageBox::question(nullptr, tr("Some nodes in the branch are already transformed"),
       tr("Do you want to harden all already applied transforms before setting the new one?\n\n"
       "  Note: If you choose no, then the applied transform will simply be replaced."),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
@@ -199,7 +197,7 @@ double qSlicerSubjectHierarchyTransformsPlugin::canAddNodeToSubjectHierarchy(
   Q_UNUSED(parentItemID);
   if (!node)
     {
-    qCritical() << Q_FUNC_INFO << ": Input node is NULL!";
+    qCritical() << Q_FUNC_INFO << ": Input node is nullptr!";
     return 0.0;
     }
   else if (node->IsA("vtkMRMLTransformNode"))

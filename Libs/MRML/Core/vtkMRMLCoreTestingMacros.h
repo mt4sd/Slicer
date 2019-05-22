@@ -97,27 +97,27 @@
 #define TEST_SET_GET_BOOLEAN( object, variable ) \
   object->Set##variable( false ); \
   object->Set##variable( true ); \
-  if( object->Get##variable() != 1 ) \
+  if( object->Get##variable() == 0 ) \
     {   \
-    std::cerr << "Error in Set/Get"#variable << ", Get"#variable << " is " << object->Get##variable() << " instead of 1" << std::endl; \
+    std::cerr << "Error in Set/Get"#variable << ", Get"#variable << " returned zero while it is expected to return non-zero" << std::endl; \
     return EXIT_FAILURE; \
     } \
   object->Set##variable( false ); \
   if( object->Get##variable() != 0 ) \
     {   \
-    std::cerr << "Error in Set/Get"#variable << ", Get"#variable << " is " << object->Get##variable() << " instead of 0" << std::endl; \
+    std::cerr << "Error in Set/Get"#variable << ", Get"#variable << " returned " << object->Get##variable() << " instead of 0" << std::endl; \
     return EXIT_FAILURE; \
     } \
   object->variable##On(); \
-  if( object->Get##variable() != 1 ) \
+  if( object->Get##variable() == 0 ) \
     {   \
-    std::cerr << "Error in On/Get"#variable << ", Get"#variable << " is " << object->Get##variable() << " instead of 1" << std::endl; \
+    std::cerr << "Error in On/Get"#variable << ", Get"#variable << " returned zero while it is expected to return non-zero" << std::endl; \
     return EXIT_FAILURE; \
     } \
   object->variable##Off(); \
   if( object->Get##variable() != 0 ) \
     {   \
-    std::cerr << "Error in Off/Get"#variable << ", Get"#variable << " is " << object->Get##variable() << " instead of 0" << std::endl; \
+    std::cerr << "Error in Off/Get"#variable << ", Get"#variable << " returned " << object->Get##variable() << " while 0 is expected" << std::endl; \
     return EXIT_FAILURE; \
     }
 
@@ -277,7 +277,7 @@
   {                                                                 \
     object->Set##variable( x, y, z );                               \
     double *val = object->Get##variable();                          \
-    if( val == NULL || val[0] != x || val[1] != y || val[2] != z )  \
+    if( val == nullptr || val[0] != x || val[1] != y || val[2] != z )  \
       {                                                             \
       std::cerr << "Error in Set/Get"#variable << std::endl;        \
       return EXIT_FAILURE;                                          \
@@ -327,7 +327,7 @@
   { \
   const char * originalStringPointer = object->Get##variable(); \
   std::string originalString; \
-  if( originalStringPointer != NULL ) \
+  if( originalStringPointer != nullptr ) \
     { \
     originalString = originalStringPointer; \
     } \
@@ -351,13 +351,13 @@
     std::cerr << "Error in Set/Get"#variable << ", tried to set to " << string2.c_str() << " but got " << (object->Get##variable() ? object->Get##variable() : "null") << std::endl; \
     return EXIT_FAILURE; \
     } \
-  if( originalStringPointer != NULL ) \
+  if( originalStringPointer != nullptr ) \
     { \
     object->Set##variable( originalString.c_str() );  \
     } \
   else \
     { \
-    object->Set##variable( NULL ); \
+    object->Set##variable( nullptr ); \
     } \
   }
 

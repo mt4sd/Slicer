@@ -1,10 +1,11 @@
+from __future__ import print_function
 import os
 import vtk, qt, ctk, slicer
 import EditorLib
-from EditorLib.EditOptions import HelpButton
-from EditorLib.EditOptions import EditOptions
+from EditorLib import HelpButton
+from EditorLib import EditOptions
 from EditorLib import EditUtil
-from EditorLib import LabelEffect
+from EditorLib import LabelEffectOptions, LabelEffectTool, LabelEffectLogic, LabelEffect
 
 #
 # The Editor Extension itself.
@@ -16,7 +17,7 @@ from EditorLib import LabelEffect
 # TemplateKeyEffectOptions - see LabelEffect, EditOptions and Effect for superclasses
 #
 
-class TemplateKeyEffectOptions(EditorLib.LabelEffectOptions):
+class TemplateKeyEffectOptions(LabelEffectOptions):
   """ TemplateKeyEffect-specfic gui
   """
 
@@ -55,7 +56,7 @@ class TemplateKeyEffectOptions(EditorLib.LabelEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = EditUtil.EditUtil().getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.RemoveObserver(self.parameterNodeTag)
@@ -88,7 +89,7 @@ class TemplateKeyEffectOptions(EditorLib.LabelEffectOptions):
 # TemplateKeyEffectTool
 #
 
-class TemplateKeyEffectTool(LabelEffect.LabelEffectTool):
+class TemplateKeyEffectTool(LabelEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -120,7 +121,7 @@ class TemplateKeyEffectTool(LabelEffect.LabelEffectTool):
       sliceLogic = self.sliceWidget.sliceLogic()
       logic = TemplateKeyEffectLogic(sliceLogic)
       logic.apply(xy)
-      print("Got a %s at %s in %s", (event,str(xy),self.sliceWidget.sliceLogic().GetSliceNode().GetName()))
+      print(("Got a %s at %s in %s", (event,str(xy),self.sliceWidget.sliceLogic().GetSliceNode().GetName())))
       self.abortEvent(event)
     else:
       pass
@@ -136,7 +137,7 @@ class TemplateKeyEffectTool(LabelEffect.LabelEffectTool):
 # TemplateKeyEffectLogic
 #
 
-class TemplateKeyEffectLogic(LabelEffect.LabelEffectLogic):
+class TemplateKeyEffectLogic(LabelEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an TemplateKeyEffectTool
@@ -158,7 +159,7 @@ class TemplateKeyEffectLogic(LabelEffect.LabelEffectLogic):
 # The TemplateKeyEffect class definition
 #
 
-class TemplateKeyEffectExtension(LabelEffect.LabelEffect):
+class TemplateKeyEffectExtension(LabelEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """
@@ -185,7 +186,7 @@ pet = EditorLib.TemplateKeyEffectTool(sw)
 # TemplateKeyEffect
 #
 
-class TemplateKeyEffect:
+class TemplateKeyEffect(object):
   """
   This class is the 'hook' for slicer to detect and recognize the extension
   as a loadable scripted module
@@ -224,7 +225,7 @@ class TemplateKeyEffect:
 # TemplateKeyEffectWidget
 #
 
-class TemplateKeyEffectWidget:
+class TemplateKeyEffectWidget(object):
   def __init__(self, parent = None):
     self.parent = parent
 

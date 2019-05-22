@@ -8,21 +8,21 @@ class VTK_MRML_EXPORT vtkMRMLInteractionNode : public vtkMRMLNode
 public:
   static vtkMRMLInteractionNode *New();
   vtkTypeMacro(vtkMRMLInteractionNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Interaction";}
+  const char* GetNodeTagName() override {return "Interaction";}
 
   /// Get/Set Current and Last mouse mode.
   vtkGetMacro(CurrentInteractionMode, int);
@@ -47,11 +47,11 @@ public:
   /// bit field operations
   enum
     {
-      //SelectRegion,
-      //LassoRegion,
-      Place = 0x1,
-      ViewTransform = 0x2,
-      Select = 0x4,
+      Place = 1,
+      ViewTransform = 2,
+      Select = 4,
+      AdjustWindowLevel,
+      User = 1000
     };
 
   /// events
@@ -80,7 +80,7 @@ public:
 
 protected:
   vtkMRMLInteractionNode();
-  ~vtkMRMLInteractionNode();
+  ~vtkMRMLInteractionNode() override;
 
   vtkMRMLInteractionNode(const vtkMRMLInteractionNode&);
   void operator=(const vtkMRMLInteractionNode&);

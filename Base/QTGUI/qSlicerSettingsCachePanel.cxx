@@ -58,7 +58,7 @@ public:
 qSlicerSettingsCachePanelPrivate::qSlicerSettingsCachePanelPrivate(qSlicerSettingsCachePanel& object)
   :q_ptr(&object)
 {
-  this->CacheManager = 0;
+  this->CacheManager = nullptr;
 }
 
 // --------------------------------------------------------------------------
@@ -97,8 +97,7 @@ qSlicerSettingsCachePanel::qSlicerSettingsCachePanel(QWidget* _parent)
 
 // --------------------------------------------------------------------------
 qSlicerSettingsCachePanel::~qSlicerSettingsCachePanel()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 void qSlicerSettingsCachePanel::setCacheManager(vtkCacheManager* cacheManager)
@@ -129,8 +128,8 @@ void qSlicerSettingsCachePanel::setCacheManager(vtkCacheManager* cacheManager)
 void qSlicerSettingsCachePanel::updateFromCacheManager()
 {
   Q_D(qSlicerSettingsCachePanel);
-  this->setEnabled(d->CacheManager != 0);
-  if (d->CacheManager == 0)
+  this->setEnabled(d->CacheManager != nullptr);
+  if (d->CacheManager == nullptr)
     {
     return;
     }

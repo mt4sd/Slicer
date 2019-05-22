@@ -59,7 +59,7 @@ class vtkCallbackCommand;
 #endif
 
 #ifndef vtkSetAndObserveMRMLObjectEventsMacroNoWarning
-#define vtkSetAndObserveMRMLObjectEventsMacroNoWarning(node,value,events)  {this->MRMLObserverManager->SetAndObserveObjectEvents ( vtkObjectPointer( &(node)), (value), (events), NULL /* priorities */, false /* no warning */);};
+#define vtkSetAndObserveMRMLObjectEventsMacroNoWarning(node,value,events)  {this->MRMLObserverManager->SetAndObserveObjectEvents ( vtkObjectPointer( &(node)), (value), (events), nullptr /* priorities */, false /* no warning */);};
 #endif
 
 #ifndef vtkObserveMRMLObjectMacro
@@ -77,7 +77,7 @@ class vtkCallbackCommand;
 #ifndef vtkSetReferenceStringBodyMacro
 #define vtkSetReferenceStringBodyMacro(name) \
   vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting " << #name " to " << (_arg?_arg:"(null)") ); \
-  if ( this->name == NULL && _arg == NULL) { return;} \
+  if ( this->name == nullptr && _arg == nullptr) { return;} \
   if ( this->name && _arg && (!strcmp(this->name,_arg))) { return;} \
   std::string oldValue; \
   if (this->name) { oldValue = this->name; delete [] this->name;  } \
@@ -91,7 +91,7 @@ class vtkCallbackCommand;
     } \
    else \
     { \
-    this->name = NULL; \
+    this->name = nullptr; \
     } \
   this->Modified(); \
   if (this->Scene && this->name) \
@@ -144,7 +144,7 @@ class VTK_MRML_EXPORT vtkMRMLNode : public vtkObject
 
 public:
   vtkTypeMacro(vtkMRMLNode,vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// \brief Create instance of the default node. Like New only virtual.
   ///
@@ -235,7 +235,7 @@ public:
   /// * SingletonTag.
   ///
   /// If a defaultNode pointer is passed then the values stored in that node
-  /// will be used to set the node contents. If defaultNode is NULL then the values
+  /// will be used to set the node contents. If defaultNode is nullptr then the values
   /// set in the constructor of the class will be used to set the node contents.
   ///
   /// \note Other attributes that needs to be preserved should be handled in the subclass.
@@ -300,7 +300,7 @@ public:
 
   /// \brief Get value of a name value pair attribute.
   ///
-  /// Return NULL if the name does not exists.
+  /// Return nullptr if the name does not exists.
   const char* GetAttribute(const char* name);
 
   /// Get all attribute names.
@@ -319,6 +319,18 @@ public:
   vtkSetMacro(Selectable, int);
   vtkBooleanMacro(Selectable, int);
 
+  /// Specifies if the state of this node is stored in the scene's undo buffer.
+  /// False by default to make sure that undo can be enabled selectively,
+  /// only for nodes that are prepared to work correctly when saved/restored.
+  /// Nodes with different UndoEnabled value must not reference to each other,
+  /// because restoring states could lead to unresolved node references.
+  /// Therefore, when undo is enabled for a certain node, it must be enabled
+  /// for nodes that it references (for example, if undo is enabled for
+  /// vtkMRMLModelNode then it must be enabled for vtkMRMLModelDisplayNode
+  /// and vtkMRMLModelStorageNode as well).
+  vtkGetMacro(UndoEnabled, bool);
+  vtkSetMacro(UndoEnabled, bool);
+  vtkBooleanMacro(UndoEnabled, bool);
 
   /// Propagate events generated in mrml.
   virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData );
@@ -346,9 +358,9 @@ public:
 
   /// \brief Tag that make this node a singleton in the scene.
   ///
-  /// If set to NULL, multiple instances of this node class are allowed.
+  /// If set to nullptr, multiple instances of this node class are allowed.
   ///
-  /// If set to a non-NULL string, the node will be a singleton and
+  /// If set to a non-nullptr string, the node will be a singleton and
   /// the scene will replace this node instead of adding new instances.
   ///
   /// The SingletonTag is used by the scene to build a unique ID.
@@ -378,11 +390,11 @@ public:
     }
   void SetSingletonOff()
     {
-    this->SetSingletonTag(NULL);
+    this->SetSingletonTag(nullptr);
     }
   bool IsSingleton()
     {
-    return (this->GetSingletonTag() != NULL);
+    return (this->GetSingletonTag() != nullptr);
     }
 
   /// Save node with MRML scene.
@@ -431,7 +443,7 @@ public:
   /// of the instance variables).
   ///
   /// \sa GetDisableModifiedEvent()
-  virtual void Modified() VTK_OVERRIDE
+  void Modified() override
     {
     if (!this->GetDisableModifiedEvent())
       {
@@ -492,8 +504,8 @@ public:
   ///
   /// \a callData is passed to InvokeEvent() if the event is invoked immediately.
   ///
-  /// If the event is not invoked immediately then it will be sent with `callData=NULL`.
-  virtual void InvokeCustomModifiedEvent(int eventId, void *callData=NULL)
+  /// If the event is not invoked immediately then it will be sent with `callData=nullptr`.
+  virtual void InvokeCustomModifiedEvent(int eventId, void *callData=nullptr)
     {
     if (!this->GetDisableModifiedEvent())
       {
@@ -604,7 +616,7 @@ public:
   /// This method is typically called in the constructors of each subclass.
   /// The optional events argument specifies what events should be observed by default (e.g., when loading the scene from file).
   /// \sa GetReferenceNodeFromMRMLAttributeName()
-  void AddNodeReferenceRole(const char *referenceRole, const char *mrmlAttributeName=0, vtkIntArray *events=0);
+  void AddNodeReferenceRole(const char *referenceRole, const char *mrmlAttributeName=nullptr, vtkIntArray *events=nullptr);
 
   /// \brief Set a reference to a node with specified nodeID from this node for a specific \a referenceRole.
   vtkMRMLNode* SetNodeReferenceID(const char* referenceRole, const char* referencedNodeID);
@@ -620,13 +632,13 @@ public:
   /// \a referenceRole.
   ///
   /// Observe Modified event by default, optionally takes array of events
-  vtkMRMLNode* SetAndObserveNodeReferenceID(const char* referenceRole , const char* referencedNodeID, vtkIntArray *events=0);
+  vtkMRMLNode* SetAndObserveNodeReferenceID(const char* referenceRole , const char* referencedNodeID, vtkIntArray *events=nullptr);
 
   /// \brief Add and observe a reference node from this node for a specific
   /// \a referenceRole.
   ///
   /// Observe Modified event by default, optionally takes array of events.
-  vtkMRMLNode* AddAndObserveNodeReferenceID(const char* referenceRole , const char* referencedNodeID, vtkIntArray *events=0);
+  vtkMRMLNode* AddAndObserveNodeReferenceID(const char* referenceRole , const char* referencedNodeID, vtkIntArray *events=nullptr);
 
   /// \brief Set and observe the Nth node ID for a specific reference role.
   ///
@@ -643,7 +655,7 @@ public:
   /// \sa SetAndObserveNodeReferenceID(const char*)
   /// \sa AddAndObserveNodeReferenceID(const char*)
   /// \sa RemoveNthNodeReferenceID(int)
-  vtkMRMLNode* SetAndObserveNthNodeReferenceID(const char* referenceRole, int n, const char *referencedNodeID, vtkIntArray *events=0);
+  vtkMRMLNode* SetAndObserveNthNodeReferenceID(const char* referenceRole, int n, const char *referencedNodeID, vtkIntArray *events=nullptr);
 
   /// Convenience method that removes the Nth node ID from the list.
   void RemoveNthNodeReferenceID(const char* referenceRole, int n);
@@ -656,7 +668,7 @@ public:
   /// \brief Return true if \a referencedNodeID is in the node ID list for a
   /// specific \a referenceRole.
   ///
-  /// If NULL is specified as role then all roles are checked.
+  /// If nullptr is specified as role then all roles are checked.
   bool HasNodeReferenceID(const char* referenceRole, const char* referencedNodeID);
 
   /// \brief Return the number of node IDs for a specific reference role (and nodes as they always
@@ -743,7 +755,7 @@ protected:
   public:
     vtkTypeMacro(vtkMRMLNodeReference,vtkObject);
     static vtkMRMLNodeReference *New();
-    void PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent)) VTK_OVERRIDE {};
+    void PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent)) override {};
 
   public:
     vtkSetStringMacro(ReferenceRole);
@@ -755,7 +767,7 @@ protected:
     /// \brief Set the events that will be observed when the referenced node
     /// will be available.
     ///
-    /// If set to NULL then the default event list (specified for the role) will be observed.
+    /// If set to nullptr then the default event list (specified for the role) will be observed.
     /// If set to an empty event list then no events will be observed.
     void SetEvents(vtkIntArray* events);
     vtkIntArray* GetEvents() const;
@@ -768,7 +780,7 @@ protected:
 
   protected:
     vtkMRMLNodeReference();
-    virtual ~vtkMRMLNodeReference();
+    ~vtkMRMLNodeReference() override;
 
     vtkMRMLNodeReference(const vtkMRMLNodeReference&);
     void operator=(const vtkMRMLNodeReference&);
@@ -791,7 +803,7 @@ protected:
 
   vtkMRMLNode();
   /// critical to have a virtual destructor!
-  virtual ~vtkMRMLNode();
+  ~vtkMRMLNode() override;
   vtkMRMLNode(const vtkMRMLNode&);
   void operator=(const vtkMRMLNode&);
 
@@ -829,9 +841,9 @@ protected:
   virtual bool IsReferenceRoleGeneric(const char* refRole);
 
   /// Updates references and event observations on the selected referenced nodes.
-  /// If referenceRole is NULL then all the roles will be updated.
+  /// If referenceRole is nullptr then all the roles will be updated.
   /// \sa UpdateNthNodeReference
-  virtual void UpdateNodeReferences(const char* referenceRole = NULL);
+  virtual void UpdateNodeReferences(const char* referenceRole = nullptr);
 
   /// Updates references and event observations on the selected referenced node.
   /// Update is necessary because at the time the reference was added the referenced node might not have been
@@ -873,7 +885,7 @@ protected:
     this->InvokeEvent(vtkMRMLNode::ReferenceModifiedEvent, reference);
   }
 
-  /// Called when a referenced node pointer is removed (set to NULL).
+  /// Called when a referenced node pointer is removed (set to nullptr).
   virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference)
   {
     this->InvokeEvent(vtkMRMLNode::ReferenceRemovedEvent, reference);
@@ -893,6 +905,7 @@ protected:
   int Selectable;
   int Selected;
   int AddToScene;
+  bool UndoEnabled;
 
   int  SaveWithScene;
 

@@ -51,7 +51,7 @@ protected:
   qSlicerSubjectHierarchySceneViewsPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchySceneViewsPluginPrivate(qSlicerSubjectHierarchySceneViewsPlugin& object);
-  ~qSlicerSubjectHierarchySceneViewsPluginPrivate();
+  ~qSlicerSubjectHierarchySceneViewsPluginPrivate() override;
   void init();
 public:
   QIcon SceneViewIcon;
@@ -68,7 +68,7 @@ qSlicerSubjectHierarchySceneViewsPluginPrivate::qSlicerSubjectHierarchySceneView
 {
   this->SceneViewIcon = QIcon(":Icons/SceneView.png");
 
-  this->RestoreSceneViewAction = NULL;
+  this->RestoreSceneViewAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -82,8 +82,7 @@ void qSlicerSubjectHierarchySceneViewsPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchySceneViewsPluginPrivate::~qSlicerSubjectHierarchySceneViewsPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchySceneViewsPlugin methods
@@ -101,8 +100,7 @@ qSlicerSubjectHierarchySceneViewsPlugin::qSlicerSubjectHierarchySceneViewsPlugin
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchySceneViewsPlugin::~qSlicerSubjectHierarchySceneViewsPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchySceneViewsPlugin::canAddNodeToSubjectHierarchy(
@@ -111,7 +109,7 @@ double qSlicerSubjectHierarchySceneViewsPlugin::canAddNodeToSubjectHierarchy(
   Q_UNUSED(parentItemID);
   if (!node)
     {
-    qCritical() << Q_FUNC_INFO << ": Input node is NULL!";
+    qCritical() << Q_FUNC_INFO << ": Input node is nullptr!";
     return 0.0;
     }
   else if (node->IsA("vtkMRMLSceneViewNode"))

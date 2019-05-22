@@ -43,7 +43,7 @@ public:
 
   static vtkMRMLAnnotationDisplayableManagerHelper *New();
   vtkTypeMacro(vtkMRMLAnnotationDisplayableManagerHelper, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Lock/Unlock all widgets based on the state of the nodes
   void UpdateLockedAllWidgetsFromNodes();
@@ -142,12 +142,12 @@ public:
 protected:
 
   vtkMRMLAnnotationDisplayableManagerHelper();
-  virtual ~vtkMRMLAnnotationDisplayableManagerHelper();
+  ~vtkMRMLAnnotationDisplayableManagerHelper() override;
 
 private:
 
-  vtkMRMLAnnotationDisplayableManagerHelper(const vtkMRMLAnnotationDisplayableManagerHelper&); /// Not implemented
-  void operator=(const vtkMRMLAnnotationDisplayableManagerHelper&); /// Not Implemented
+  vtkMRMLAnnotationDisplayableManagerHelper(const vtkMRMLAnnotationDisplayableManagerHelper&) = delete;
+  void operator=(const vtkMRMLAnnotationDisplayableManagerHelper&) = delete;
 
   /// SeedWidget for point placement
   vtkSmartPointer<vtkSeedWidget> SeedWidget;

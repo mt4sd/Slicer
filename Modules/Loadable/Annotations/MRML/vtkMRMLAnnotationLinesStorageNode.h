@@ -19,32 +19,32 @@ class  VTK_SLICER_ANNOTATIONS_MODULE_MRML_EXPORT vtkMRMLAnnotationLinesStorageNo
   public:
   static vtkMRMLAnnotationLinesStorageNode *New();
   vtkTypeMacro(vtkMRMLAnnotationLinesStorageNode,vtkMRMLAnnotationControlPointsStorageNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   // Description:
   // Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   // Description:
   // Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   // Description:
   // Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   // Description:
   // Get node XML tag name (like Storage, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "AnnotationLinesStorage";}
+  const char* GetNodeTagName() override {return "AnnotationLinesStorage";}
 
   /// Return true if the node can be read in
-  virtual bool CanReadInReferenceNode(vtkMRMLNode* refNode) VTK_OVERRIDE;
+  bool CanReadInReferenceNode(vtkMRMLNode* refNode) override;
 
 protected:
   vtkMRMLAnnotationLinesStorageNode();
-  ~vtkMRMLAnnotationLinesStorageNode();
+  ~vtkMRMLAnnotationLinesStorageNode() override;
   vtkMRMLAnnotationLinesStorageNode(const vtkMRMLAnnotationLinesStorageNode&);
   void operator=(const vtkMRMLAnnotationLinesStorageNode&);
 
@@ -60,10 +60,10 @@ protected:
   int ReadAnnotationLinesProperties(vtkMRMLAnnotationLinesNode *refNode, char line[1024], int &typeColumn, int& startIDColumn,    int& endIDColumn, int& selColumn, int& visColumn, int& numColumns);
 
   /// Read data and set it in the referenced node
-  virtual int ReadDataInternal(vtkMRMLNode *refNode) VTK_OVERRIDE;
+  int ReadDataInternal(vtkMRMLNode *refNode) override;
 
   // Description:
-  virtual int WriteAnnotationDataInternal(vtkMRMLNode *refNode, fstream & of) VTK_OVERRIDE;
+  int WriteAnnotationDataInternal(vtkMRMLNode *refNode, fstream & of) override;
 };
 
 #endif

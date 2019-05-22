@@ -24,44 +24,44 @@ public:
   // void PrintSelf(ostream& os, vtkIndent indent);
   // Description:
   // Just prints short summary
-  virtual void PrintAnnotationInfo(ostream& os, vtkIndent indent, int titleFlag = 1) VTK_OVERRIDE;
+  void PrintAnnotationInfo(ostream& os, vtkIndent indent, int titleFlag = 1) override;
 
   //--------------------------------------------------------------------------
   // MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
   // Description:
   // Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "AnnotationControlPoints";}
+  const char* GetNodeTagName() override {return "AnnotationControlPoints";}
 
   // Description:
   // Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   // Description:
   // Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Write this node's information to a vector of strings for passing to a CLI,
   /// precede each datum with the prefix if not an empty string
   /// coordinateSystemFlag = 0 for RAS, 1 for LPS
   /// multipleFlag = 1 for the whole list, 1 for the first point
-  virtual void WriteCLI(std::vector<std::string>& commandLine,
+  void WriteCLI(std::vector<std::string>& commandLine,
                         std::string prefix, int coordinateSystem = 0,
-                        int multipleFlag = 1) VTK_OVERRIDE;
+                        int multipleFlag = 1) override;
 
   // Description:
   // Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE {Superclass::Copy(node);}
+  void Copy(vtkMRMLNode *node) override {Superclass::Copy(node);}
 
-  void UpdateScene(vtkMRMLScene *scene) VTK_OVERRIDE;
+  void UpdateScene(vtkMRMLScene *scene) override;
 
   // Description:
   // alternative method to propagate events generated in Display nodes
-  virtual void ProcessMRMLEvents ( vtkObject * /*caller*/,
+  void ProcessMRMLEvents ( vtkObject * /*caller*/,
                                    unsigned long /*event*/,
-                                   void * /*callData*/ ) VTK_OVERRIDE;
+                                   void * /*callData*/ ) override;
 
 
   enum
@@ -69,7 +69,7 @@ public:
       ControlPointModifiedEvent = 19010,
     };
 
-  virtual void Modified() VTK_OVERRIDE
+  void Modified() override
     {
     Superclass::Modified();
 
@@ -83,7 +83,7 @@ public:
   /// Invokes any modified events that are 'pending', meaning they were generated
   /// while the DisableModifiedEvent flag was nonzero.
   /// Returns the old flag state.
-  virtual int InvokePendingModifiedEvent () VTK_OVERRIDE
+  int InvokePendingModifiedEvent () override
     {
     if ( this->GetModifiedEventPending() )
       {
@@ -93,12 +93,12 @@ public:
     }
 
   // Description:
-  // get associated display node or NULL if not set
+  // get associated display node or nullptr if not set
   vtkMRMLAnnotationPointDisplayNode* GetAnnotationPointDisplayNode();
 
   // Description:
-  // Create default storage node or NULL if does not have one
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE;
+  // Create default storage node or nullptr if does not have one
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override;
 
   int  AddControlPoint(double newControl[3],int selectedFlag, int visibleFlag);
 
@@ -127,12 +127,12 @@ public:
     NUM_CP_ATTRIBUTE_TYPES
   };
 
-  const char *GetAttributeTypesEnumAsString(int val) VTK_OVERRIDE;
+  const char *GetAttributeTypesEnumAsString(int val) override;
 
 
   // Description:
   // Initializes all variables associated with annotations
-  virtual void ResetAnnotations() VTK_OVERRIDE;
+  void ResetAnnotations() override;
 
   // Description:
   // add display node if not already present
@@ -158,11 +158,11 @@ public:
   const char* GetNumberingSchemeAsString(int g);
   void SetNumberingSchemeFromString(const char *schemeString);
 
-  virtual void Initialize(vtkMRMLScene* mrmlScene) VTK_OVERRIDE;
+  void Initialize(vtkMRMLScene* mrmlScene) override;
 
 protected:
   vtkMRMLAnnotationControlPointsNode();
-  ~vtkMRMLAnnotationControlPointsNode() { };
+  ~vtkMRMLAnnotationControlPointsNode() override  = default;
   vtkMRMLAnnotationControlPointsNode(const vtkMRMLAnnotationControlPointsNode&);
   void operator=(const vtkMRMLAnnotationControlPointsNode&);
 

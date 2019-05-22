@@ -21,7 +21,7 @@ class VTK_ITK_EXPORT vtkITKLevelTracingImageFilter : public vtkPolyDataAlgorithm
 public:
   static vtkITKLevelTracingImageFilter *New();
   vtkTypeMacro(vtkITKLevelTracingImageFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Methods to set/get seeds.  Seeds are specified in IJK (not XYZ).
   vtkSetVector3Macro(Seed, int);
@@ -37,17 +37,17 @@ public:
 
 protected:
   vtkITKLevelTracingImageFilter();
-  ~vtkITKLevelTracingImageFilter();
+  ~vtkITKLevelTracingImageFilter() override;
 
-  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
-  virtual int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
+  int FillInputPortInformation(int port, vtkInformation *info) override;
 
   int Seed[3];
   int Plane;
 
 private:
-  vtkITKLevelTracingImageFilter(const vtkITKLevelTracingImageFilter&);  /// Not implemented.
-  void operator=(const vtkITKLevelTracingImageFilter&);  /// Not implemented.
+  vtkITKLevelTracingImageFilter(const vtkITKLevelTracingImageFilter&) = delete;
+  void operator=(const vtkITKLevelTracingImageFilter&) = delete;
 };
 
 #endif

@@ -57,13 +57,12 @@ vtkFractionalLabelmapToClosedSurfaceConversionRule::vtkFractionalLabelmapToClose
 
 //----------------------------------------------------------------------------
 vtkFractionalLabelmapToClosedSurfaceConversionRule::~vtkFractionalLabelmapToClosedSurfaceConversionRule()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 unsigned int vtkFractionalLabelmapToClosedSurfaceConversionRule::GetConversionCost(
-    vtkDataObject* vtkNotUsed(sourceRepresentation)/*=NULL*/,
-    vtkDataObject* vtkNotUsed(targetRepresentation)/*=NULL*/)
+    vtkDataObject* vtkNotUsed(sourceRepresentation)/*=nullptr*/,
+    vtkDataObject* vtkNotUsed(targetRepresentation)/*=nullptr*/)
 {
   // Rough input-independent guess (ms)
   return 600;
@@ -82,7 +81,7 @@ vtkDataObject* vtkFractionalLabelmapToClosedSurfaceConversionRule::ConstructRepr
     }
   else
     {
-    return NULL;
+    return nullptr;
     }
 }
 
@@ -99,7 +98,7 @@ vtkDataObject* vtkFractionalLabelmapToClosedSurfaceConversionRule::ConstructRepr
     }
   else
     {
-    return NULL;
+    return nullptr;
     }
 }
 

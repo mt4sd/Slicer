@@ -1,7 +1,7 @@
 project(MRMLDisplayableManager)
 
 #-----------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13.4)
 #-----------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------
@@ -86,6 +86,7 @@ set(DisplayableManager_SRCS
   # DisplayableManager common between ThreeDView and SliceView
   vtkMRMLOrientationMarkerDisplayableManager.cxx
   vtkMRMLRulerDisplayableManager.cxx
+  vtkMRMLScalarBarDisplayableManager.cxx
   )
 
 set(KIT_SRCS
@@ -93,6 +94,8 @@ set(KIT_SRCS
   vtkMRMLAbstractDisplayableManager.cxx
   vtkMRMLDisplayableManagerGroup.cxx
   vtkMRMLDisplayableManagerFactory.cxx
+
+  vtkMRMLInteractionEventData.cxx
 
   # ThreeDView factory and DisplayableManager
   vtkMRMLAbstractThreeDViewDisplayableManager.cxx
@@ -102,8 +105,18 @@ set(KIT_SRCS
   vtkMRMLAbstractSliceViewDisplayableManager.cxx
   vtkMRMLSliceViewDisplayableManagerFactory.cxx
 
-  vtkSliceViewInteractorStyle.cxx
-  vtkThreeDViewInteractorStyle.cxx
+  vtkMRMLViewInteractorStyle.cxx
+  vtkMRMLSliceViewInteractorStyle.cxx
+  vtkMRMLThreeDViewInteractorStyle.cxx
+
+  # Widgets
+  vtkMRMLAbstractWidget.cxx
+  vtkMRMLAbstractWidgetRepresentation.cxx
+  vtkMRMLCameraWidget.cxx
+  vtkMRMLSliceIntersectionWidget.cxx
+  vtkMRMLSliceIntersectionRepresentation2D.cxx
+  vtkMRMLRubberBandWidgetRepresentation.cxx
+  vtkMRMLWindowLevelWidget.cxx
 
   # Proxy classes
   vtkMRMLLightBoxRendererManagerProxy.cxx

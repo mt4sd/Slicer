@@ -148,7 +148,7 @@ public:
   Q_INVOKABLE QList<qSlicerSubjectHierarchyAbstractPlugin*> allPlugins();
 
   /// Get a plugin by name
-  /// \return The plugin instance if exists, NULL otherwise
+  /// \return The plugin instance if exists, nullptr otherwise
   Q_INVOKABLE qSlicerSubjectHierarchyAbstractPlugin* pluginByName(QString name);
 
   /// Returns the plugin that can handle a node the best for adding it from outside to inside the subject hierarchy
@@ -222,10 +222,10 @@ protected:
 public:
   /// Private constructor made public to enable python wrapping
   /// IMPORTANT: Should not be used for creating plugin handler! Use instance() instead.
-  qSlicerSubjectHierarchyPluginHandler(QObject* parent=NULL);
+  qSlicerSubjectHierarchyPluginHandler(QObject* parent=nullptr);
 
   /// Private destructor made public to enable python wrapping
-  virtual ~qSlicerSubjectHierarchyPluginHandler();
+  ~qSlicerSubjectHierarchyPluginHandler() override;
 
 private:
   Q_DISABLE_COPY(qSlicerSubjectHierarchyPluginHandler);

@@ -41,8 +41,8 @@ class Q_SLICER_QTMODULES_SUBJECTHIERARCHY_EXPORT qSlicerSubjectHierarchyModuleWi
 
 public:
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerSubjectHierarchyModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerSubjectHierarchyModuleWidget();
+  qSlicerSubjectHierarchyModuleWidget(QWidget *parent=nullptr);
+  ~qSlicerSubjectHierarchyModuleWidget() override;
 
   Q_INVOKABLE qSlicerSubjectHierarchyPluginLogic* pluginLogic();
   Q_INVOKABLE void setPluginLogic(qSlicerSubjectHierarchyPluginLogic* pluginLogic);
@@ -50,7 +50,7 @@ public:
 protected:
   QScopedPointer<qSlicerSubjectHierarchyModuleWidgetPrivate> d_ptr;
 
-  virtual void setup();
+  void setup() override;
 
 private:
   Q_DECLARE_PRIVATE(qSlicerSubjectHierarchyModuleWidget);

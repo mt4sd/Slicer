@@ -19,40 +19,40 @@ class  VTK_SLICER_ANNOTATIONS_MODULE_MRML_EXPORT vtkMRMLAnnotationPointDisplayNo
  public:
   static vtkMRMLAnnotationPointDisplayNode *New (  );
   vtkTypeMacro ( vtkMRMLAnnotationPointDisplayNode,vtkMRMLAnnotationDisplayNode );
-  void PrintSelf ( ostream& os, vtkIndent indent ) VTK_OVERRIDE;
+  void PrintSelf ( ostream& os, vtkIndent indent ) override;
 
   //--------------------------------------------------------------------------
   // MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance () VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance () override;
 
   // Description:
   // Read node attributes from XML (MRML) file
-  virtual void ReadXMLAttributes ( const char** atts ) VTK_OVERRIDE;
+  void ReadXMLAttributes ( const char** atts ) override;
 
   // Description:
   // Write this node's information to a MRML file in XML format.
-  virtual void WriteXML ( ostream& of, int indent ) VTK_OVERRIDE;
+  void WriteXML ( ostream& of, int indent ) override;
 
 
   // Description:
   // Copy the node's attributes to this object
-  virtual void Copy ( vtkMRMLNode *node ) VTK_OVERRIDE;
+  void Copy ( vtkMRMLNode *node ) override;
 
   // Description:
   // Get node XML tag name (like Volume, Annotation)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "AnnotationPointDisplay";}
+  const char* GetNodeTagName() override {return "AnnotationPointDisplay";}
 
   // Description:
   // Finds the storage node and read the data
-  virtual void UpdateScene(vtkMRMLScene *scene) VTK_OVERRIDE;
+  void UpdateScene(vtkMRMLScene *scene) override;
 
   // Description:
   // alternative method to propagate events generated in Display nodes
-  virtual void ProcessMRMLEvents ( vtkObject * /*caller*/,
+  void ProcessMRMLEvents ( vtkObject * /*caller*/,
                                    unsigned long /*event*/,
-                                   void * /*callData*/ ) VTK_OVERRIDE;
+                                   void * /*callData*/ ) override;
 
   /// Which kind of glyph should be used to display this fiducial?
   /// Vertex2D is supposed to start at 1
@@ -97,9 +97,9 @@ class  VTK_SLICER_ANNOTATIONS_MODULE_MRML_EXPORT vtkMRMLAnnotationPointDisplayNo
   vtkGetMacro(GlyphScale,double);
 
   /// Create a backup of this node and attach it.
-  void CreateBackup() VTK_OVERRIDE;
+  void CreateBackup() override;
   /// Restore an attached backup of this node.
-  void RestoreBackup() VTK_OVERRIDE;
+  void RestoreBackup() override;
 
   /// Set projection color as fiducial color
   ///\sa SetProjectedColor
@@ -132,7 +132,7 @@ class  VTK_SLICER_ANNOTATIONS_MODULE_MRML_EXPORT vtkMRMLAnnotationPointDisplayNo
 
  protected:
   vtkMRMLAnnotationPointDisplayNode();
-  ~vtkMRMLAnnotationPointDisplayNode() { };
+  ~vtkMRMLAnnotationPointDisplayNode() override  = default;
   vtkMRMLAnnotationPointDisplayNode( const vtkMRMLAnnotationPointDisplayNode& );
   void operator= ( const vtkMRMLAnnotationPointDisplayNode& );
 

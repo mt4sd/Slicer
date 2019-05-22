@@ -36,18 +36,18 @@ class Q_SLICER_BASE_QTCORE_EXPORT qSlicerXcedeCatalogReader
   Q_OBJECT
 public:
   typedef qSlicerFileReader Superclass;
-  qSlicerXcedeCatalogReader(QObject* parent = 0);
-  qSlicerXcedeCatalogReader(vtkMRMLColorLogic* logic, QObject* parent = 0);
-  virtual ~qSlicerXcedeCatalogReader();
+  qSlicerXcedeCatalogReader(QObject* parent = nullptr);
+  qSlicerXcedeCatalogReader(vtkMRMLColorLogic* logic, QObject* parent = nullptr);
+  ~qSlicerXcedeCatalogReader() override;
 
   vtkMRMLColorLogic* colorLogic()const;
   void setColorLogic(vtkMRMLColorLogic* logic);
 
-  virtual QString description()const;
-  virtual IOFileType fileType()const;
-  virtual QStringList extensions()const;
+  QString description()const override;
+  IOFileType fileType()const override;
+  QStringList extensions()const override;
 
-  virtual bool load(const IOProperties& properties);
+  bool load(const IOProperties& properties) override;
 protected:
   QScopedPointer<qSlicerXcedeCatalogReaderPrivate> d_ptr;
 

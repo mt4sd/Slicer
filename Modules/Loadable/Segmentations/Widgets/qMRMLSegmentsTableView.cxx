@@ -115,7 +115,7 @@ private:
 //-----------------------------------------------------------------------------
 qMRMLSegmentsTableViewPrivate::qMRMLSegmentsTableViewPrivate(qMRMLSegmentsTableView& object)
   : q_ptr(&object)
-  , SegmentationNode(NULL)
+  , SegmentationNode(nullptr)
   , AdvancedSegmentVisibility(false)
   , IsUpdatingWidgetFromMRML(false)
 {
@@ -141,11 +141,7 @@ void qMRMLSegmentsTableViewPrivate::init()
   this->SegmentsTable->horizontalHeaderItem(
     this->columnIndex("Visible"))->setIcon(QIcon(":/Icons/Small/SlicerVisibleInvisible.png") );
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  this->SegmentsTable->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-#else
   this->SegmentsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-#endif
   this->SegmentsTable->horizontalHeader()->setStretchLastSection(1);
 
   // Select rows
@@ -206,7 +202,7 @@ QTableWidgetItem* qMRMLSegmentsTableViewPrivate::findItemBySegmentID(QString seg
       }
     }
 
-  return NULL;
+  return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -240,8 +236,7 @@ qMRMLSegmentsTableView::qMRMLSegmentsTableView(QWidget* _parent)
 
 //-----------------------------------------------------------------------------
 qMRMLSegmentsTableView::~qMRMLSegmentsTableView()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qMRMLSegmentsTableView::setSegmentationNode(vtkMRMLNode* node)
@@ -281,7 +276,7 @@ void qMRMLSegmentsTableView::setMRMLScene(vtkMRMLScene* newScene)
 
   if (d->SegmentationNode && newScene != d->SegmentationNode->GetScene())
     {
-    this->setSegmentationNode(NULL);
+    this->setSegmentationNode(nullptr);
     }
 
   Superclass::setMRMLScene(newScene);
@@ -371,10 +366,10 @@ void qMRMLSegmentsTableView::populateSegmentTable()
 
     // Visibility (show only 3D visibility; if the user changes it then it applies to all types of visibility)
     QToolButton* visibilityButton = new QToolButton();
-    visibilityButton->setEnabled(displayNode != NULL);
+    visibilityButton->setEnabled(displayNode != nullptr);
     visibilityButton->setAutoRaise(true);
     visibilityButton->setProperty(ID_PROPERTY, segmentId);
-    if (displayNode != NULL && properties.Visible && (properties.Visible3D || properties.Visible2DFill || properties.Visible2DOutline))
+    if (displayNode != nullptr && properties.Visible && (properties.Visible3D || properties.Visible2DFill || properties.Visible2DOutline))
       {
       visibilityButton->setProperty(VISIBILITY_PROPERTY, true);
       visibilityButton->setIcon(d->VisibleIcon);
@@ -508,8 +503,8 @@ void qMRMLSegmentsTableView::updateWidgetFromMRML()
       d->SegmentsTable->cellWidget(row, d->columnIndex("Visible")) );
     if (visibilityButton)
       {
-      visibilityButton->setEnabled(displayNode != NULL);
-      if (displayNode != NULL && properties.Visible && (properties.Visible3D || properties.Visible2DFill || properties.Visible2DOutline))
+      visibilityButton->setEnabled(displayNode != nullptr);
+      if (displayNode != nullptr && properties.Visible && (properties.Visible3D || properties.Visible2DFill || properties.Visible2DOutline))
         {
         visibilityButton->setProperty(VISIBILITY_PROPERTY, true);
         visibilityButton->setIcon(d->VisibleIcon);
@@ -1253,7 +1248,7 @@ QString qMRMLSegmentsTableView::terminologyTooltipForSegment(vtkSegment* segment
     }
 
   // Get terminologies module logic
-  vtkSlicerTerminologiesModuleLogic* terminologiesLogic = NULL;
+  vtkSlicerTerminologiesModuleLogic* terminologiesLogic = nullptr;
   qSlicerAbstractCoreModule* terminologiesModule = qSlicerCoreApplication::application()->moduleManager()->module("Terminologies");
   if (terminologiesModule)
     {

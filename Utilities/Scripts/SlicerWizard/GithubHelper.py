@@ -7,7 +7,7 @@ import subprocess
 from github import Github
 from github.GithubObject import NotSet
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 __all__ = [
   'logIn',
@@ -44,7 +44,7 @@ def _credentials(client, request, action="fill"):
   # Set up and execute 'git credential' process, passing stringized token to
   # the process's stdin
   p = client.credential(action, as_process=True, istream=subprocess.PIPE)
-  out, err = p.communicate(input=str(request))
+  out, err = p.communicate(input=str(request).encode("utf-8"))
 
   # Raise exception if process failed
   if p.returncode != 0:
@@ -52,7 +52,7 @@ def _credentials(client, request, action="fill"):
                               err.rstrip())
 
   # Return token parsed from the command's output
-  return _CredentialToken(out)
+  return _CredentialToken(out.decode())
 
 #-----------------------------------------------------------------------------
 def logIn(repo=None):
@@ -117,11 +117,11 @@ def getRepo(session, name=None, url=None):
   :param name:
     Name of the repository to look up.
   :type name:
-    :class:`basestring` or ``None``
+    :class:`str` or ``None``
   :param url:
     Clone URL of the repository.
   :type url:
-    :class:`basestring` or ``None``
+    :class:`str` or ``None``
 
   :returns: Matching repository, or ``None`` if no such repository was found.
   :rtype: :class:`github:github.Repository.Repository` or ``None``.
@@ -248,7 +248,7 @@ def getPullRequest(upstream, ref, user=None, fork=None, target=None):
   :param ref:
     Branch name or git ref of the requested pull request.
   :type ref:
-    :class:`basestring`
+    :class:`str`
   :param fork:
     Downstream (fork) repository of the requested pull request.
   :type fork:
@@ -256,7 +256,7 @@ def getPullRequest(upstream, ref, user=None, fork=None, target=None):
   :param target:
     Branch name or git ref of the requested pull request target.
   :type target:
-    :class:`basestring` or ``None``
+    :class:`str` or ``None``
 
   :return:
     The specified pull request, or ``None`` if no such pull request exists.

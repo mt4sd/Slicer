@@ -28,6 +28,7 @@
 #include <ctkPimpl.h>
 #include "qSlicerBaseQTGUIExport.h"
 
+class ctkMenuComboBox;
 class qSlicerModuleSelectorToolBarPrivate;
 class qSlicerModuleManager;
 class qSlicerModulesMenu;
@@ -49,12 +50,16 @@ public:
   /// Constructor
   /// title is the name of the toolbar (can appear using right click on the
   /// toolbar area)
-  qSlicerModuleSelectorToolBar(const QString& title, QWidget* parent = 0);
-  qSlicerModuleSelectorToolBar(QWidget* parent = 0);
-  virtual ~qSlicerModuleSelectorToolBar();
+  qSlicerModuleSelectorToolBar(const QString& title, QWidget* parent = nullptr);
+  qSlicerModuleSelectorToolBar(QWidget* parent = nullptr);
+  ~qSlicerModuleSelectorToolBar() override;
 
   /// Returns a pointer to the modules menu used to populate the list of modules
-  qSlicerModulesMenu* modulesMenu()const;
+  Q_INVOKABLE qSlicerModulesMenu* modulesMenu()const;
+
+  /// Returns a pointer to the menu combobox used to display the modules menu.
+  /// \sa modulesMenu()
+  Q_INVOKABLE ctkMenuComboBox* modulesMenuComboBox() const;
 
   /// Returns the selected module name
   QString selectedModule() const;

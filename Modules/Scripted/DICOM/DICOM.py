@@ -120,6 +120,7 @@ class _ui_DICOMSettingsPanel(object):
     genericGroupBox = ctk.ctkCollapsibleGroupBox()
     genericGroupBox.title = "Generic DICOM settings"
     genericGroupBoxFormLayout = qt.QFormLayout(genericGroupBox)
+
     loadReferencesComboBox = ctk.ctkComboBox()
     loadReferencesComboBox.toolTip = "Determines whether referenced DICOM series are " \
       "offered when loading DICOM, or the automatic behavior if interaction is disabled. " \
@@ -132,6 +133,19 @@ class _ui_DICOMSettingsPanel(object):
     parent.registerProperty(
       "DICOM/automaticallyLoadReferences", loadReferencesComboBox,
       "currentUserDataAsString", str(qt.SIGNAL("currentIndexChanged(int)")))
+
+    schemaUpdateComboBox = ctk.ctkComboBox()
+    schemaUpdateComboBox.toolTip = "What do do when the supported schema version is " \
+      "different from that of the loaded database"
+    schemaUpdateComboBox.addItem("Always update", "AlwaysUpdate")
+    schemaUpdateComboBox.addItem("Never update", "NeverUpdate")
+    schemaUpdateComboBox.addItem("Ask user", "AskUser")
+    schemaUpdateComboBox.currentIndex = 2 # Make 'AskUser' the default as opposed to the CTK default 'AlwaysUpdate'
+    genericGroupBoxFormLayout.addRow("Schema update behavior:", schemaUpdateComboBox)
+    parent.registerProperty(
+      "DICOM/SchemaUpdateOption", schemaUpdateComboBox,
+      "currentUserDataAsString", str(qt.SIGNAL("currentIndexChanged(int)")))
+
     vBoxLayout.addWidget(genericGroupBox)
 
     # Add settings panel for the plugins
@@ -158,7 +172,7 @@ DICOM.setDatabasePrecacheTags = DICOMLib.setDatabasePrecacheTags
 # Class for avoiding python error that is caused by the method DICOM::setup
 # http://www.na-mic.org/Bug/view.php?id=3871
 #
-class DICOMFileWriter:
+class DICOMFileWriter(object):
   def __init__(self, parent):
     pass
 
@@ -166,7 +180,7 @@ class DICOMFileWriter:
 #
 # DICOM file dialog
 #
-class DICOMFileDialog:
+class DICOMFileDialog(object):
   """This specially named class is detected by the scripted loadable
   module and is the target for optional drag and drop operations.
   See: Base/QTGUI/qSlicerScriptedFileDialog.h
@@ -206,7 +220,7 @@ class DICOMFileDialog:
     special characters in the name.
     """
     for directoryName in directoriesToAdd:
-      if isinstance(directoryName, unicode):
+      if isinstance(directoryName, str):
         try:
           directoryName.encode('ascii')
         except UnicodeEncodeError:
@@ -238,7 +252,7 @@ class DICOMFileDialog:
 # DICOM widget
 #
 
-class DICOMWidget:
+class DICOMWidget(object):
   """
   Slicer module that creates the Qt GUI for interacting with DICOM
   """

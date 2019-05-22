@@ -19,9 +19,10 @@
 ==============================================================================*/
 
 // MRMLDisplayableManager includes
+#include <vtkMRMLCameraDisplayableManager.h>
 #include <vtkMRMLDisplayableManagerGroup.h>
 #include <vtkMRMLThreeDReformatDisplayableManager.h>
-#include <vtkThreeDViewInteractorStyle.h>
+#include <vtkMRMLThreeDViewInteractorStyle.h>
 
 // MRMLLogic includes
 #include <vtkMRMLApplicationLogic.h>
@@ -869,18 +870,35 @@ char vtkMRMLThreeDReformatDisplayableManagerTest1EventLog[] =
 
 namespace
 {
+
 //----------------------------------------------------------------------------
 class vtkAbortCommand: public vtkCommand
 {
 public:
   static vtkAbortCommand *New(){ return new vtkAbortCommand; }
-  virtual void Execute (vtkObject* vtkNotUsed(caller),
+  void Execute (vtkObject* vtkNotUsed(caller),
                         unsigned long vtkNotUsed(eventId),
-                        void* vtkNotUsed(callData))
+                        void* vtkNotUsed(callData)) override
     {
     this->SetAbortFlag(1);
     }
 };
+
+class vtkRenderCallback : public vtkCommand
+{
+public:
+  static vtkRenderCallback *New()
+    {
+    return new vtkRenderCallback;
+    }
+  void Execute(vtkObject *vtkNotUsed(caller), unsigned long vtkNotUsed(eventId), void* vtkNotUsed(callData)) override
+    {
+    this->RenderWindow->Render();
+    }
+  vtkRenderCallback() :RenderWindow(nullptr) {}
+  vtkRenderWindow *RenderWindow;
+};
+
 };
 
 //----------------------------------------------------------------------------
@@ -897,11 +915,8 @@ int vtkMRMLThreeDReformatDisplayableManagerTest1(int argc, char* argv[])
   renderWindow->SetInteractor(renderWindowInteractor.GetPointer());
 
   // Set Interactor Style
-  vtkNew<vtkThreeDViewInteractorStyle> iStyle;
+  vtkNew<vtkMRMLThreeDViewInteractorStyle> iStyle;
   renderWindowInteractor->SetInteractorStyle(iStyle.GetPointer());
-
-  // move back far enough to see the reformat widgets
-  renderer->GetActiveCamera()->SetPosition(0,0,-500.);
 
   renderWindow->Render();
 
@@ -919,9 +934,25 @@ int vtkMRMLThreeDReformatDisplayableManagerTest1(int argc, char* argv[])
   displayableManagerGroup->SetRenderer(renderer.GetPointer());
   displayableManagerGroup->SetMRMLDisplayableNode(viewNode.GetPointer());
 
+  vtkNew<vtkRenderCallback> renderCallback;
+  renderCallback->RenderWindow = renderWindow;
+  displayableManagerGroup->AddObserver(vtkCommand::UpdateEvent, renderCallback);
+
+  iStyle->SetDisplayableManagers(displayableManagerGroup);
+
   vtkNew<vtkMRMLThreeDReformatDisplayableManager> reformatDisplayableManager;
   reformatDisplayableManager->SetMRMLApplicationLogic(applicationLogic);
   displayableManagerGroup->AddDisplayableManager(reformatDisplayableManager.GetPointer());
+
+  // Need to add vtkMRMLCameraDisplayableManager, as this processes camera manipulation events
+  vtkNew<vtkMRMLCameraDisplayableManager> cameraDisplayableManager;
+  cameraDisplayableManager->SetMRMLApplicationLogic(applicationLogic);
+  displayableManagerGroup->AddDisplayableManager(cameraDisplayableManager.GetPointer());
+
+  // Camera displayable manager sets default camera position/orientation.
+  // Move camera back far enough to see the reformat widgets.
+  renderer->GetActiveCamera()->SetPosition(0, 0, -500.);
+  renderer->GetActiveCamera()->SetViewUp(0, 1., 0);
 
   // Visible when added
   vtkNew<vtkMRMLSliceNode> sliceNodeRed;
@@ -1041,7 +1072,7 @@ int vtkMRMLThreeDReformatDisplayableManagerTest1(int argc, char* argv[])
     std::cout << "Saved screenshot: " << screenshootFilename << std::endl;
     }
 
-  reformatDisplayableManager->SetMRMLApplicationLogic(0);
+  reformatDisplayableManager->SetMRMLApplicationLogic(nullptr);
   applicationLogic->Delete();
   scene->Delete();
 

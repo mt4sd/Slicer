@@ -8,40 +8,40 @@ class VTK_MRML_EXPORT vtkMRMLPETProceduralColorNode : public vtkMRMLProceduralCo
 public:
   static vtkMRMLPETProceduralColorNode *New();
   vtkTypeMacro(vtkMRMLPETProceduralColorNode,vtkMRMLProceduralColorNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "PETProceduralColor";}
+  const char* GetNodeTagName() override {return "PETProceduralColor";}
 
   ///
   ///
-  virtual void UpdateScene(vtkMRMLScene *scene) VTK_OVERRIDE;
+  void UpdateScene(vtkMRMLScene *scene) override;
 
   ///
   /// Get/Set for Type. In SetType, set up the custom colour options for this
   /// set of colours
-  virtual void SetType(int type) VTK_OVERRIDE;
+  void SetType(int type) override;
 
-  void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) VTK_OVERRIDE;
+  void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) override;
 
   /// The list of valid procedural types
   //enum
@@ -67,17 +67,17 @@ public:
   };
 
   /// Return the lowest and the highest integers, for use in looping
-  int GetFirstType() VTK_OVERRIDE { return this->PETheat; }
-  int GetLastType() VTK_OVERRIDE { return this->PETMIP; }
+  int GetFirstType() override { return this->PETheat; }
+  int GetLastType() override { return this->PETMIP; }
 
-  const char *GetTypeAsString() VTK_OVERRIDE;
+  const char *GetTypeAsString() override;
   void SetTypeToHeat();
   void SetTypeToRainbow();
   void SetTypeToMIP();
 
 protected:
   vtkMRMLPETProceduralColorNode();
-  ~vtkMRMLPETProceduralColorNode();
+  ~vtkMRMLPETProceduralColorNode() override;
   vtkMRMLPETProceduralColorNode(const vtkMRMLPETProceduralColorNode&);
   void operator=(const vtkMRMLPETProceduralColorNode&);
 };

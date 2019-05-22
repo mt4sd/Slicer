@@ -35,6 +35,7 @@
 #include <vtkMRMLLayoutLogic.h>
 #include <vtkMRMLLayoutNode.h>
 #include <vtkMRMLScene.h>
+#include <vtkMRMLSliceViewDisplayableManagerFactory.h>
 
 // VTK includes
 #include <vtkCollection.h>
@@ -77,6 +78,9 @@ int qMRMLLayoutManagerTest3(int argc, char * argv[] )
   QSurfaceFormat::setDefaultFormat(format);
 #endif
 
+  // Enables resource sharing between the OpenGL contexts used by classes like QOpenGLWidget and QQuickWidget
+  QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
   QApplication app(argc, argv);
   QWidget w;
   w.show();
@@ -85,8 +89,9 @@ int qMRMLLayoutManagerTest3(int argc, char * argv[] )
   vtkNew<vtkMRMLScene> scene;
 
   vtkNew<vtkMRMLApplicationLogic> applicationLogic;
+  vtkMRMLSliceViewDisplayableManagerFactory::GetInstance()->SetMRMLApplicationLogic(applicationLogic);
 
-  vtkMRMLLayoutNode * layoutNode = 0;
+  vtkMRMLLayoutNode * layoutNode = nullptr;
   {
     vtkNew<vtkMRMLLayoutNode> newLayoutNode;
 

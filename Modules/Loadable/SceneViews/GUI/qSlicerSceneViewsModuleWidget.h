@@ -26,15 +26,15 @@ class Q_SLICER_QTMODULES_SCENEVIEWS_EXPORT qSlicerSceneViewsModuleWidget :
   QVTK_OBJECT
 public:
     typedef qSlicerAbstractModuleWidget Superclass;
-    qSlicerSceneViewsModuleWidget(QWidget *parent=0);
-    ~qSlicerSceneViewsModuleWidget();
+    qSlicerSceneViewsModuleWidget(QWidget *parent=nullptr);
+    ~qSlicerSceneViewsModuleWidget() override;
 
   /// Set up the GUI from mrml when entering
-  virtual void enter();
+  void enter() override;
   /// Disconnect from scene when exiting
-  virtual void exit();
+  void exit() override;
 
-  virtual bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString());
+  bool setEditedNode(vtkMRMLNode* node, QString role = QString(), QString context = QString()) override;
 
 public slots:
     /// a public slot allowing other modules to open up the scene view capture
@@ -72,7 +72,7 @@ protected slots:
 protected:
   QScopedPointer<qSlicerSceneViewsModuleWidgetPrivate> d_ptr;
 
-  virtual void setup();
+  void setup() override;
 
 private:
   Q_DECLARE_PRIVATE(qSlicerSceneViewsModuleWidget);

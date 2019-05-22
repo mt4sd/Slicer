@@ -43,8 +43,8 @@ public:
   typedef QMenu Superclass;
 
   /// Constructors
-  explicit qMRMLSceneViewMenu(QWidget* newParent = 0);
-  virtual ~qMRMLSceneViewMenu();
+  explicit qMRMLSceneViewMenu(QWidget* newParent = nullptr);
+  ~qMRMLSceneViewMenu() override;
 
   /// Return a pointer on the current MRML scene
   vtkMRMLScene* mrmlScene() const;

@@ -67,8 +67,8 @@ public:
 
 private:
   /// Not implemented
-  qSlicerScriptedUtils(){}
-  virtual ~qSlicerScriptedUtils(){}
+  qSlicerScriptedUtils() = default;
+  virtual ~qSlicerScriptedUtils() = default;
 
 };
 
@@ -86,7 +86,7 @@ public:
 
   PyObject* instantiateClass(QObject* cpp, const QString& className, PyObject* classToInstantiate);
 
-  PyObject * callMethod(int id, PyObject * arguments = 0);
+  PyObject * callMethod(int id, PyObject * arguments = nullptr);
 
   PyObject* pythonSelf()const;
 

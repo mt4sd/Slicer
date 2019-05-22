@@ -62,7 +62,7 @@ protected:
   qSlicerSubjectHierarchySegmentsPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchySegmentsPluginPrivate(qSlicerSubjectHierarchySegmentsPlugin& object);
-  ~qSlicerSubjectHierarchySegmentsPluginPrivate();
+  ~qSlicerSubjectHierarchySegmentsPluginPrivate() override;
   void init();
 public:
   QIcon SegmentIcon;
@@ -80,9 +80,9 @@ qSlicerSubjectHierarchySegmentsPluginPrivate::qSlicerSubjectHierarchySegmentsPlu
 : q_ptr(&object)
 , SegmentIcon(QIcon(":Icons/Segment.png"))
 {
-  this->ShowOnlyCurrentSegmentAction = NULL;
-  this->ShowAllSegmentsAction = NULL;
-  this->JumpSlicesAction = NULL;
+  this->ShowOnlyCurrentSegmentAction = nullptr;
+  this->ShowAllSegmentsAction = nullptr;
+  this->JumpSlicesAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -105,8 +105,7 @@ void qSlicerSubjectHierarchySegmentsPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchySegmentsPluginPrivate::~qSlicerSubjectHierarchySegmentsPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchySegmentsPlugin methods
@@ -124,8 +123,7 @@ qSlicerSubjectHierarchySegmentsPlugin::qSlicerSubjectHierarchySegmentsPlugin(QOb
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchySegmentsPlugin::~qSlicerSubjectHierarchySegmentsPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchySegmentsPlugin::canReparentItemInsideSubjectHierarchy(vtkIdType itemID, vtkIdType parentItemID)const
@@ -208,7 +206,7 @@ bool qSlicerSubjectHierarchySegmentsPlugin::reparentItemInsideSubjectHierarchy(v
       {
       QString message = QString("Segment ID of the moved segment (%1) might exist in the target segmentation.\n"
         "Please check the error window for details.").arg(segmentId.c_str());
-      QMessageBox::warning(NULL, tr("Failed to move segment between segmentations"), message);
+      QMessageBox::warning(nullptr, tr("Failed to move segment between segmentations"), message);
       return false;
       }
 
@@ -221,7 +219,7 @@ bool qSlicerSubjectHierarchySegmentsPlugin::reparentItemInsideSubjectHierarchy(v
       .arg(toSegmentationNode->GetSegmentation()->GetMasterRepresentationName().c_str())
       .arg(segmentId.c_str()).arg(fromSegmentationNode->GetName()).arg(toSegmentationNode->GetName());
     QMessageBox::StandardButton answer =
-      QMessageBox::question(NULL, tr("Failed to move segment between segmentations"), message,
+      QMessageBox::question(nullptr, tr("Failed to move segment between segmentations"), message,
       QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
     if (answer == QMessageBox::Yes)
       {
@@ -232,7 +230,7 @@ bool qSlicerSubjectHierarchySegmentsPlugin::reparentItemInsideSubjectHierarchy(v
         {
         QString message = QString("Failed to convert %1 to %2").arg(toSegmentationNode->GetName())
           .arg(fromSegmentationNode->GetSegmentation()->GetMasterRepresentationName().c_str());
-        QMessageBox::warning(NULL, tr("Conversion failed"), message);
+        QMessageBox::warning(nullptr, tr("Conversion failed"), message);
         return false;
         }
 

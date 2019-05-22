@@ -30,6 +30,7 @@
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 
+#include <dcmtk/dcmdata/dcuid.h>
 #include "dcmtk/dcmdata/dcdict.h"             // For DcmDataDictionary
 #include "dcmtk/dcmdata/dcsequen.h"        /* for DcmSequenceOfItems */
 #include "dcmtk/dcmdata/dcvrcs.h"          /* for DcmCodeString */
@@ -74,7 +75,7 @@ DCMTKSequence
   DcmItem *item = this->m_DcmSequenceOfItems->getItem(index);
   DcmSequenceOfItems *sequence =
     dynamic_cast<DcmSequenceOfItems *>(item);
-  if(sequence == 0)
+  if(sequence == nullptr)
     {
     DCMTKException(<< "Can't find DCMTKSequence at index " << index);
     }
@@ -106,7 +107,7 @@ DCMTKSequence
   DcmStack resultStack;
   this->GetStack(group,element,&resultStack);
   DcmCodeString *codeStringElement = dynamic_cast<DcmCodeString *>(resultStack.top());
-  if(codeStringElement == 0)
+  if(codeStringElement == nullptr)
     {
     DCMTKException(<< "Can't get CodeString Element at tag "
                    << std::hex << group << " "
@@ -137,7 +138,7 @@ GetElementFD(unsigned short group,
   DcmStack resultStack;
   this->GetStack(group,element,&resultStack);
   DcmFloatingPointDouble *fdItem = dynamic_cast<DcmFloatingPointDouble *>(resultStack.top());
-  if(fdItem == 0)
+  if(fdItem == nullptr)
     {
     DCMTKException(<< "Can't get CodeString Element at tag "
                    << std::hex << group << " "
@@ -175,7 +176,7 @@ DCMTKSequence
   DcmStack resultStack;
   this->GetStack(group,element,&resultStack);
   DcmDecimalString *decimalStringElement = dynamic_cast<DcmDecimalString *>(resultStack.top());
-  if(decimalStringElement == 0)
+  if(decimalStringElement == nullptr)
     {
     DCMTKException(<< "Can't get DecimalString Element at tag "
                    << std::hex << group << " "
@@ -208,7 +209,7 @@ DCMTKSequence
   this->GetStack(group,element,&resultStack);
 
   DcmSequenceOfItems *seqElement = dynamic_cast<DcmSequenceOfItems *>(resultStack.top());
-  if(seqElement == 0)
+  if(seqElement == nullptr)
     {
     DCMTKException(<< "Can't get  at tag "
                    << std::hex << group << " "
@@ -230,7 +231,7 @@ DCMTKSequence
   this->GetStack(group,element,&resultStack);
 
   DcmTime *dcmTime = dynamic_cast<DcmTime *>(resultStack.top());
-  if(dcmTime == 0)
+  if(dcmTime == nullptr)
     {
     DCMTKException(<< "Can't get  at tag "
                    << std::hex << group << " "
@@ -271,7 +272,7 @@ DCMTKFileReader
     {
     itkGenericExceptionMacro(<< "No filename given" );
     }
-  if(this->m_DFile != 0)
+  if(this->m_DFile != nullptr)
     {
     delete this->m_DFile;
     }
@@ -320,7 +321,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmLongString *loItem = dynamic_cast<DcmLongString *>(el);
-  if(loItem == 0)
+  if(loItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -357,7 +358,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmLongString *loItem = dynamic_cast<DcmLongString *>(el);
-  if(loItem == 0)
+  if(loItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -395,7 +396,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmDecimalString *dsItem = dynamic_cast<DcmDecimalString *>(el);
-  if(dsItem == 0)
+  if(dsItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -432,7 +433,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmFloatingPointDouble *fdItem = dynamic_cast<DcmFloatingPointDouble *>(el);
-  if(fdItem == 0)
+  if(fdItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -462,7 +463,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmFloatingPointDouble *fdItem = dynamic_cast<DcmFloatingPointDouble *>(el);
-  if(fdItem == 0)
+  if(fdItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -492,7 +493,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmFloatingPointSingle *flItem = dynamic_cast<DcmFloatingPointSingle *>(el);
-  if(flItem == 0)
+  if(flItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -559,7 +560,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmUnsignedShort *usItem = dynamic_cast<DcmUnsignedShort *>(el);
-  if(usItem == 0)
+  if(usItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -589,7 +590,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmUnsignedShort *usItem = dynamic_cast<DcmUnsignedShort *>(el);
-  if(usItem == 0)
+  if(usItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -621,7 +622,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmCodeString *csItem = dynamic_cast<DcmCodeString *>(el);
-  if(csItem == 0)
+  if(csItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -658,7 +659,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmPersonName *pnItem = dynamic_cast<DcmPersonName *>(el);
-  if(pnItem == 0)
+  if(pnItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -697,7 +698,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmIntegerString *isItem = dynamic_cast<DcmIntegerString *>(el);
-  if(isItem == 0)
+  if(isItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -769,7 +770,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmOtherByteOtherWord *obItem = dynamic_cast<DcmOtherByteOtherWord *>(el);
-  if(obItem == 0)
+  if(obItem == nullptr)
     {
     DCMTKException(<< "Can't find DecimalString element " << std::hex
                    << group << " " << std::hex
@@ -822,7 +823,7 @@ DCMTKFileReader
                    << entry << std::dec);
     }
   DcmUniqueIdentifier *uiItem = dynamic_cast<DcmUniqueIdentifier *>(el);
-  if(uiItem == 0)
+  if(uiItem == nullptr)
     {
     DCMTKException(<< "Can't convert data item " << group
                    << "," << entry);
@@ -857,7 +858,7 @@ GetElementDA(unsigned short group,
                    << element << std::dec);
     }
   DcmDate *dcmDate = dynamic_cast<DcmDate *>(el);
-  if(dcmDate == 0)
+  if(dcmDate == nullptr)
     {
     DCMTKException(<< "Can't get  at tag "
                    << std::hex << group << " "
@@ -886,7 +887,7 @@ DCMTKFileReader
                    << element << std::dec);
     }
   DcmTime *dcmTime = dynamic_cast<DcmTime *>(el);
-  if(dcmTime == 0)
+  if(dcmTime == nullptr)
     {
     DCMTKException(<< "Can't get  at tag "
                    << std::hex << group << " "
@@ -1145,7 +1146,11 @@ DCMTKFileReader
 {
   DcmDataDictionary &dict = dcmDataDict.wrlock();
   dict.addEntry(entry);
+#if OFFIS_DCMTK_VERSION_NUMBER < 364
   dcmDataDict.unlock();
+#else
+  dcmDataDict.rdunlock();
+#endif
 }
 
 unsigned

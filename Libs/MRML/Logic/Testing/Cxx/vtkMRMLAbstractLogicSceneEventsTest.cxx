@@ -42,23 +42,23 @@ public:
   vtkTypeMacro(vtkMRMLTestLogic, vtkMRMLAbstractLogic);
   static vtkMRMLTestLogic *New();
 
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* scene) VTK_OVERRIDE;
-  virtual void UnobserveMRMLScene() VTK_OVERRIDE;
-  virtual void ObserveMRMLScene() VTK_OVERRIDE;
-  virtual void RegisterNodes() VTK_OVERRIDE;
-  virtual void UpdateFromMRMLScene() VTK_OVERRIDE;
+  void SetMRMLSceneInternal(vtkMRMLScene* scene) override;
+  void UnobserveMRMLScene() override;
+  void ObserveMRMLScene() override;
+  void RegisterNodes() override;
+  void UpdateFromMRMLScene() override;
 
-  virtual void OnMRMLSceneStartBatchProcess() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndBatchProcess() VTK_OVERRIDE;
-  virtual void OnMRMLSceneStartClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneStartImport() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndImport() VTK_OVERRIDE;
-  virtual void OnMRMLSceneStartRestore() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndRestore() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNew() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* nodeAdded) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* nodeRemoved) VTK_OVERRIDE;
+  void OnMRMLSceneStartBatchProcess() override;
+  void OnMRMLSceneEndBatchProcess() override;
+  void OnMRMLSceneStartClose() override;
+  void OnMRMLSceneEndClose() override;
+  void OnMRMLSceneStartImport() override;
+  void OnMRMLSceneEndImport() override;
+  void OnMRMLSceneStartRestore() override;
+  void OnMRMLSceneEndRestore() override;
+  void OnMRMLSceneNew() override;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* nodeAdded) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* nodeRemoved) override;
 
   enum MethodType{
     Set = 0,
@@ -72,8 +72,8 @@ public:
   /// or vtkMRMLScene::SceneEventType
   std::map<unsigned long, int> CalledMethods;
 protected:
-  vtkMRMLTestLogic(){}
-  virtual ~vtkMRMLTestLogic(){}
+  vtkMRMLTestLogic() = default;
+  ~vtkMRMLTestLogic() override = default;
 };
 
 vtkStandardNewMacro(vtkMRMLTestLogic);
@@ -280,9 +280,9 @@ int vtkMRMLAbstractLogicSceneEventsTest(
   //---------------------------------------------------------------------------
   // SetMRMLScene(0)
   //---------------------------------------------------------------------------
-  testLogic->SetMRMLScene(0);
+  testLogic->SetMRMLScene(nullptr);
 
-  if (testLogic->GetMRMLScene() != 0 ||
+  if (testLogic->GetMRMLScene() != nullptr ||
       testLogic->CalledMethods.size() != 2 ||
       testLogic->CalledMethods[vtkMRMLTestLogic::Unobserve] != 1 ||
       testLogic->CalledMethods[vtkMRMLTestLogic::Set] != 1)

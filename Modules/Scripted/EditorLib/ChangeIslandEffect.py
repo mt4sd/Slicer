@@ -4,9 +4,10 @@ import vtkITK
 import ctk
 import qt
 import slicer
-from EditOptions import HelpButton
-import Effect
-import IslandEffect
+
+from . import EditUtil
+from . import HelpButton
+from . import IslandEffectOptions, IslandEffectTool, IslandEffectLogic, IslandEffect
 
 __all__ = [
   'ChangeIslandEffectOptions',
@@ -32,7 +33,7 @@ comment = """
 # ChangeIslandEffectOptions - see Effect for superclasses
 #
 
-class ChangeIslandEffectOptions(IslandEffect.IslandEffectOptions):
+class ChangeIslandEffectOptions(IslandEffectOptions):
   """ ChangeIslandEffect-specfic gui
   """
 
@@ -67,7 +68,7 @@ class ChangeIslandEffectOptions(IslandEffect.IslandEffectOptions):
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
   def updateParameterNode(self, caller, event):
-    node = self.editUtil.getParameterNode()
+    node = EditUtil.getParameterNode()
     if node != self.parameterNode:
       if self.parameterNode:
         node.ChangeObserver(self.parameterNodeTag)
@@ -87,7 +88,7 @@ class ChangeIslandEffectOptions(IslandEffect.IslandEffectOptions):
 # ChangeIslandEffectTool
 #
 
-class ChangeIslandEffectTool(IslandEffect.IslandEffectTool):
+class ChangeIslandEffectTool(IslandEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -127,7 +128,7 @@ class ChangeIslandEffectTool(IslandEffect.IslandEffectTool):
 # ChangeIslandEffectLogic
 #
 
-class ChangeIslandEffectLogic(IslandEffect.IslandEffectLogic):
+class ChangeIslandEffectLogic(IslandEffectLogic):
   """
   This class contains helper methods for a given effect
   type.  It can be instanced as needed by an ChangeIslandEffectTool
@@ -148,13 +149,13 @@ class ChangeIslandEffectLogic(IslandEffect.IslandEffectLogic):
     labelLogic = self.sliceLogic.GetLabelLayer()
     xyToIJK = labelLogic.GetXYToIJKTransform()
     ijk = xyToIJK.TransformDoublePoint( xy + (0,) )
-    ijk = map(lambda v: int(round(v)), ijk)
+    ijk = [int(round(v)) for v in ijk]
 
     connectivity = slicer.vtkImageConnectivity()
     connectivity.SetFunctionToChangeIsland()
     connectivity.SetInputData( self.getScopedLabelInput() )
     connectivity.SetOutput( self.getScopedLabelOutput() )
-    connectivity.SetOutputLabel( self.editUtil.getLabel() )
+    connectivity.SetOutputLabel( EditUtil.getLabel() )
     connectivity.SetSeed( ijk )
     # TODO: $this setProgressFilter $connectivity "Change Island"
     connectivity.Update()
@@ -166,7 +167,7 @@ class ChangeIslandEffectLogic(IslandEffect.IslandEffectLogic):
 # The ChangeIslandEffect class definition
 #
 
-class ChangeIslandEffect(IslandEffect.IslandEffect):
+class ChangeIslandEffect(IslandEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """

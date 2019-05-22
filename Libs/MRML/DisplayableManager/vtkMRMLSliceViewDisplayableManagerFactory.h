@@ -42,7 +42,7 @@ public:
 
   vtkTypeMacro(vtkMRMLSliceViewDisplayableManagerFactory,
                        vtkMRMLDisplayableManagerFactory);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// This is a singleton pattern New.  There will only be ONE
   /// reference to a vtkMRMLSliceViewDisplayableManagerFactory object per process. Clients that
@@ -56,14 +56,14 @@ public:
 protected:
 
   vtkMRMLSliceViewDisplayableManagerFactory();
-  virtual ~vtkMRMLSliceViewDisplayableManagerFactory();
+  ~vtkMRMLSliceViewDisplayableManagerFactory() override;
 
   VTK_SINGLETON_DECLARE(vtkMRMLSliceViewDisplayableManagerFactory);
 
 private:
 
-  vtkMRMLSliceViewDisplayableManagerFactory(const vtkMRMLSliceViewDisplayableManagerFactory&);
-  void operator=(const vtkMRMLSliceViewDisplayableManagerFactory&);
+  vtkMRMLSliceViewDisplayableManagerFactory(const vtkMRMLSliceViewDisplayableManagerFactory&) = delete;
+  void operator=(const vtkMRMLSliceViewDisplayableManagerFactory&) = delete;
 
 };
 

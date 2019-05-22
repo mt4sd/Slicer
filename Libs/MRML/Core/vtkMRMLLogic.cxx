@@ -21,17 +21,16 @@ vtkStandardNewMacro(vtkMRMLLogic);
 //------------------------------------------------------------------------------
 vtkMRMLLogic::vtkMRMLLogic()
 {
-  this->Scene = NULL;
+  this->Scene = nullptr;
 }
 
 //------------------------------------------------------------------------------
 vtkMRMLLogic::~vtkMRMLLogic()
-{
-}
+= default;
 
 void vtkMRMLLogic::RemoveUnreferencedStorageNodes()
 {
-  if (this->Scene == NULL)
+  if (this->Scene == nullptr)
     {
     return;
     }
@@ -42,9 +41,9 @@ void vtkMRMLLogic::RemoveUnreferencedStorageNodes()
   this->Scene->GetNodesByClass("vtkMRMLStorableNode", storableNodes);
   this->Scene->GetNodesByClass("vtkMRMLStorageNode", storageNodes);
 
-  vtkMRMLNode *node = NULL;
-  vtkMRMLStorableNode *storableNode = NULL;
-  vtkMRMLStorageNode *storageNode = NULL;
+  vtkMRMLNode *node = nullptr;
+  vtkMRMLStorableNode *storableNode = nullptr;
+  vtkMRMLStorageNode *storageNode = nullptr;
   unsigned int i;
   for (i=0; i<storableNodes.size(); i++)
     {
@@ -85,7 +84,7 @@ void vtkMRMLLogic::RemoveUnreferencedStorageNodes()
 
 void vtkMRMLLogic::RemoveUnreferencedDisplayNodes()
 {
-  if (this->Scene == NULL)
+  if (this->Scene == nullptr)
     {
     return;
     }
@@ -96,9 +95,9 @@ void vtkMRMLLogic::RemoveUnreferencedDisplayNodes()
   this->Scene->GetNodesByClass("vtkMRMLDisplayableNode", displayableNodes);
   this->Scene->GetNodesByClass("vtkMRMLDisplayNode", displayNodes);
 
-  vtkMRMLNode *node = NULL;
-  vtkMRMLDisplayableNode *displayableNode = NULL;
-  vtkMRMLDisplayNode *displayNode = NULL;
+  vtkMRMLNode *node = nullptr;
+  vtkMRMLDisplayableNode *displayableNode = nullptr;
+  vtkMRMLDisplayNode *displayNode = nullptr;
   unsigned int i;
   for (i=0; i<displayableNodes.size(); i++)
     {
@@ -145,13 +144,13 @@ void vtkMRMLLogic::RemoveUnreferencedDisplayNodes()
 std::string vtkMRMLLogic::GetApplicationHomeDirectory()
 {
   std::string applicationHome;
-  if (vtksys::SystemTools::GetEnv(MRML_APPLICATION_HOME_DIR_ENV) != NULL)
+  if (vtksys::SystemTools::GetEnv(MRML_APPLICATION_HOME_DIR_ENV) != nullptr)
     {
     applicationHome = std::string(vtksys::SystemTools::GetEnv(MRML_APPLICATION_HOME_DIR_ENV));
     }
   else
     {
-    if (vtksys::SystemTools::GetEnv("PWD") != NULL)
+    if (vtksys::SystemTools::GetEnv("PWD") != nullptr)
       {
       applicationHome =  std::string(vtksys::SystemTools::GetEnv("PWD"));
       }

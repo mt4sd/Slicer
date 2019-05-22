@@ -41,30 +41,30 @@ public:
   static vtkMRMLDoubleArrayNode *New();
   vtkTypeMacro(vtkMRMLDoubleArrayNode,vtkMRMLStorableNode);
 
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE
+  const char* GetNodeTagName() override
     {return "DoubleArray";}
 
   ///
   /// Method to propagate events generated in mrml
-  virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) VTK_OVERRIDE;
+  void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData ) override;
 
   //----------------------------------------------------------------
   /// Get and Set Macros
@@ -178,15 +178,15 @@ public:
   const LabelsVectorType & GetLabels() const;
 
   ///
-  /// Create default storage node or NULL if does not have one
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE;
+  /// Create default storage node or nullptr if does not have one
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override;
 
   //----------------------------------------------------------------
   /// Constructor and destroctor
   //----------------------------------------------------------------
  protected:
   vtkMRMLDoubleArrayNode();
-  ~vtkMRMLDoubleArrayNode();
+  ~vtkMRMLDoubleArrayNode() override;
   vtkMRMLDoubleArrayNode(const vtkMRMLDoubleArrayNode&);
   void operator=(const vtkMRMLDoubleArrayNode&);
 

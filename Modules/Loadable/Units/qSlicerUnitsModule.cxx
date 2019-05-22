@@ -27,12 +27,6 @@
 #include "qSlicerUnitsSettingsPanel.h"
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerUnitsModule, qSlicerUnitsModule);
-#endif
-
-//-----------------------------------------------------------------------------
 class qSlicerUnitsModulePrivate
 {
 public:
@@ -45,8 +39,7 @@ public:
 //-----------------------------------------------------------------------------
 qSlicerUnitsModulePrivate
 ::qSlicerUnitsModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerUnitsModule methods
@@ -61,8 +54,7 @@ qSlicerUnitsModule
 
 //-----------------------------------------------------------------------------
 qSlicerUnitsModule::~qSlicerUnitsModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerUnitsModule::helpText()const
@@ -147,7 +139,7 @@ void qSlicerUnitsModule::setup()
 qSlicerAbstractModuleRepresentation * qSlicerUnitsModule
 ::createWidgetRepresentation()
 {
-  return 0;
+  return nullptr;
 }
 
 //-----------------------------------------------------------------------------

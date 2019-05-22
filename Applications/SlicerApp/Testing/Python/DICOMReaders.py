@@ -1,3 +1,4 @@
+from __future__ import print_function
 import logging
 import numpy
 import os
@@ -127,7 +128,7 @@ class DICOMReadersTest(ScriptedLoadableModuleTest):
         # load the data by series UID
         detailsPopup.offerLoadables(dataset['seriesUID'],'Series')
         detailsPopup.examineForLoading()
-        loadable = detailsPopup.getAllSelectedLoadables().keys()[0]
+        loadable = list(detailsPopup.getAllSelectedLoadables().keys())[0]
 
         #
         # try loading using each of the selected readers, fail
@@ -160,7 +161,7 @@ class DICOMReadersTest(ScriptedLoadableModuleTest):
         # to ensure they match in terms of pixel data and metadata
         #
         failedComparisons = {}
-        approachesThatLoaded = volumesByApproach.keys()
+        approachesThatLoaded = list(volumesByApproach.keys())
         print('approachesThatLoaded %s' % approachesThatLoaded)
         for approachIndex in range(len(approachesThatLoaded)):
           firstApproach = approachesThatLoaded[approachIndex]
@@ -171,7 +172,7 @@ class DICOMReadersTest(ScriptedLoadableModuleTest):
             print('comparing  %s,%s' % (firstApproach, secondApproach))
             comparison = slicer.modules.dicomPlugins['DICOMScalarVolumePlugin'].compareVolumeNodes(firstVolume,secondVolume)
             if comparison != "":
-              print('failed: %s', comparison)
+              print(('failed: %s', comparison))
               failedComparisons[firstApproach,secondApproach] = comparison
 
         if len(failedComparisons.keys()) > 0:
@@ -179,7 +180,7 @@ class DICOMReadersTest(ScriptedLoadableModuleTest):
 
         self.delayDisplay('%s Test passed!' % dataset['name'])
 
-      except Exception, e:
+      except Exception as e:
         import traceback
         traceback.print_exc()
         self.delayDisplay('%s Test caused exception!\n' % dataset['name'] + str(e))
@@ -265,7 +266,7 @@ reloadScriptedModule('DICOMReaders'); import DICOMReaders; tester = DICOMReaders
       # load the data by series UID
       detailsPopup.offerLoadables(seriesUID,'Series')
       detailsPopup.examineForLoading()
-      loadable = detailsPopup.getAllSelectedLoadables().keys()[0]
+      loadable = list(detailsPopup.getAllSelectedLoadables().keys())[0]
 
       if len(loadable.warning) == 0:
         raise Exception("Expected warning about geometry issues due to missing slices!")
@@ -281,7 +282,7 @@ reloadScriptedModule('DICOMReaders'); import DICOMReaders; tester = DICOMReaders
 
       self.delayDisplay('test_MissingSlices passed!')
 
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Missing Slices Test caused exception!\n' + str(e))

@@ -66,8 +66,8 @@ public:
   typedef qMRMLViewControllerBar Superclass;
 
   /// Constructors
-  explicit qMRMLSliceControllerWidget(QWidget* parent = 0);
-  virtual ~qMRMLSliceControllerWidget();
+  explicit qMRMLSliceControllerWidget(QWidget* parent = nullptr);
+  ~qMRMLSliceControllerWidget() override;
 
   /// Are the slices linked to each other
   bool isLinked()const;
@@ -155,7 +155,7 @@ public:
 
 public slots:
 
-  virtual void setMRMLScene(vtkMRMLScene* newScene);
+  void setMRMLScene(vtkMRMLScene* newScene) override;
 
   /// Set a new SliceNode.
   void setMRMLSliceNode(vtkMRMLSliceNode* newSliceNode);

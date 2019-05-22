@@ -15,32 +15,23 @@
 
 ==============================================================================*/
 
-// MRMLMarkups includes
+// MRML includes
 #include "vtkMRMLMarkupsDisplayNode.h"
+#include <vtkMRMLProceduralColorNode.h>
 
 // VTK includes
+#include <vtkCommand.h>
+#include <vtkDiscretizableColorTransferFunction.h>
+#include <vtkIntArray.h>
+#include <vtkNew.h>
 #include <vtkObjectFactory.h>
+#include <vtkPiecewiseFunction.h>
 
 // STL includes
 #include <sstream>
 
-const char *vtkMRMLMarkupsDisplayNode::GlyphTypesNames[GlyphMax+2] =
-{
-  "GlyphMin",
-  "Vertex2D",
-  "Dash2D",
-  "Cross2D",
-  "ThickCross2D",
-  "Triangle2D",
-  "Square2D",
-  "Circle2D",
-  "Diamond2D",
-  "Arrow2D",
-  "ThickArrow2D",
-  "HookedArrow2D",
-  "StarBurst2D",
-  "Sphere3D"
-};
+const char* vtkMRMLMarkupsDisplayNode::LineColorNodeReferenceRole = "lineColor";
+const char* vtkMRMLMarkupsDisplayNode::LineColorNodeReferenceMRMLAttributeName = "lineColorNodeRef";
 
 //----------------------------------------------------------------------------
 vtkMRMLNodeNewMacro(vtkMRMLMarkupsDisplayNode);
@@ -48,11 +39,12 @@ vtkMRMLNodeNewMacro(vtkMRMLMarkupsDisplayNode);
 //----------------------------------------------------------------------------
 vtkMRMLMarkupsDisplayNode::vtkMRMLMarkupsDisplayNode()
 {
-    // model display node settings
-  this->SetVisibility(1);
-  this->SetVectorVisibility(0);
-  this->SetScalarVisibility(0);
-  this->SetTensorVisibility(0);
+  // Markups display node settings
+  this->Visibility = 1;
+  this->Visibility2D = 1;
+  this->VectorVisibility = 0;
+  this->ScalarVisibility = 0;
+  this->TensorVisibility = 0;
 
   this->Color[0] = 0.4;
   this->Color[1] = 1.0;
@@ -70,41 +62,65 @@ vtkMRMLMarkupsDisplayNode::vtkMRMLMarkupsDisplayNode()
   this->Power = 1;
 
   // markup display node settings
-  this->TextScale = 3.4;
+  this->TextScale = 3;
   this->GlyphType = vtkMRMLMarkupsDisplayNode::Sphere3D;
-  this->GlyphScale = 2.1;
+  this->GlyphScale = 1.0; // size as percent in screen size
+  this->GlyphSize = 5.0;  // size in world coordinate system (mm)
+  this->UseGlyphScale = true; // relative size by default
 
   // projection settings
-  this->SliceProjection = (vtkMRMLMarkupsDisplayNode::ProjectionOff |
-                           vtkMRMLMarkupsDisplayNode::ProjectionUseFiducialColor |
-                           vtkMRMLMarkupsDisplayNode::ProjectionOutlinedBehindSlicePlane);
+  this->SliceProjection = false;
+  this->SliceProjectionUseFiducialColor = true;
+  this->SliceProjectionOutlinedBehindSlicePlane = false;
   this->SliceProjectionColor[0] = 1.0;
   this->SliceProjectionColor[1] = 1.0;
   this->SliceProjectionColor[2] = 1.0;
   this->SliceProjectionOpacity = 0.6;
+
+  this->PropertiesLabelVisibility = true;
+  this->PointLabelsVisibility = false;
+
+  this->ActiveComponentType = ComponentNone;
+  this->ActiveComponentIndex = -1;
+
+  // Line color variables
+  this->LineColorFadingStart = 1.;
+  this->LineColorFadingEnd = 10.;
+  this->LineColorFadingSaturation = 1.;
+  this->LineColorFadingHueOffset = 0.;
+
+  // Line color node
+  vtkNew<vtkIntArray> events;
+  events->InsertNextValue(vtkCommand::ModifiedEvent);
+
+  this->AddNodeReferenceRole(this->GetLineColorNodeReferenceRole(),
+                             this->GetLineColorNodeReferenceMRMLAttributeName(),
+                             events.GetPointer());
 }
 
 //----------------------------------------------------------------------------
 vtkMRMLMarkupsDisplayNode::~vtkMRMLMarkupsDisplayNode()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 void vtkMRMLMarkupsDisplayNode::WriteXML(ostream& of, int nIndent)
 {
   Superclass::WriteXML(of, nIndent);
 
-  of << " textScale=\"" << this->TextScale << "\"";
-  of << " glyphScale=\"" << this->GlyphScale << "\"";
-  of << " glyphType=\"" << this->GlyphType << "\"";
-
-  of << " sliceProjection=\"" << this->SliceProjection << "\"";
-
-  of << " sliceProjectionColor=\"" << this->SliceProjectionColor[0] << " "
-     << this->SliceProjectionColor[1] << " "
-     << this->SliceProjectionColor[2] << "\"";
-
-  of << " sliceProjectionOpacity=\"" << this->SliceProjectionOpacity << "\"";
+  vtkMRMLWriteXMLBeginMacro(of);
+  vtkMRMLWriteXMLBooleanMacro(propertiesLabelVisibility, PropertiesLabelVisibility);
+  vtkMRMLWriteXMLBooleanMacro(pointLabelsVisibility, PointLabelsVisibility);
+  vtkMRMLWriteXMLFloatMacro(textScale, TextScale);
+  vtkMRMLWriteXMLFloatMacro(glyphScale, GlyphScale);
+  vtkMRMLWriteXMLFloatMacro(glyphSize, GlyphSize);
+  vtkMRMLWriteXMLBooleanMacro(useGlyphScale, UseGlyphScale);
+  vtkMRMLWriteXMLEnumMacro(glyphType, GlyphType);
+  vtkMRMLWriteXMLBooleanMacro(sliceProjection, SliceProjection);
+  vtkMRMLWriteXMLBooleanMacro(sliceProjectionUseFiducialColor, SliceProjectionUseFiducialColor);
+  vtkMRMLWriteXMLBooleanMacro(sliceProjectionOutlinedBehindSlicePlane, SliceProjectionOutlinedBehindSlicePlane);
+  vtkMRMLWriteXMLVectorMacro(sliceProjectionColor, SliceProjectionColor, double, 3);
+  vtkMRMLWriteXMLFloatMacro(sliceProjectionOpacity, SliceProjectionOpacity);
+  vtkMRMLWriteXMLEndMacro();
 }
 
 //----------------------------------------------------------------------------
@@ -114,54 +130,20 @@ void vtkMRMLMarkupsDisplayNode::ReadXMLAttributes(const char** atts)
 
   Superclass::ReadXMLAttributes(atts);
 
-  const char* attName;
-  const char* attValue;
-  while (*atts != NULL)
-    {
-    attName = *(atts++);
-    attValue = *(atts++);
-
-    if (!strcmp(attName, "textScale"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> this->TextScale;
-      }
-    else if (!strcmp(attName, "glyphType"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> this->GlyphType;
-      }
-    else if (!strcmp(attName, "glyphScale"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> this->GlyphScale;
-      }
-    else if (!strcmp(attName, "sliceProjection"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> this->SliceProjection;
-      }
-    else if (!strcmp(attName, "sliceProjectionColor") ||
-         !strcmp(attName, "projectedColor"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> this->SliceProjectionColor[0];
-      ss >> this->SliceProjectionColor[1];
-      ss >> this->SliceProjectionColor[2];
-      }
-    else if (!strcmp(attName, "sliceProjectionOpacity") ||
-         !strcmp(attName, "projectedOpacity"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> this->SliceProjectionOpacity;
-      }
-    }
+  vtkMRMLReadXMLBeginMacro(atts);
+  vtkMRMLReadXMLBooleanMacro(propertiesLabelVisibility, PropertiesLabelVisibility);
+  vtkMRMLReadXMLBooleanMacro(pointLabelsVisibility, PointLabelsVisibility);
+  vtkMRMLReadXMLFloatMacro(textScale, TextScale);
+  vtkMRMLReadXMLFloatMacro(glyphScale, GlyphScale);
+  vtkMRMLReadXMLFloatMacro(glyphSize, GlyphSize);
+  vtkMRMLReadXMLBooleanMacro(useGlyphScale, UseGlyphScale);
+  vtkMRMLReadXMLEnumMacro(glyphType, GlyphType);
+  vtkMRMLReadXMLBooleanMacro(sliceProjection, SliceProjection);
+  vtkMRMLReadXMLBooleanMacro(sliceProjectionUseFiducialColor, SliceProjectionUseFiducialColor);
+  vtkMRMLReadXMLBooleanMacro(sliceProjectionOutlinedBehindSlicePlane, SliceProjectionOutlinedBehindSlicePlane);
+  vtkMRMLReadXMLVectorMacro(sliceProjectionColor, SliceProjectionColor, double, 3);
+  vtkMRMLReadXMLFloatMacro(sliceProjectionOpacity, SliceProjectionOpacity);
+  vtkMRMLReadXMLEndMacro();
 
   this->EndModify(disabledModify);
 }
@@ -176,14 +158,22 @@ void vtkMRMLMarkupsDisplayNode::Copy(vtkMRMLNode *anode)
 
   Superclass::Copy(anode);
 
-  vtkMRMLMarkupsDisplayNode *node = (vtkMRMLMarkupsDisplayNode *)anode;
+  vtkMRMLMarkupsDisplayNode *node = vtkMRMLMarkupsDisplayNode::SafeDownCast(anode);
 
-  this->SetTextScale(node->TextScale);
-  this->SetGlyphType(node->GlyphType);
-  this->SetGlyphScale(node->GlyphScale);
-  this->SetSliceProjection(node->SliceProjection);
-  this->SetSliceProjectionColor(node->GetSliceProjectionColor());
-  this->SetSliceProjectionOpacity(node->GetSliceProjectionOpacity());
+  vtkMRMLCopyBeginMacro(anode);
+  vtkMRMLCopyBooleanMacro(PropertiesLabelVisibility);
+  vtkMRMLCopyBooleanMacro(PointLabelsVisibility);
+  vtkMRMLCopyFloatMacro(TextScale);
+  vtkMRMLCopyFloatMacro(GlyphScale);
+  vtkMRMLCopyFloatMacro(GlyphSize);
+  vtkMRMLCopyBooleanMacro(UseGlyphScale);
+  vtkMRMLCopyEnumMacro(GlyphType);
+  vtkMRMLCopyBooleanMacro(SliceProjection);
+  vtkMRMLCopyBooleanMacro(SliceProjectionUseFiducialColor);
+  vtkMRMLCopyBooleanMacro(SliceProjectionOutlinedBehindSlicePlane);
+  vtkMRMLCopyVectorMacro(SliceProjectionColor, double, 3);
+  vtkMRMLCopyFloatMacro(SliceProjectionOpacity);
+  vtkMRMLCopyEndMacro();
 
   this->EndModify(disabledModify);
 }
@@ -192,61 +182,87 @@ void vtkMRMLMarkupsDisplayNode::Copy(vtkMRMLNode *anode)
 //----------------------------------------------------------------------------
 const char* vtkMRMLMarkupsDisplayNode::GetGlyphTypeAsString()
 {
-  return this->GetGlyphTypeAsString(this->GlyphType);
-}
-
-//----------------------------------------------------------------------------
-const char* vtkMRMLMarkupsDisplayNode::GetGlyphTypeAsString(int glyphType)
-{
-  if (glyphType < GlyphMin || (glyphType > GlyphMax))
-    {
-    return "UNKNOWN";
-    }
-  return this->GlyphTypesNames[glyphType];
+  return vtkMRMLMarkupsDisplayNode::GetGlyphTypeAsString(this->GlyphType);
 }
 
 //----------------------------------------------------------------------------
 void vtkMRMLMarkupsDisplayNode::SetGlyphTypeFromString(const char *glyphString)
 {
-  if (!glyphString)
+  this->SetGlyphType(vtkMRMLMarkupsDisplayNode::GetGlyphTypeFromString(glyphString));
+}
+
+//-----------------------------------------------------------
+int vtkMRMLMarkupsDisplayNode::GetGlyphTypeFromString(const char* name)
+{
+  if (name == nullptr)
     {
-    vtkErrorMacro("SetGlyphTypeFromString: Null glyph type string!");
-    return;
+    // invalid name
+    return 0;
     }
-  for (int ID = GlyphMin; ID <= GlyphMax; ID++)
+  for (int ii = 0; ii < GlyphType_Last; ii++)
     {
-      if (!strcmp(glyphString,GlyphTypesNames[ID]))
+    if (strcmp(name, GetGlyphTypeAsString(ii)) == 0)
       {
-      this->SetGlyphType(ID);
-      return;
+      // found a matching name
+      return ii;
       }
     }
-  vtkErrorMacro("Invalid glyph type string: " << glyphString);
+  // unknown name
+  return GlyphTypeInvalid;
+}
+
+//---------------------------------------------------------------------------
+const char* vtkMRMLMarkupsDisplayNode::GetGlyphTypeAsString(int id)
+{
+  switch (id)
+  {
+  case Vertex2D: return "Vertex2D";
+  case Dash2D: return "Dash2D";
+  case Cross2D: return "Cross2D";
+  case ThickCross2D: return "ThickCross2D";
+  case Triangle2D: return "Triangle2D";
+  case Square2D: return "Square2D";
+  case Circle2D: return "Circle2D";
+  case Diamond2D: return "Diamond2D";
+  case Arrow2D: return "Arrow2D";
+  case ThickArrow2D: return "ThickArrow2D";
+  case HookedArrow2D: return "HookedArrow2D";
+  case StarBurst2D: return "StarBurst2D";
+  case Sphere3D: return "Sphere3D";
+  case Diamond3D: return "Diamond3D";
+  case GlyphTypeInvalid:
+  default:
+    // invalid id
+    return "Invalid";
+  }
 }
 
 //----------------------------------------------------------------------------
 void vtkMRMLMarkupsDisplayNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
-
-  os << indent << "Text scale: " << this->TextScale << "\n";
-  os << indent << "Glyph scale: (";
-  os << this->GlyphScale << ")\n";
-  os << indent << "Glyph type: ";
-  os << this->GetGlyphTypeAsString() << " (" << this->GlyphType << ")\n";
-  os << indent << "Slice projection: ";
-  os << this->SliceProjection << "\n";
-  os << indent << "Slice projection Color: (";
-  os << this->SliceProjectionColor[0] << ","
-     << this->SliceProjectionColor[1] << ","
-     << this->SliceProjectionColor[2] << ")" << "\n";
-  os << indent << "Slice projection Opacity: " << this->SliceProjectionOpacity << "\n";
+  vtkMRMLPrintBeginMacro(os,indent);
+  vtkMRMLPrintBooleanMacro(PropertiesLabelVisibility);
+  vtkMRMLPrintBooleanMacro(PointLabelsVisibility);
+  vtkMRMLPrintFloatMacro(TextScale);
+  vtkMRMLPrintFloatMacro(GlyphScale);
+  vtkMRMLPrintFloatMacro(GlyphSize);
+  vtkMRMLPrintBooleanMacro(UseGlyphScale);
+  vtkMRMLPrintEnumMacro(GlyphType);
+  vtkMRMLPrintBooleanMacro(SliceProjection);
+  vtkMRMLPrintBooleanMacro(SliceProjectionUseFiducialColor);
+  vtkMRMLPrintBooleanMacro(SliceProjectionOutlinedBehindSlicePlane);
+  vtkMRMLPrintVectorMacro(SliceProjectionColor, double, 3);
+  vtkMRMLPrintFloatMacro(SliceProjectionOpacity);
+  vtkMRMLPrintFloatMacro(ActiveComponentType);
+  vtkMRMLPrintFloatMacro(ActiveComponentIndex);
+  vtkMRMLPrintEndMacro();
 }
 
 //---------------------------------------------------------------------------
-void vtkMRMLMarkupsDisplayNode::ProcessMRMLEvents ( vtkObject *caller,
-                                           unsigned long event,
-                                           void *callData )
+void vtkMRMLMarkupsDisplayNode::ProcessMRMLEvents(vtkObject *caller,
+                                                  unsigned long event,
+                                                  void *callData)
 {
   Superclass::ProcessMRMLEvents(caller, event, callData);
   return;
@@ -272,26 +288,152 @@ int  vtkMRMLMarkupsDisplayNode::GlyphTypeIs3D(int glyphType)
 }
 
 //---------------------------------------------------------------------------
-void  vtkMRMLMarkupsDisplayNode::SetGlyphType(int type)
+void vtkMRMLMarkupsDisplayNode::SetLineColorNodeID(const char *lineColorNodeID)
 {
-  if (this->GlyphType == type)
+  this->SetNodeReferenceID(this->GetLineColorNodeReferenceRole(), lineColorNodeID);
+}
+
+//---------------------------------------------------------------------------
+const char *vtkMRMLMarkupsDisplayNode::GetLineColorNodeID()
+{
+  return this->GetNodeReferenceID(this->GetLineColorNodeReferenceRole());
+}
+
+//---------------------------------------------------------------------------
+vtkMRMLProceduralColorNode *vtkMRMLMarkupsDisplayNode::GetLineColorNode()
+{
+  return vtkMRMLProceduralColorNode::SafeDownCast(this->GetNodeReference(this->GetLineColorNodeReferenceRole()));
+}
+
+//---------------------------------------------------------------------------
+const char *vtkMRMLMarkupsDisplayNode::GetLineColorNodeReferenceRole()
+{
+  return vtkMRMLMarkupsDisplayNode::LineColorNodeReferenceRole;
+}
+
+//----------------------------------------------------------------------------
+const char *vtkMRMLMarkupsDisplayNode::GetLineColorNodeReferenceMRMLAttributeName()
+{
+  return vtkMRMLMarkupsDisplayNode::LineColorNodeReferenceMRMLAttributeName;
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLMarkupsDisplayNode::SetActiveComponent(int componentType, int componentIndex)
+{
+  if (this->ActiveComponentIndex == componentIndex
+    && this->ActiveComponentType == componentType)
     {
+    // no change
     return;
     }
-  vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting GlyphType to " << type);
-  this->GlyphType = type;
-
+  this->ActiveComponentIndex = componentIndex;
+  this->ActiveComponentType = componentType;
   this->Modified();
 }
 
 //---------------------------------------------------------------------------
-void vtkMRMLMarkupsDisplayNode::SetGlyphScale(double scale)
+void vtkMRMLMarkupsDisplayNode::SetActiveControlPoint(int controlPointIndex)
 {
-  if (this->GlyphScale == scale)
+  this->SetActiveComponent(ComponentControlPoint, controlPointIndex);
+}
+
+//---------------------------------------------------------------------------
+int vtkMRMLMarkupsDisplayNode::UpdateActiveControlPointWorld(
+  int controlPointIndex, double pointWorld[3],
+  double orientationMatrixWorld[9], const char* viewNodeID,
+  const char* associatedNodeID, int positionStatus)
+{
+  vtkMRMLMarkupsNode* markupsNode = this->GetMarkupsNode();
+  if (!markupsNode)
     {
-    return;
+    return -1;
     }
-  vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting GlyphScale to " << scale);
-  this->GlyphScale = scale;
-  this->Modified();
+
+  bool addNewControlPoint = false;
+  if (controlPointIndex < 0 || controlPointIndex >= markupsNode->GetNumberOfControlPoints())
+    {
+    // Determine new control point index. Now we assuem that new point is added to the end,
+    // but in the future we may place existing points.
+    controlPointIndex = markupsNode->GetNumberOfControlPoints();
+    addNewControlPoint = true;
+    }
+
+  // Update active component but not yet fire modified event
+  // because the control point is not created/updated yet
+  // in the markups node.
+  bool activeComponentChanged = false;
+  if (this->ActiveComponentIndex != controlPointIndex
+    || this->ActiveComponentType != ComponentControlPoint)
+    {
+    this->ActiveComponentType = ComponentControlPoint;
+    this->ActiveComponentIndex = controlPointIndex;
+    activeComponentChanged = true;
+    }
+
+  // AddControlPoint will fire modified events anyway, so we temporarily disable events
+  // to add a new point with a minimum number of events.
+  bool wasDisabled = markupsNode->GetDisableModifiedEvent();
+  markupsNode->DisableModifiedEventOn();
+  if (positionStatus == vtkMRMLMarkupsNode::PositionPreview)
+    {
+    markupsNode->SetAttribute("Markups.MovingInSliceView", viewNodeID);
+    std::ostringstream controlPointIndexStr;
+    controlPointIndexStr << controlPointIndex;
+    markupsNode->SetAttribute("Markups.MovingMarkupIndex", controlPointIndexStr.str().c_str());
+  }
+  else
+    {
+    markupsNode->SetAttribute("Markups.MovingInSliceView", "");
+    markupsNode->SetAttribute("Markups.MovingMarkupIndex", "");
+    }
+  markupsNode->SetDisableModifiedEvent(wasDisabled);
+
+  if (addNewControlPoint)
+    {
+    // Add new control point
+    vtkMRMLMarkupsNode::ControlPoint* controlPoint = new vtkMRMLMarkupsNode::ControlPoint;
+    markupsNode->TransformPointFromWorld(pointWorld, controlPoint->Position);
+    // TODO: transform orientation to world before copying
+    std::copy_n(orientationMatrixWorld, 9, controlPoint->OrientationMatrix);
+    if (associatedNodeID)
+      {
+      controlPoint->AssociatedNodeID = associatedNodeID;
+      }
+    controlPoint->PositionStatus = positionStatus;
+
+    markupsNode->AddControlPoint(controlPoint);
+  }
+  else
+    {
+    // Update existing control point
+    markupsNode->SetNthControlPointPositionOrientationWorldFromArray(controlPointIndex,
+      pointWorld, orientationMatrixWorld, associatedNodeID, positionStatus);
+    }
+
+  if (activeComponentChanged)
+    {
+    this->Modified();
+    }
+
+  return controlPointIndex;
+}
+
+
+//---------------------------------------------------------------------------
+int vtkMRMLMarkupsDisplayNode::GetActiveControlPoint()
+{
+  if (this->ActiveComponentType == ComponentControlPoint)
+    {
+    return this->ActiveComponentIndex;
+    }
+  else
+    {
+    return -1;
+    }
+}
+
+//---------------------------------------------------------------------------
+vtkMRMLMarkupsNode* vtkMRMLMarkupsDisplayNode::GetMarkupsNode()
+{
+  return vtkMRMLMarkupsNode::SafeDownCast(this->GetDisplayableNode());
 }

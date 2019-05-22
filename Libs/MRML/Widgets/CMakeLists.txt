@@ -2,7 +2,7 @@ project(qMRMLWidgets)
 
 
 #-----------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13.4)
 #-----------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------
@@ -46,15 +46,8 @@ endif()
 # Configure headers
 # --------------------------------------------------------------------------
 set(MRML_WIDGETS_HAVE_QT5 1)
-if(CTK_QT_VERSION VERSION_LESS "5")
-  set(MRML_WIDGETS_HAVE_QT5 0)
-endif()
-
-set(MRML_WIDGETS_HAVE_WEBKIT_SUPPORT 1)
-if(CTK_QT_VERSION VERSION_GREATER "4")
-  if(Qt5_VERSION VERSION_GREATER "5.5.0")
-    set(MRML_WIDGETS_HAVE_WEBKIT_SUPPORT 0)
-  endif()
+if(NOT DEFINED MRML_WIDGETS_HAVE_WEBGINE_SUPPORT)
+  set(MRML_WIDGETS_HAVE_WEBGINE_SUPPORT 1)
 endif()
 
 configure_file(
@@ -68,14 +61,6 @@ configure_file(
 set(MRMLWidgets_SRCS
   qMRMLCaptureToolBar.cxx
   qMRMLCaptureToolBar.h
-  qMRMLChartView.cxx
-  qMRMLChartView.h
-  qMRMLChartView_p.h
-  qMRMLChartViewControllerWidget.cxx
-  qMRMLChartViewControllerWidget.h
-  qMRMLChartViewControllerWidget_p.h
-  qMRMLChartWidget.cxx
-  qMRMLChartWidget.h
   qMRMLCheckableNodeComboBox.cxx
   qMRMLCheckableNodeComboBox.h
   qMRMLClipNodeWidget.cxx
@@ -236,23 +221,31 @@ set(MRMLWidgets_SRCS
   qMRMLVolumeThresholdWidget.h
   qMRMLVolumeWidget.cxx
   qMRMLVolumeWidget.h
-  qMRMLExpandingWebView.cxx
-  qMRMLExpandingWebView.h
-  qMRMLExpandingWebView_p.h
   qMRMLWidget.cxx
   qMRMLWidget.h
   qMRMLWindowLevelWidget.cxx
   qMRMLWindowLevelWidget.h
   )
 
+if(MRML_WIDGETS_HAVE_WEBGINE_SUPPORT)
+  list(APPEND MRMLWidgets_SRCS
+    qMRMLChartView.cxx
+    qMRMLChartView.h
+    qMRMLChartView_p.h
+    qMRMLChartViewControllerWidget.cxx
+    qMRMLChartViewControllerWidget.h
+    qMRMLChartViewControllerWidget_p.h
+    qMRMLChartWidget.cxx
+    qMRMLChartWidget.h
+    qMRMLExpandingWebView.cxx
+    qMRMLExpandingWebView.h
+    qMRMLExpandingWebView_p.h
+    )
+endif()
+
 # Headers that should run through moc
 set(MRMLWidgets_MOC_SRCS
   qMRMLCaptureToolBar.h
-  qMRMLChartView.h
-  qMRMLChartView_p.h
-  qMRMLChartViewControllerWidget.h
-  qMRMLChartViewControllerWidget_p.h
-  qMRMLChartWidget.h
   qMRMLCheckableNodeComboBox.h
   qMRMLClipNodeWidget.h
   qMRMLCollapsibleButton.h
@@ -338,15 +331,24 @@ set(MRMLWidgets_MOC_SRCS
   qMRMLVolumeThresholdWidget.h
   qMRMLVolumeWidget.h
   qMRMLVolumeWidget_p.h
-  qMRMLExpandingWebView.h
-  qMRMLExpandingWebView_p.h
   qMRMLWidget.h
   qMRMLWindowLevelWidget.h
   )
 
+if(MRML_WIDGETS_HAVE_WEBGINE_SUPPORT)
+  list(APPEND MRMLWidgets_MOC_SRCS
+    qMRMLChartView.h
+    qMRMLChartView_p.h
+    qMRMLChartViewControllerWidget.h
+    qMRMLChartViewControllerWidget_p.h
+    qMRMLChartWidget.h
+    qMRMLExpandingWebView.h
+    qMRMLExpandingWebView_p.h
+    )
+endif()
+
 # UI files
 set(MRMLWidgets_UI_SRCS
-  Resources/UI/qMRMLChartViewControllerWidget.ui
   Resources/UI/qMRMLClipNodeWidget.ui
   Resources/UI/qMRMLColorPickerWidget.ui
   Resources/UI/qMRMLDisplayNodeWidget.ui
@@ -371,11 +373,22 @@ set(MRMLWidgets_UI_SRCS
   Resources/UI/qMRMLWindowLevelWidget.ui
   )
 
-configure_file(Resources/jqPlot.qrc.in ${qMRMLWidgets_BINARY_DIR}/Resources/jqPlot.qrc)
+if(MRML_WIDGETS_HAVE_WEBGINE_SUPPORT)
+  list(APPEND MRMLWidgets_UI_SRCS
+    Resources/UI/qMRMLChartViewControllerWidget.ui
+    )
+endif()
+
 set(MRMLWidgets_QRC_SRCS
   Resources/qMRMLWidgets.qrc
-  ${qMRMLWidgets_BINARY_DIR}/Resources/jqPlot.qrc
   )
+
+if(MRML_WIDGETS_HAVE_WEBGINE_SUPPORT)
+  configure_file(Resources/jqPlot.qrc.in ${qMRMLWidgets_BINARY_DIR}/Resources/jqPlot.qrc)
+  list(APPEND MRMLWidgets_QRC_SRCS
+    ${qMRMLWidgets_BINARY_DIR}/Resources/jqPlot.qrc
+    )
+endif()
 
 if(Slicer_USE_QtTesting)
   list(APPEND MRMLWidgets_SRCS
@@ -400,23 +413,10 @@ if(Slicer_USE_QtTesting)
     )
 endif()
 
-if(CTK_QT_VERSION VERSION_LESS "5")
-  set(_moc_options)
-  if(MRML_WIDGETS_HAVE_WEBKIT_SUPPORT)
-    set(_moc_options OPTIONS -DMRML_WIDGETS_HAVE_WEBKIT_SUPPORT)
-  endif()
-  QT4_WRAP_CPP(MRMLWidgets_MOC_CXX ${MRMLWidgets_MOC_SRCS} OPTIONS ${_moc_options})
-  QT4_WRAP_UI(MRMLWidgets_UI_CXX ${MRMLWidgets_UI_SRCS})
-  QT4_ADD_RESOURCES(MRMLWidgets_QRC_CXX ${MRMLWidgets_QRC_SRCS})
-else()
   set(_moc_options OPTIONS -DMRML_WIDGETS_HAVE_QT5)
-  if(MRML_WIDGETS_HAVE_WEBKIT_SUPPORT)
-    set(_moc_options OPTIONS -DMRML_WIDGETS_HAVE_WEBKIT_SUPPORT)
-  endif()
   QT5_WRAP_CPP(MRMLWidgets_MOC_CXX ${MRMLWidgets_MOC_SRCS} ${_moc_options})
   QT5_WRAP_UI(MRMLWidgets_UI_CXX ${MRMLWidgets_UI_SRCS})
   QT5_ADD_RESOURCES(MRMLWidgets_QRC_CXX ${MRMLWidgets_QRC_SRCS})
-endif()
 
 source_group("Resources" FILES
   ${MRMLWidgets_UI_SRCS}

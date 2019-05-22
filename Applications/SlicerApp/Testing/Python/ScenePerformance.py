@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import unittest
 import vtk, qt, ctk, slicer
@@ -116,11 +117,11 @@ class ScenePerformanceLogic(ScriptedLoadableModuleLogic):
         (downloadURL, downloadFileName),
         )
 
-    import urllib
+    import urllib.request, urllib.parse, urllib.error
     for url,name in downloads:
       filePath = slicer.app.temporaryPath + '/' + name
       if not os.path.exists(filePath) or os.stat(filePath).st_size == 0:
-        urllib.urlretrieve(url, filePath)
+        urllib.request.urlretrieve(url, filePath)
     return filePath
 
   def startTiming(self):

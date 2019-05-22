@@ -59,7 +59,7 @@ public:
 
   typedef qSlicerCoreApplication Superclass;
   qSlicerApplication(int &argc, char **argv);
-  virtual ~qSlicerApplication();
+  ~qSlicerApplication() override;
 
   /// Return a reference to the application singleton
   static qSlicerApplication* application();
@@ -75,10 +75,7 @@ public:
   ///
   /// http://stackoverflow.com/questions/13878373/where-am-i-supposed-to-reimplement-qapplicationnotify-function
   ///
-  virtual bool notify(QObject * receiver, QEvent * event);
-
-  /// Get errorLogModel
-  Q_INVOKABLE ctkErrorLogModel* errorLogModel()const;
+  bool notify(QObject * receiver, QEvent * event) override;
 
   /// Get commandOptions
   Q_INVOKABLE qSlicerCommandOptions* commandOptions()const;
@@ -176,15 +173,15 @@ public slots:
   /// The caller is responsible for making sure that each setRenderPaused(true) is paired with
   /// setRenderPaused(false).
   /// \sa qMRMLLayoutManager::setRenderPaused()
-  void setRenderPaused(bool pause);
+  void setRenderPaused(bool pause) override;
 
   /// Equivalent to setRenderPaused(true)
   /// \sa setRenderPaused
-  void pauseRender();
+  void pauseRender() override;
 
   /// Equivalent to setRenderPaused(false)
   /// \sa setRenderPaused
-  void resumeRender();
+  void resumeRender() override;
 
 signals:
 
@@ -207,9 +204,9 @@ signals:
 
 protected:
   /// Reimplemented from qSlicerCoreApplication
-  virtual void handlePreApplicationCommandLineArguments();
-  virtual void handleCommandLineArguments();
-  virtual void onSlicerApplicationLogicModified();
+  void handlePreApplicationCommandLineArguments() override;
+  void handleCommandLineArguments() override;
+  void onSlicerApplicationLogicModified() override;
 
   /// Set up file logging. Creates and sets new log file and deletes the oldest
   /// one from the stored queue

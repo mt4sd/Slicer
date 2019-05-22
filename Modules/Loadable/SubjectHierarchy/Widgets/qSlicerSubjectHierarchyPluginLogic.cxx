@@ -35,6 +35,7 @@
 #include "qSlicerSubjectHierarchyRegisterPlugin.h"
 #include "qSlicerSubjectHierarchyFolderPlugin.h"
 #include "qSlicerSubjectHierarchyOpacityPlugin.h"
+#include "qSlicerSubjectHierarchyVisibilityPlugin.h"
 
 // Qt includes
 #include <QDebug>
@@ -67,8 +68,7 @@ qSlicerSubjectHierarchyPluginLogicPrivate::qSlicerSubjectHierarchyPluginLogicPri
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyPluginLogicPrivate::~qSlicerSubjectHierarchyPluginLogicPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyPluginLogic methods
@@ -84,8 +84,7 @@ qSlicerSubjectHierarchyPluginLogic::qSlicerSubjectHierarchyPluginLogic(QObject* 
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyPluginLogic::~qSlicerSubjectHierarchyPluginLogic()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerSubjectHierarchyPluginLogic::registerCorePlugins()
@@ -102,6 +101,8 @@ void qSlicerSubjectHierarchyPluginLogic::registerCorePlugins()
     new qSlicerSubjectHierarchyRegisterPlugin());
   qSlicerSubjectHierarchyPluginHandler::instance()->registerPlugin(
     new qSlicerSubjectHierarchyOpacityPlugin());
+  qSlicerSubjectHierarchyPluginHandler::instance()->registerPlugin(
+    new qSlicerSubjectHierarchyVisibilityPlugin());
 }
 
 //-----------------------------------------------------------------------------
@@ -189,7 +190,7 @@ void qSlicerSubjectHierarchyPluginLogic::onNodeAdded(vtkObject* sceneObject, vtk
     // If there is a plugin that can add the data node to subject hierarchy, then add
     QList<qSlicerSubjectHierarchyAbstractPlugin*> foundPlugins =
       qSlicerSubjectHierarchyPluginHandler::instance()->pluginsForAddingNodeToSubjectHierarchy(node);
-    qSlicerSubjectHierarchyAbstractPlugin* selectedPlugin = NULL;
+    qSlicerSubjectHierarchyAbstractPlugin* selectedPlugin = nullptr;
     if (foundPlugins.size() > 1)
       {
       // Let the user choose a plugin if more than one returned the same non-zero confidence value
@@ -370,7 +371,7 @@ void qSlicerSubjectHierarchyPluginLogic::addSupportedDataNodesToSubjectHierarchy
     QList<qSlicerSubjectHierarchyAbstractPlugin*> foundPlugins =
       qSlicerSubjectHierarchyPluginHandler::instance()->pluginsForAddingNodeToSubjectHierarchy(
           node, vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID);
-    qSlicerSubjectHierarchyAbstractPlugin* selectedPlugin = NULL;
+    qSlicerSubjectHierarchyAbstractPlugin* selectedPlugin = nullptr;
     if (foundPlugins.size() > 0)
       {
       // Choose first plugin in case of confidence equality not to annoy user (it can be changed later in subject hierarchy module)

@@ -53,7 +53,7 @@ protected:
   qSlicerSubjectHierarchyChartsPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyChartsPluginPrivate(qSlicerSubjectHierarchyChartsPlugin& object);
-  ~qSlicerSubjectHierarchyChartsPluginPrivate();
+  ~qSlicerSubjectHierarchyChartsPluginPrivate() override;
   void init();
 public:
   QIcon ChartIcon;
@@ -82,8 +82,7 @@ void qSlicerSubjectHierarchyChartsPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyChartsPluginPrivate::~qSlicerSubjectHierarchyChartsPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyChartsPlugin methods
@@ -101,8 +100,7 @@ qSlicerSubjectHierarchyChartsPlugin::qSlicerSubjectHierarchyChartsPlugin(QObject
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyChartsPlugin::~qSlicerSubjectHierarchyChartsPlugin()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 double qSlicerSubjectHierarchyChartsPlugin::canAddNodeToSubjectHierarchy(
@@ -111,7 +109,7 @@ double qSlicerSubjectHierarchyChartsPlugin::canAddNodeToSubjectHierarchy(
   Q_UNUSED(parentItemID);
   if (!node)
     {
-    qCritical() << Q_FUNC_INFO << ": Input node is NULL!";
+    qCritical() << Q_FUNC_INFO << ": Input node is nullptr!";
     return 0.0;
     }
   else if (node->IsA("vtkMRMLChartNode"))
@@ -245,7 +243,7 @@ void qSlicerSubjectHierarchyChartsPlugin::setDisplayVisibility(vtkIdType itemID,
       vtkIdType chartItemID = shNode->GetItemByDataNode(scene->GetNodeByID(chartViewNode->GetChartNodeID()));
       if (chartItemID)
         {
-        chartViewNode->SetChartNodeID(NULL);
+        chartViewNode->SetChartNodeID(nullptr);
         shNode->ItemModified(chartItemID);
         }
       }
@@ -256,7 +254,7 @@ void qSlicerSubjectHierarchyChartsPlugin::setDisplayVisibility(vtkIdType itemID,
   else if (chartViewNode)
     {
     // Hide chart
-    chartViewNode->SetChartNodeID(NULL);
+    chartViewNode->SetChartNodeID(nullptr);
     }
 
   // Trigger icon update
@@ -321,13 +319,13 @@ vtkMRMLChartViewNode* qSlicerSubjectHierarchyChartsPlugin::getChartViewNode()con
   if (!scene)
     {
     qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
-    return NULL;
+    return nullptr;
     }
 
   vtkMRMLChartViewNode* chartViewNode = vtkMRMLChartViewNode::SafeDownCast(scene->GetFirstNodeByClass("vtkMRMLChartViewNode"));
   if (!chartViewNode)
     {
-    return NULL;
+    return nullptr;
     }
 
   return chartViewNode;

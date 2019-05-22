@@ -31,30 +31,30 @@ class VTK_MRML_EXPORT vtkMRMLCameraNode : public vtkMRMLTransformableNode
 public:
   static vtkMRMLCameraNode *New();
   vtkTypeMacro(vtkMRMLCameraNode,vtkMRMLTransformableNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //--------------------------------------------------------------------------
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Read node attributes from XML file
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode* node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode* node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Camera";};
+  const char* GetNodeTagName() override {return "Camera";};
 
   ///
   /// Set the camera active tag, i.e. the tag for which object (view) this
@@ -133,9 +133,9 @@ public:
 
   ///
   /// alternative method to propagate events generated in Camera nodes
-  virtual void ProcessMRMLEvents ( vtkObject * /*caller*/,
+  void ProcessMRMLEvents ( vtkObject * /*caller*/,
                                    unsigned long /*event*/,
-                                   void * /*callData*/ ) VTK_OVERRIDE;
+                                   void * /*callData*/ ) override;
 
   /// This is the transform that was last applied
   /// to the position, focal point, and up vector
@@ -154,16 +154,16 @@ public:
   };
 
   /// Mark the active tag node as references.
-  virtual void SetSceneReferences() VTK_OVERRIDE;
+  void SetSceneReferences() override;
 
   ///
   /// Updates this node if it depends on other nodes
   /// when the node is deleted in the scene
-  virtual void UpdateReferences() VTK_OVERRIDE;
+  void UpdateReferences() override;
 
   ///
   /// Update the stored reference to another node in the scene
-  virtual void UpdateReferenceID(const char* oldID, const char* newID) VTK_OVERRIDE;
+  void UpdateReferenceID(const char* oldID, const char* newID) override;
 
   /// Reset the clipping range just based on its position and focal point
   void ResetClippingRange();
@@ -184,9 +184,9 @@ public:
   };
 
   enum ScreenAxis{
-    X = 0,
-    Y = 1,
-    Z = 2
+    X = 0, // left
+    Y = 1, // up
+    Z = 2  // forward
   };
 
   /// Moves the camera toward a position.
@@ -214,7 +214,7 @@ public:
   void Reset(bool resetRotation,
              bool resetTranslation = true,
              bool resetDistance = true,
-             vtkRenderer* renderer = 0);
+             vtkRenderer* renderer = nullptr);
 
   /// Get/Set a flag indicating whether this node is actively being
   /// manipulated (usually) by a user interface. This flag is used by
@@ -250,7 +250,7 @@ public:
 
 protected:
   vtkMRMLCameraNode();
-  ~vtkMRMLCameraNode();
+  ~vtkMRMLCameraNode() override;
   vtkMRMLCameraNode(const vtkMRMLCameraNode&);
   void operator=(const vtkMRMLCameraNode&);
 

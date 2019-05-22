@@ -41,11 +41,11 @@ class Q_SLICER_QTMODULES_VIEWCONTROLLERS_EXPORT qSlicerViewControllersModuleWidg
 public:
 
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerViewControllersModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerViewControllersModuleWidget();
+  qSlicerViewControllersModuleWidget(QWidget *parent=nullptr);
+  ~qSlicerViewControllersModuleWidget() override;
 
 public slots:
-  virtual void setMRMLScene(vtkMRMLScene *newScene);
+  void setMRMLScene(vtkMRMLScene *newScene) override;
   void onNodeAddedEvent(vtkObject* scene, vtkObject* node);
   void onNodeRemovedEvent(vtkObject* scene, vtkObject* node);
   void onLayoutChanged(int);
@@ -54,7 +54,7 @@ protected slots:
   void onAdvancedViewNodeChanged(vtkMRMLNode*);
 
 protected:
-  virtual void setup();
+  void setup() override;
 
 protected:
   QScopedPointer<qSlicerViewControllersModuleWidgetPrivate> d_ptr;

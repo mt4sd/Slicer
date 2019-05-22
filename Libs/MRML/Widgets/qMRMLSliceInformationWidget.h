@@ -46,8 +46,8 @@ public:
   typedef qMRMLWidget Superclass;
 
   /// Constructors
-  explicit qMRMLSliceInformationWidget(QWidget* parent = 0);
-  virtual ~qMRMLSliceInformationWidget();
+  explicit qMRMLSliceInformationWidget(QWidget* parent = nullptr);
+  ~qMRMLSliceInformationWidget() override;
 
   /// Get \a sliceNode
   /// \sa setMRMLSliceCompositeNode();

@@ -44,13 +44,11 @@ vtkStandardNewMacro(vtkSlicerReformatLogic);
 
 //------------------------------------------------------------------------------
 vtkSlicerReformatLogic::vtkSlicerReformatLogic()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 vtkSlicerReformatLogic::~vtkSlicerReformatLogic()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 void vtkSlicerReformatLogic::PrintSelf(ostream& os, vtkIndent indent)
@@ -170,18 +168,18 @@ void vtkSlicerReformatLogic::GetVolumeBounds(vtkMRMLSliceNode* node,
     return;
     }
 
-  const char* volumeNodeID = 0;
+  const char* volumeNodeID = nullptr;
   if (!volumeNodeID)
     {
-    volumeNodeID = sliceCompositeNode ? sliceCompositeNode->GetBackgroundVolumeID() : 0;
+    volumeNodeID = sliceCompositeNode ? sliceCompositeNode->GetBackgroundVolumeID() : nullptr;
     }
   if (!volumeNodeID)
     {
-    volumeNodeID = sliceCompositeNode ? sliceCompositeNode->GetForegroundVolumeID() : 0;
+    volumeNodeID = sliceCompositeNode ? sliceCompositeNode->GetForegroundVolumeID() : nullptr;
     }
   if (!volumeNodeID)
     {
-    volumeNodeID = sliceCompositeNode ? sliceCompositeNode->GetLabelVolumeID() : 0;
+    volumeNodeID = sliceCompositeNode ? sliceCompositeNode->GetLabelVolumeID() : nullptr;
     }
 
   vtkMRMLVolumeNode* volumeNode = vtkMRMLVolumeNode::SafeDownCast(

@@ -26,8 +26,8 @@ class VTK_ITK_EXPORT vtkITKImageToImageFilterFF : public vtkITKImageToImageFilte
 {
 public:
   vtkTypeMacro(vtkITKImageToImageFilterFF,vtkITKImageToImageFilter);
-  static vtkITKImageToImageFilterFF* New() { return 0; };
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE
+  static vtkITKImageToImageFilterFF* New() { return nullptr; };
+  void PrintSelf(ostream& os, vtkIndent indent) override
   {
     Superclass::PrintSelf ( os, indent );
     os << m_Filter;
@@ -65,13 +65,12 @@ protected:
     this->vtkCast->SetOutputScalarTypeToFloat();
   };
 
-  ~vtkITKImageToImageFilterFF()
-  {
-  };
+  ~vtkITKImageToImageFilterFF() override
+   = default;
 
 private:
-  vtkITKImageToImageFilterFF(const vtkITKImageToImageFilterFF&);  /// Not implemented.
-  void operator=(const vtkITKImageToImageFilterFF&);  /// Not implemented.
+  vtkITKImageToImageFilterFF(const vtkITKImageToImageFilterFF&) = delete;
+  void operator=(const vtkITKImageToImageFilterFF&) = delete;
 };
 
 #endif

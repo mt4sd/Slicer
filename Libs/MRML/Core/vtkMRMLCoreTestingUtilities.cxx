@@ -77,8 +77,8 @@ bool CheckNodeInSceneByID(int line, vtkMRMLScene* scene,
   vtkMRMLNode* current = scene->GetNodeByID(nodeID);
   if (current != expected)
     {
-    const char* currentID = (current ? current->GetID() : 0);
-    const char* expectedID = (expected ? expected->GetID() : 0);
+    const char* currentID = (current ? current->GetID() : nullptr);
+    const char* expectedID = (expected ? expected->GetID() : nullptr);
     std::cerr << "\nLine " << line << " - GetNodeByID(\"" << nodeID << "\")"
               << " : " << testName << " failed"
 
@@ -138,7 +138,7 @@ int ExerciseBasicMRMLMethods(vtkMRMLNode* node)
   newNode->Delete();
 
   //  Test UpdateScene()
-  node->UpdateScene(NULL);
+  node->UpdateScene(nullptr);
 
   //  Test New()
   vtkSmartPointer < vtkMRMLNode > node1 = vtkSmartPointer < vtkMRMLNode >::Take(node->CreateNodeInstance());
@@ -152,7 +152,7 @@ int ExerciseBasicMRMLMethods(vtkMRMLNode* node)
 
   //  Test Copy()
   node1->Copy(node);
-  node->Reset(NULL);
+  node->Reset(nullptr);
 
   //  Test SetAttribute() / GetAttribute()
   int mod = node->StartModify();
@@ -203,7 +203,7 @@ int ExerciseBasicMRMLMethods(vtkMRMLNode* node)
             "hideFromEditors", "false",
             "selectable", "true",
             "selected", "true",
-            NULL};
+            nullptr};
   node->ReadXMLAttributes(atts);
 
   //  Test WriteXML
@@ -249,7 +249,7 @@ int ExerciseBasicTransformableMRMLMethods(vtkMRMLTransformableNode* node)
 
   CHECK_NULL(node->GetParentTransformNode());
 
-  node->SetAndObserveTransformNodeID(NULL);
+  node->SetAndObserveTransformNodeID(nullptr);
   CHECK_NULL(node->GetTransformNodeID());
 
   bool canApplyNonLinear = node->CanApplyNonLinearTransforms();
@@ -279,10 +279,10 @@ int ExerciseBasicDisplayMRMLMethods(vtkMRMLDisplayNode* node)
   CHECK_EXIT_SUCCESS(ExerciseBasicMRMLMethods(node));
 
   CHECK_NULL(node->GetDisplayableNode());
-  node->SetTextureImageDataConnection(NULL);
+  node->SetTextureImageDataConnection(nullptr);
   CHECK_NULL(node->GetTextureImageDataConnection());
 
-  node->SetAndObserveColorNodeID(NULL);
+  node->SetAndObserveColorNodeID(nullptr);
   CHECK_NULL(node->GetColorNodeID());
   CHECK_NULL(node->GetColorNode());
 
@@ -299,8 +299,9 @@ int ExerciseBasicDisplayMRMLMethods(vtkMRMLDisplayNode* node)
   TEST_SET_GET_DOUBLE_RANGE(node, Specular, 0.0, 1.0);
   TEST_SET_GET_DOUBLE_RANGE(node, Power, 0.0, 1.0);
   TEST_SET_GET_BOOLEAN(node, Visibility);
+  TEST_SET_GET_BOOLEAN(node, Visibility2D);
+  TEST_SET_GET_BOOLEAN(node, Visibility3D);
   TEST_SET_GET_BOOLEAN(node, Clipping);
-  TEST_SET_GET_BOOLEAN(node, SliceIntersectionVisibility);
   TEST_SET_GET_INT_RANGE(node, SliceIntersectionThickness, 0, 10);
   TEST_SET_GET_BOOLEAN(node, BackfaceCulling);
   TEST_SET_GET_BOOLEAN(node, ScalarVisibility);
@@ -351,26 +352,26 @@ int ExerciseBasicStorageMRMLMethods(vtkMRMLStorageNode* node)
   int errorObserverTag = node->AddObserver(vtkCommand::WarningEvent, errorWarningObserver.GetPointer());
   int warningObserverTag = node->AddObserver(vtkCommand::ErrorEvent, errorWarningObserver.GetPointer());
 
-  node->ReadData(NULL);
+  node->ReadData(nullptr);
   CHECK_BOOL(errorWarningObserver->GetError(), true);
   errorWarningObserver->Clear();
 
-  node->WriteData(NULL);
+  node->WriteData(nullptr);
   CHECK_BOOL(errorWarningObserver->GetError(), true);
   errorWarningObserver->Clear();
 
   TEST_SET_GET_STRING(node, FileName);
   const char *f0 = node->GetNthFileName(0);
-  std::cout << "Filename 0 = " << (f0 == NULL ? "NULL" : f0) << std::endl;
+  std::cout << "Filename 0 = " << (f0 == nullptr ? "NULL" : f0) << std::endl;
   TEST_SET_GET_BOOLEAN(node, UseCompression);
   TEST_SET_GET_STRING(node, URI);
 
   vtkURIHandler *handler = vtkURIHandler::New();
-  node->SetURIHandler(NULL);
+  node->SetURIHandler(nullptr);
   CHECK_NULL(node->GetURIHandler());
   node->SetURIHandler(handler);
   CHECK_NOT_NULL(node->GetURIHandler());
-  node->SetURIHandler(NULL);
+  node->SetURIHandler(nullptr);
   handler->Delete();
 
   TEST_SET_GET_INT_RANGE(node, ReadState, 0, 5);
@@ -428,7 +429,7 @@ int ExerciseBasicStorageMRMLMethods(vtkMRMLStorageNode* node)
     {
     std::cout << "\t" << types->GetValue(i).c_str() << std::endl;
     }
-  int sup = node->SupportedFileType(NULL);
+  int sup = node->SupportedFileType(nullptr);
   CHECK_BOOL(errorWarningObserver->GetWarning(), true);
   errorWarningObserver->Clear();
 
@@ -447,7 +448,7 @@ int ExerciseBasicStorageMRMLMethods(vtkMRMLStorageNode* node)
 
   node->ResetNthFileName(0, "moretesting.txt");
   node->ResetNthFileName(100, "notinlist.txt");
-  node->ResetNthFileName(0, NULL);
+  node->ResetNthFileName(0, nullptr);
   CHECK_BOOL(node->FileNameIsInList("notinlist"), false);
 
   node->ResetFileNameList();
@@ -462,7 +463,7 @@ int ExerciseBasicStorageMRMLMethods(vtkMRMLStorageNode* node)
 
   node->ResetNthURI(0, "http://www.nowhere.com/newfilename.txt");
   node->ResetNthURI(100, "ftp://not.in.list");
-  node->ResetNthURI(100, NULL);
+  node->ResetNthURI(100, nullptr);
   const char *dataDirName = "/test-ing/a/dir ect.ory";
   node->SetDataDirectory(dataDirName);
   node->SetFileName("/tmp/file.txt");
@@ -474,9 +475,9 @@ int ExerciseBasicStorageMRMLMethods(vtkMRMLStorageNode* node)
   node->SetURIPrefix(uriPrefix);
 
   const char *defaultExt = node->GetDefaultWriteFileExtension();
-  std::cout << "Default write extension = " << (defaultExt == NULL ? "null" : defaultExt) << std::endl;
+  std::cout << "Default write extension = " << (defaultExt == nullptr ? "null" : defaultExt) << std::endl;
 
-  std::cout << "Is null file path relative? " << node->IsFilePathRelative(NULL) << std::endl;
+  std::cout << "Is null file path relative? " << node->IsFilePathRelative(nullptr) << std::endl;
   std::cout << "Is absolute file path relative? " << node->IsFilePathRelative("/spl/tmp/file.txt") << std::endl;
   std::cout << "Is relative file path relative? " << node->IsFilePathRelative("tmp/file.txt") << std::endl;
   node->RemoveObserver(errorObserverTag);
@@ -563,7 +564,7 @@ int ExerciseAllBasicMRMLMethods(vtkMRMLNode* node)
 }
 
 // ----------------------------------------------------------------------------
-int ExerciseSceneLoadingMethods(const char * sceneFilePath, vtkMRMLScene* inputScene /* = NULL */)
+int ExerciseSceneLoadingMethods(const char * sceneFilePath, vtkMRMLScene* inputScene /* = nullptr */)
 {
   vtkSmartPointer<vtkMRMLScene> scene;
   if (inputScene)
@@ -596,15 +597,14 @@ int ExerciseSceneLoadingMethods(const char * sceneFilePath, vtkMRMLScene* inputS
 
 //---------------------------------------------------------------------------
 vtkMRMLNodeCallback::vtkMRMLNodeCallback()
-  : Node(0)
+  : Node(nullptr)
 {
   this->ResetNumberOfEvents();
 }
 
 //---------------------------------------------------------------------------
 vtkMRMLNodeCallback::~vtkMRMLNodeCallback()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 void vtkMRMLNodeCallback::ResetNumberOfEvents()

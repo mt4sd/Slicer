@@ -39,8 +39,8 @@ class Q_SLICER_MODULE_VOLUMERENDERING_WIDGETS_EXPORT qSlicerPresetComboBox
 public:
   /// Constructors
   typedef qMRMLNodeComboBox Superclass;
-  explicit qSlicerPresetComboBox(QWidget* parent=0);
-  virtual ~qSlicerPresetComboBox();
+  explicit qSlicerPresetComboBox(QWidget* parent=nullptr);
+  ~qSlicerPresetComboBox() override;
 
   bool showIcons()const;
   void setShowIcons(bool show);

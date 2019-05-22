@@ -26,33 +26,33 @@ class VTK_MRML_EXPORT vtkMRMLDoubleArrayStorageNode : public vtkMRMLStorageNode
 public:
   static vtkMRMLDoubleArrayStorageNode *New();
   vtkTypeMacro(vtkMRMLDoubleArrayStorageNode,vtkMRMLStorageNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Get node XML tag name (like Storage, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "DoubleArrayStorage";}
+  const char* GetNodeTagName() override {return "DoubleArrayStorage";}
 
   /// Return true if the node can be read in
-  virtual bool CanReadInReferenceNode(vtkMRMLNode *refNode) VTK_OVERRIDE;
+  bool CanReadInReferenceNode(vtkMRMLNode *refNode) override;
 
 protected:
   vtkMRMLDoubleArrayStorageNode();
-  ~vtkMRMLDoubleArrayStorageNode();
+  ~vtkMRMLDoubleArrayStorageNode() override;
   vtkMRMLDoubleArrayStorageNode(const vtkMRMLDoubleArrayStorageNode&);
   void operator=(const vtkMRMLDoubleArrayStorageNode&);
 
   /// Initialize all the supported write file types
-  virtual void InitializeSupportedReadFileTypes() VTK_OVERRIDE;
+  void InitializeSupportedReadFileTypes() override;
 
   /// Initialize all the supported write file types
-  virtual void InitializeSupportedWriteFileTypes() VTK_OVERRIDE;
+  void InitializeSupportedWriteFileTypes() override;
 
   /// Read data and set it in the referenced node
-  virtual int ReadDataInternal(vtkMRMLNode *refNode) VTK_OVERRIDE;
+  int ReadDataInternal(vtkMRMLNode *refNode) override;
 
   /// Write data from a  referenced node
-  virtual int WriteDataInternal(vtkMRMLNode *refNode) VTK_OVERRIDE;
+  int WriteDataInternal(vtkMRMLNode *refNode) override;
 
 };
 

@@ -38,6 +38,7 @@
 #include <vtkMRMLLayoutNode.h>
 #include <vtkMRMLScene.h>
 #include <vtkMRMLSliceNode.h>
+#include <vtkMRMLSliceViewDisplayableManagerFactory.h>
 #include <vtkMRMLViewNode.h>
 
 // VTK includes
@@ -240,11 +241,11 @@ bool runTests(vtkMRMLScene* scene,
       }
   }
 
-  layoutNode->SetViewArrangement(vtkMRMLLayoutNode::SlicerLayoutFourUpQuantitativeView);
+  layoutNode->SetViewArrangement(vtkMRMLLayoutNode::SlicerLayoutFourUpPlotView);
   qApp->processEvents();
 
-  vtkMRMLAbstractViewNode* chartNode =
-      vtkMRMLAbstractViewNode::SafeDownCast(scene->GetNodeByID("vtkMRMLChartViewNodeChartView1"));
+  vtkMRMLAbstractViewNode* plotNode =
+      vtkMRMLAbstractViewNode::SafeDownCast(scene->GetNodeByID("vtkMRMLPlotViewNodePlotView1"));
 
   // Only yellow widgets is expected to be hidden
   {
@@ -252,7 +253,7 @@ bool runTests(vtkMRMLScene* scene,
     viewNodesToExpectedVisibility[redNode] =    QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
     viewNodesToExpectedVisibility[yellowNode] = QList<bool>()  << NoVisibility << MappedInLayout    << NotVisibleInLayout;
     viewNodesToExpectedVisibility[greenNode] =  QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
-    viewNodesToExpectedVisibility[chartNode] =  QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
+    viewNodesToExpectedVisibility[plotNode] =  QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
 
     if (!checkViews(__LINE__, layoutManager, viewNodesToExpectedVisibility))
       {
@@ -290,7 +291,7 @@ bool runTests(vtkMRMLScene* scene,
     viewNodesToExpectedVisibility[yellowNode] = QList<bool>()  << NoVisibility << MappedInLayout    << NotVisibleInLayout;
     viewNodesToExpectedVisibility[greenNode] =  QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
     viewNodesToExpectedVisibility[threeDNode] = QList<bool>()  << NoVisibility << MappedInLayout    << NotVisibleInLayout;
-    viewNodesToExpectedVisibility[chartNode] =  QList<bool>()  << Visibility   << NotMappedInLayout << NotVisibleInLayout;
+    viewNodesToExpectedVisibility[plotNode] =  QList<bool>()  << Visibility   << NotMappedInLayout << NotVisibleInLayout;
     viewNodesToExpectedVisibility[tableNode] =  QList<bool>()  << Visibility   << NotMappedInLayout << NotVisibleInLayout;
 
     if (!checkViews(__LINE__, layoutManager, viewNodesToExpectedVisibility))
@@ -309,7 +310,7 @@ bool runTests(vtkMRMLScene* scene,
     viewNodesToExpectedVisibility[yellowNode] = QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
     viewNodesToExpectedVisibility[greenNode] =  QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
     viewNodesToExpectedVisibility[threeDNode] = QList<bool>()  << Visibility   << MappedInLayout    << VisibleInLayout;
-    viewNodesToExpectedVisibility[chartNode] =  QList<bool>()  << Visibility   << NotMappedInLayout << NotVisibleInLayout;
+    viewNodesToExpectedVisibility[plotNode] =  QList<bool>()  << Visibility   << NotMappedInLayout << NotVisibleInLayout;
     viewNodesToExpectedVisibility[tableNode] =  QList<bool>()  << Visibility   << NotMappedInLayout << NotVisibleInLayout;
 
     if (!checkViews(__LINE__, layoutManager, viewNodesToExpectedVisibility))
@@ -376,6 +377,9 @@ int qMRMLLayoutManagerVisibilityTest(int argc, char * argv[] )
   QSurfaceFormat::setDefaultFormat(format);
 #endif
 
+  // Enables resource sharing between the OpenGL contexts used by classes like QOpenGLWidget and QQuickWidget
+  QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
   QApplication app(argc, argv);
 
   QWidget w;
@@ -384,6 +388,7 @@ int qMRMLLayoutManagerVisibilityTest(int argc, char * argv[] )
   qMRMLLayoutManager layoutManager(&w, &w);
 
   vtkNew<vtkMRMLApplicationLogic> applicationLogic;
+  vtkMRMLSliceViewDisplayableManagerFactory::GetInstance()->SetMRMLApplicationLogic(applicationLogic);
 
   vtkNew<vtkMRMLScene> scene;
   vtkNew<vtkMRMLLayoutNode> layoutNode;

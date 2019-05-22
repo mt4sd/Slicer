@@ -1,8 +1,10 @@
+from __future__ import print_function
 import os
 import unittest
 import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
 import logging
+from functools import reduce
 
 #
 # LabelStatistics
@@ -230,7 +232,7 @@ class LabelStatisticsWidget(ScriptedLoadableModuleWidget):
     row = 0
     for i in self.logic.labelStats["Labels"]:
       col = 0
-      
+
       color = qt.QColor()
       rgb = lut.GetTableValue(i)
       color.setRgb(rgb[0]*255,rgb[1]*255,rgb[2]*255)
@@ -241,14 +243,14 @@ class LabelStatisticsWidget(ScriptedLoadableModuleWidget):
       self.model.setItem(row,col,item)
       self.items.append(item)
       col += 1
-      
+
       item = qt.QStandardItem()
       item.setData(colorNode.GetColorName(i),qt.Qt.DisplayRole)
       item.setEditable(False)
       self.model.setItem(row,col,item)
       self.items.append(item)
       col += 1
-      
+
       for k in self.logic.keys:
         item = qt.QStandardItem()
         # set data as float with Qt::DisplayRole
@@ -283,14 +285,14 @@ class LabelStatisticsLogic(ScriptedLoadableModuleLogic):
 
   def __init__(self, grayscaleNode, labelNode, colorNode=None, nodeBaseName=None, fileName=None):
     #import numpy
-    
+
     self.keys = ("Index", "Count", "Volume mm^3", "Volume cc", "Min", "Max", "Mean", "Median", "StdDev")
     cubicMMPerVoxel = reduce(lambda x,y: x*y, labelNode.GetSpacing())
     ccPerCubicMM = 0.001
 
     # TODO: progress and status updates
     # this->InvokeEvent(vtkLabelStatisticsLogic::StartLabelStats, (void*)"start label stats")
-    
+
     self.labelNode = labelNode
     self.colorNode = colorNode
 
@@ -301,13 +303,25 @@ class LabelStatisticsLogic(ScriptedLoadableModuleLogic):
     self.labelStats = {}
     self.labelStats['Labels'] = []
 
+    if (not labelNode.GetImageData()
+      or not labelNode.GetImageData().GetPointData()
+      or not labelNode.GetImageData().GetPointData().GetScalars()):
+      # No input label data
+      return
+
+    if (not grayscaleNode.GetImageData()
+      or not grayscaleNode.GetImageData().GetPointData()
+      or not grayscaleNode.GetImageData().GetPointData().GetScalars()):
+      # No input grayscale image data
+      return
+
     stataccum = vtk.vtkImageAccumulate()
     stataccum.SetInputConnection(labelNode.GetImageDataConnection())
     stataccum.Update()
     lo = int(stataccum.GetMin()[0])
     hi = int(stataccum.GetMax()[0])
 
-    for i in xrange(lo,hi+1):
+    for i in range(lo,hi+1):
 
       # this->SetProgress((float)i/hi);
       # std::string event_message = "Label "; std::stringstream s; s << i; event_message.append(s.str());
@@ -396,7 +410,7 @@ class LabelStatisticsLogic(ScriptedLoadableModuleLogic):
       tuples -= 1
     array.SetNumberOfTuples(tuples)
     tuple = 0
-    for i in xrange(samples):
+    for i in range(samples):
         index = self.labelStats["Labels"][i]
         if not (ignoreZero and index == 0):
           array.SetComponent(tuple, 0, index)
@@ -462,9 +476,9 @@ class LabelStatisticsLogic(ScriptedLoadableModuleLogic):
     """
     print comma separated value file with header keys in quotes
     """
-    
+
     colorNode = self.getColorNode()
-    
+
     csv = ""
     header = ""
     if colorNode:

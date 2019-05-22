@@ -62,7 +62,7 @@ public:
 qMRMLNodeAttributeTableViewPrivate::qMRMLNodeAttributeTableViewPrivate(qMRMLNodeAttributeTableView& object)
   : q_ptr(&object)
 {
-  this->InspectedNode = 0;
+  this->InspectedNode = nullptr;
 }
 
 // --------------------------------------------------------------------------
@@ -77,12 +77,6 @@ void qMRMLNodeAttributeTableViewPrivate::init()
           q, SLOT(storeSelectedAttributeTableItem(QTableWidgetItem*,QTableWidgetItem*)));
 
   this->setMessage(QString());
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  // Set up initial look of node attributes table
-  this->NodeAttributesTable->horizontalHeader()->setResizeMode(
-    QHeaderView::ResizeToContents);
-#endif
 }
 
 // --------------------------------------------------------------------------
@@ -100,8 +94,7 @@ qMRMLNodeAttributeTableView::qMRMLNodeAttributeTableView(QWidget* _parent)
 
 // --------------------------------------------------------------------------
 qMRMLNodeAttributeTableView::~qMRMLNodeAttributeTableView()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qMRMLNodeAttributeTableView::setInspectedNode(vtkMRMLNode* node)
@@ -209,7 +202,7 @@ void qMRMLNodeAttributeTableView::onAttributeChanged(QTableWidgetItem* changedIt
       int wasModifying = d->InspectedNode->StartModify();
 
       d->InspectedNode->SetAttribute(
-        d->SelectedAttributeTableItemText.toLatin1().constData(), 0);
+        d->SelectedAttributeTableItemText.toLatin1().constData(), nullptr);
       d->InspectedNode->SetAttribute(
         changedItem->text().toLatin1().constData(), valueText.toLatin1().constData());
 
@@ -339,20 +332,20 @@ QTableWidgetItem* qMRMLNodeAttributeTableView::findAttributeNameItem(const QStri
 {
   Q_D(const qMRMLNodeAttributeTableView);
 
-  QTableWidgetItem* item = NULL;
+  QTableWidgetItem* item = nullptr;
   int numberOfAttributesFound = 0;
   QList<QTableWidgetItem*> itemList = d->NodeAttributesTable->findItems(attributeName, Qt::MatchFixedString);
   foreach(QTableWidgetItem* currentItem, itemList)
     {
     // Check if found item is in the name column (there may be values containing the same text)
-    if (currentItem != NULL && currentItem->column() == 0)
+    if (currentItem != nullptr && currentItem->column() == 0)
       {
         numberOfAttributesFound++;
         item = currentItem;
       }
     }
 
-  return (numberOfAttributesFound == 1) ? item : NULL;
+  return (numberOfAttributesFound == 1) ? item : nullptr;
 }
 
 //-----------------------------------------------------------------------------

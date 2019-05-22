@@ -35,8 +35,8 @@ public:
   // Provide a concrete New.
   static vtkMRMLTestVolumeNode *New();
   vtkTypeMacro(vtkMRMLTestVolumeNode,vtkMRMLVolumeNode);
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE {return  vtkMRMLTestVolumeNode::New();}
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "vtkMRMLTestVolumeNode";}
+  vtkMRMLNode* CreateNodeInstance() override {return  vtkMRMLTestVolumeNode::New();}
+  const char* GetNodeTagName() override {return "vtkMRMLTestVolumeNode";}
 };
 vtkStandardNewMacro(vtkMRMLTestVolumeNode);
 
@@ -212,7 +212,7 @@ int vtkMRMLVolumeNodeEventsTest(int , char * [] )
   callback->ResetNumberOfEvents();
 
   // Clear image data
-  volumeNode->SetAndObserveImageData(0);
+  volumeNode->SetAndObserveImageData(nullptr);
 
   if (!callback->GetErrorString().empty() ||
       callback->GetNumberOfEvents(vtkCommand::ModifiedEvent) != 1 ||

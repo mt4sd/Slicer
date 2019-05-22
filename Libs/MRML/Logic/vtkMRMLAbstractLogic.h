@@ -138,7 +138,7 @@ public:
   typedef void (vtkMRMLAbstractLogic::*TaskFunctionPointer)(void *clientdata);
 
   static vtkMRMLAbstractLogic *New();
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkMRMLAbstractLogic, vtkObject);
 
   /// Get access to overall application state
@@ -160,13 +160,13 @@ public:
   /// \sa SetMRMLSceneInternal()
   /// \sa SetAndObserveMRMLSceneInternal() SetAndObserveMRMLSceneEventsInternal()
   void SetAndObserveMRMLScene(vtkMRMLScene * newScene);
-  void SetAndObserveMRMLSceneEvents(vtkMRMLScene * newScene, vtkIntArray * events, vtkFloatArray* priorities=0);
+  void SetAndObserveMRMLSceneEvents(vtkMRMLScene * newScene, vtkIntArray * events, vtkFloatArray* priorities=nullptr);
   /// @endcond
 
 protected:
 
   vtkMRMLAbstractLogic();
-  virtual ~vtkMRMLAbstractLogic();
+  ~vtkMRMLAbstractLogic() override;
 
   /// Receives all the events fired by the scene.
   /// By default, it calls OnMRMLScene*Event based on the event passed.
@@ -340,7 +340,7 @@ protected:
   /// \sa SetMRMLSceneInternal()
   void SetAndObserveMRMLSceneEventsInternal(vtkMRMLScene *newScene,
                                             vtkIntArray *events,
-                                            vtkFloatArray *priorities=0);
+                                            vtkFloatArray *priorities=nullptr);
 
   /// Register node classes into the MRML scene. Called each time a new scene
   /// is set. Do nothing by default. Can be reimplemented in derivated classes.
@@ -427,7 +427,7 @@ protected:
   /// would be to disable modified events, call a series of Set* operations, and then re-enable
   /// modified events and call InvokePendingModifiedEvent to invoke the event (if any of the Set*
   /// calls actually changed the values of the instance variables).
-  virtual void Modified() VTK_OVERRIDE;
+  void Modified() override;
 
   /// Invokes any modified events that are 'pending', meaning they were generated
   /// while the DisableModifiedEvent flag was nonzero.
@@ -437,8 +437,8 @@ protected:
 
 private:
 
-  vtkMRMLAbstractLogic(const vtkMRMLAbstractLogic&); // Not implemented
-  void operator=(const vtkMRMLAbstractLogic&);       // Not implemented
+  vtkMRMLAbstractLogic(const vtkMRMLAbstractLogic&) = delete;
+  void operator=(const vtkMRMLAbstractLogic&) = delete;
 
   class vtkInternal;
   vtkInternal * Internal;

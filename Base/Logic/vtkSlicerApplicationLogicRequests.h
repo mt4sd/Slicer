@@ -27,7 +27,7 @@ public:
     m_UID = uid;
   }
 
-  virtual ~DataRequest(){}
+  virtual ~DataRequest()  = default;
 
   virtual void Execute(vtkSlicerApplicationLogic*) {};
 
@@ -51,7 +51,7 @@ public:
     m_DeleteFile = deleteFile;
   }
 
-  void Execute(vtkSlicerApplicationLogic* appLogic)
+  void Execute(vtkSlicerApplicationLogic* appLogic) override
   {
     // This method needs to read the data into the specific type of node and set up an
     // appropriate storage and display node.
@@ -75,7 +75,7 @@ public:
         vtkMRMLStorageNode *testStorageNode = storableNode->GetNthStorageNode(n);
         if (testStorageNode)
           {
-          if (useURI && testStorageNode->GetURI() != NULL)
+          if (useURI && testStorageNode->GetURI() != nullptr)
             {
             if (m_Filename.compare(testStorageNode->GetURI()) == 0)
               {
@@ -85,7 +85,7 @@ public:
               break;
               }
             }
-          else if (testStorageNode->GetFileName() != NULL &&
+          else if (testStorageNode->GetFileName() != nullptr &&
             m_Filename.compare(testStorageNode->GetFileName()) == 0)
             {
             // found the right storage node for a local file
@@ -98,7 +98,7 @@ public:
 
       // if there wasn't already a matching storage node on the node, make one
       bool createdNewStorageNode = false;
-      if (storageNode.GetPointer() == NULL)
+      if (storageNode.GetPointer() == nullptr)
         {
         // Read the data into the referenced node
         if (itksys::SystemTools::FileExists(m_Filename.c_str()))
@@ -106,12 +106,12 @@ public:
           // file is there on disk
           storableNode->AddDefaultStorageNode(m_Filename.c_str());
           storageNode = storableNode->GetStorageNode();
-          createdNewStorageNode = (storageNode != NULL);
+          createdNewStorageNode = (storageNode != nullptr);
           }
         }
 
       // Have the storage node read the data into the current node
-      if (storageNode.GetPointer() != NULL)
+      if (storageNode.GetPointer() != nullptr)
         {
         try
           {
@@ -125,7 +125,7 @@ public:
             storageNode->ReadData(nd, /*temporary*/true);
             if (createdNewStorageNode)
               {
-              storageNode->SetURI(NULL); // clear temporary URI
+              storageNode->SetURI(nullptr); // clear temporary URI
               }
             }
           else
@@ -136,7 +136,7 @@ public:
             storageNode->ReadData(nd, /*temporary*/true);
             if (createdNewStorageNode)
               {
-              storageNode->SetFileName(NULL); // clear temp file name
+              storageNode->SetFileName(nullptr); // clear temp file name
               }
             }
           }
@@ -203,12 +203,12 @@ public:
     // Tensors? Vectors?
     if (m_DisplayData)
       {
-      if (vtkMRMLLabelMapVolumeNode::SafeDownCast(nd) != NULL)
+      if (vtkMRMLLabelMapVolumeNode::SafeDownCast(nd) != nullptr)
         {
         appLogic->GetSelectionNode()->SetActiveLabelVolumeID(m_TargetNode.c_str());
         appLogic->PropagateVolumeSelection();
         }
-      else if (vtkMRMLScalarVolumeNode::SafeDownCast(nd) != NULL)
+      else if (vtkMRMLScalarVolumeNode::SafeDownCast(nd) != nullptr)
         {
         appLogic->GetSelectionNode()->SetActiveVolumeID(m_TargetNode.c_str());
         // make sure win/level gets calculated
@@ -219,7 +219,7 @@ public:
           }
         appLogic->PropagateVolumeSelection();
         }
-      else if (vtkMRMLTableNode::SafeDownCast(nd) != NULL)
+      else if (vtkMRMLTableNode::SafeDownCast(nd) != nullptr)
         {
         appLogic->GetSelectionNode()->SetActiveTableID(m_TargetNode.c_str());
         appLogic->PropagateTableSelection();
@@ -252,7 +252,7 @@ public:
     m_DeleteFile = deleteFile;
   }
 
-  void Execute(vtkSlicerApplicationLogic* appLogic)
+  void Execute(vtkSlicerApplicationLogic* appLogic) override
   {
     if (m_SourceNodes.size() != m_TargetNodes.size())
       {
@@ -340,7 +340,7 @@ public:
             vtkMRMLDisplayNode *sdnd1 = smnd->GetDisplayNode();
 
             vtkMRMLNode *tmodel = appLogic->GetMRMLScene()->CopyNode(smnd);
-            vtkMRMLStorableNode::SafeDownCast(tmodel)->SetAndObserveStorageNodeID(NULL);
+            vtkMRMLStorableNode::SafeDownCast(tmodel)->SetAndObserveStorageNodeID(nullptr);
             vtkMRMLModelNode *mnd = vtkMRMLModelNode::SafeDownCast( tmodel );
             tmhnd->SetModelNodeID( mnd->GetID() );
 
@@ -397,7 +397,7 @@ public:
                   // check for a parent node id in the mapper (as long as it doesn't already
                   // point to the source node), default to the top level one though
                   std::string parentNodeID = std::string(tmhnd->GetID());
-                  if (tcmhd->GetParentNodeID() != NULL &&
+                  if (tcmhd->GetParentNodeID() != nullptr &&
                       strcmp(tcmhd->GetParentNodeID(),smhnd->GetID()) != 0)
                     {
                     std::map<std::string,std::string>::iterator pIt = parentNodeIDMapper.find(std::string(tcmhd->GetParentNodeID()));
@@ -421,7 +421,7 @@ public:
                     vtkMRMLDisplayNode *sdnd2 = smnd1->GetDisplayNode();
 
                     vtkMRMLNode *tmodel = appLogic->GetMRMLScene()->CopyNode(smnd1);
-                    vtkMRMLStorableNode::SafeDownCast(tmodel)->SetAndObserveStorageNodeID(NULL);
+                    vtkMRMLStorableNode::SafeDownCast(tmodel)->SetAndObserveStorageNodeID(nullptr);
                     vtkMRMLModelNode *mnd =vtkMRMLModelNode::SafeDownCast(tmodel);
                     tcmhd->SetModelNodeID( mnd->GetID() );
 
@@ -513,7 +513,7 @@ public:
     m_ParentTransformNode = parentTransformNode;
   }
 
-  void Execute(vtkSlicerApplicationLogic* appLogic)
+  void Execute(vtkSlicerApplicationLogic* appLogic) override
   {
     vtkMRMLScene* scene = appLogic->GetMRMLScene();
     vtkMRMLTransformableNode* node = vtkMRMLTransformableNode::SafeDownCast(
@@ -541,7 +541,7 @@ public:
     m_SubjectHierarchySiblingNode = siblingNode;
   }
 
-  void Execute(vtkSlicerApplicationLogic* appLogic)
+  void Execute(vtkSlicerApplicationLogic* appLogic) override
   {
     vtkMRMLScene* scene = appLogic->GetMRMLScene();
 
@@ -562,6 +562,37 @@ public:
 protected:
   std::string m_UpdatedNode;
   std::string m_SubjectHierarchySiblingNode;
+};
+
+//----------------------------------------------------------------------------
+class ReadDataRequestAddNodeReference : public DataRequest
+{
+public:
+  ReadDataRequestAddNodeReference(const std::string& referencingNode,
+    const std::string& referencedNode, const std::string& role, int uid = 0)
+    : DataRequest(uid)
+  {
+    m_ReferencingNode = referencingNode;
+    m_ReferencedNode = referencedNode;
+    m_Role = role;
+  }
+
+  void Execute(vtkSlicerApplicationLogic* appLogic) override
+  {
+    vtkMRMLScene* scene = appLogic->GetMRMLScene();
+
+    vtkMRMLNode *referencingNode = scene->GetNodeByID(m_ReferencingNode);
+    vtkMRMLNode *referencedNode = scene->GetNodeByID(m_ReferencedNode);
+    if (referencingNode && referencedNode)
+      {
+      referencingNode->AddNodeReferenceID(m_Role.c_str(), m_ReferencedNode.c_str());
+      }
+  }
+
+protected:
+  std::string m_ReferencingNode;
+  std::string m_ReferencedNode;
+  std::string m_Role;
 };
 
 //----------------------------------------------------------------------------
@@ -595,7 +626,7 @@ public:
     m_Filename = filename;
   }
 
-  void Execute(vtkSlicerApplicationLogic* appLogic)
+  void Execute(vtkSlicerApplicationLogic* appLogic) override
   {
     if (m_SourceNodes.size() != m_TargetNodes.size())
       {

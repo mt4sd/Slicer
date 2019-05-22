@@ -28,12 +28,6 @@
 #include "qSlicerDoubleArraysReader.h"
 
 //-----------------------------------------------------------------------------
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QtPlugin>
-Q_EXPORT_PLUGIN2(qSlicerDoubleArraysModule, qSlicerDoubleArraysModule);
-#endif
-
-//-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class qSlicerDoubleArraysModulePrivate
 {
@@ -46,8 +40,7 @@ public:
 
 //-----------------------------------------------------------------------------
 qSlicerDoubleArraysModulePrivate::qSlicerDoubleArraysModulePrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerDoubleArraysModule methods
@@ -61,8 +54,7 @@ qSlicerDoubleArraysModule::qSlicerDoubleArraysModule(QObject* _parent)
 
 //-----------------------------------------------------------------------------
 qSlicerDoubleArraysModule::~qSlicerDoubleArraysModule()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 QString qSlicerDoubleArraysModule::helpText()const
@@ -120,7 +112,7 @@ bool qSlicerDoubleArraysModule::isHidden() const
 //-----------------------------------------------------------------------------
 qSlicerAbstractModuleRepresentation * qSlicerDoubleArraysModule::createWidgetRepresentation()
 {
-  return 0;
+  return nullptr;
 }
 
 //-----------------------------------------------------------------------------

@@ -42,7 +42,7 @@ class VTK_SLICER_SEGMENTATIONS_LOGIC_EXPORT vtkSlicerSegmentationGeometryLogic :
 public:
   static vtkSlicerSegmentationGeometryLogic* New();
   vtkTypeMacro(vtkSlicerSegmentationGeometryLogic, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Calculate output geometry into \sa GeometryImageData with current options
   /// \return Error message. Empty when successful
@@ -85,7 +85,7 @@ public:
 
 protected:
   vtkSlicerSegmentationGeometryLogic();
-  virtual ~vtkSlicerSegmentationGeometryLogic();
+  ~vtkSlicerSegmentationGeometryLogic() override;
 
 protected:
   /// Input segmentation MRML node to modify the labelmap geometry of
@@ -117,8 +117,8 @@ protected:
   int SourceAxisIndexForInputAxis[3];
 
 private:
-  vtkSlicerSegmentationGeometryLogic(const vtkSlicerSegmentationGeometryLogic&); // Not implemented
-  void operator=(const vtkSlicerSegmentationGeometryLogic&);               // Not implemented
+  vtkSlicerSegmentationGeometryLogic(const vtkSlicerSegmentationGeometryLogic&) = delete;
+  void operator=(const vtkSlicerSegmentationGeometryLogic&) = delete;
 };
 
 #endif

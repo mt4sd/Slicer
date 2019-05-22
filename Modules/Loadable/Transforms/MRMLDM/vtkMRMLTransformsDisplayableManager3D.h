@@ -40,33 +40,33 @@ public:
 
   static vtkMRMLTransformsDisplayableManager3D* New();
   vtkTypeMacro(vtkMRMLTransformsDisplayableManager3D,vtkMRMLAbstractThreeDViewDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
 
   vtkMRMLTransformsDisplayableManager3D();
-  virtual ~vtkMRMLTransformsDisplayableManager3D();
+  ~vtkMRMLTransformsDisplayableManager3D() override;
 
-  virtual void UnobserveMRMLScene() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) VTK_OVERRIDE;
+  void UnobserveMRMLScene() override;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) override;
+  void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) override;
 
   /// Update Actors based on transforms in the scene
-  virtual void UpdateFromMRML() VTK_OVERRIDE;
+  void UpdateFromMRML() override;
 
-  virtual void OnMRMLSceneStartClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndClose() VTK_OVERRIDE;
+  void OnMRMLSceneStartClose() override;
+  void OnMRMLSceneEndClose() override;
 
-  virtual void OnMRMLSceneEndBatchProcess() VTK_OVERRIDE;
+  void OnMRMLSceneEndBatchProcess() override;
 
   /// Initialize the displayable manager
-  virtual void Create() VTK_OVERRIDE;
+  void Create() override;
 
 private:
 
-  vtkMRMLTransformsDisplayableManager3D(const vtkMRMLTransformsDisplayableManager3D&); // Not implemented
-  void operator=(const vtkMRMLTransformsDisplayableManager3D&);                 // Not Implemented
+  vtkMRMLTransformsDisplayableManager3D(const vtkMRMLTransformsDisplayableManager3D&) = delete;
+  void operator=(const vtkMRMLTransformsDisplayableManager3D&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

@@ -83,8 +83,7 @@ qSlicerMarkupsSettingsPanel::qSlicerMarkupsSettingsPanel(QWidget* _parent)
 
 // --------------------------------------------------------------------------
 qSlicerMarkupsSettingsPanel::~qSlicerMarkupsSettingsPanel()
-{
-}
+= default;
 
 // --------------------------------------------------------------------------
 vtkSlicerMarkupsLogic* qSlicerMarkupsSettingsPanel
@@ -125,6 +124,7 @@ void qSlicerMarkupsSettingsPanel
 ::onMarkupsLogicModified()
 {
   Q_D(qSlicerMarkupsSettingsPanel);
+/* disable it for now; if we want a settings panel then use the same pattern that is used for default view options
 
   // update the gui to match the logic
   QString glyphType = QString(d->MarkupsLogic->GetDefaultMarkupsDisplayNodeGlyphTypeAsString().c_str());
@@ -167,6 +167,7 @@ void qSlicerMarkupsSettingsPanel
   QObject::connect(d->defaultOpacitySliderWidget, SIGNAL(valueChanged(double)),
                    this, SLOT(onDefaultOpacityChanged(double)),Qt::UniqueConnection);
   d->defaultOpacitySliderWidget->setValue(opacity);
+  */
 }
 
 // --------------------------------------------------------------------------
@@ -302,11 +303,12 @@ void qSlicerMarkupsSettingsPanel::updateMarkupsLogicDefaultGlyphType()
 {
   Q_D(qSlicerMarkupsSettingsPanel);
 
-  if (d->MarkupsLogic == 0)
+  if (d->MarkupsLogic == nullptr)
     {
     return;
     }
-  d->MarkupsLogic->SetDefaultMarkupsDisplayNodeGlyphTypeFromString(this->defaultGlyphType().toLatin1());
+  // disable it for now; if we want a settings panel then use the same pattern that is used for default view options
+  // d->MarkupsLogic->SetDefaultMarkupsDisplayNodeGlyphTypeFromString(this->defaultGlyphType().toLatin1());
 }
 
 // --------------------------------------------------------------------------
@@ -330,7 +332,9 @@ void qSlicerMarkupsSettingsPanel::updateMarkupsLogicDefaultUnselectedColor()
   color[1] = qcolor.greenF();
   color[2] = qcolor.blueF();
 
-  d->MarkupsLogic->SetDefaultMarkupsDisplayNodeColor(color);
+  // disable it for now; if we want a settings panel then use the same pattern that is used for default view options
+  // d->MarkupsLogic->SetDefaultMarkupsDisplayNodeColor(color);
+  Q_UNUSED(color);
 }
 
 // --------------------------------------------------------------------------
@@ -354,7 +358,9 @@ void qSlicerMarkupsSettingsPanel::updateMarkupsLogicDefaultSelectedColor()
   color[1] = qcolor.greenF();
   color[2] = qcolor.blueF();
 
-  d->MarkupsLogic->SetDefaultMarkupsDisplayNodeSelectedColor(color);
+  // disable it for now; if we want a settings panel then use the same pattern that is used for default view options
+  // d->MarkupsLogic->SetDefaultMarkupsDisplayNodeSelectedColor(color);
+  Q_UNUSED(color);
 }
 
 // --------------------------------------------------------------------------
@@ -370,11 +376,12 @@ void qSlicerMarkupsSettingsPanel::updateMarkupsLogicDefaultGlyphScale()
 {
   Q_D(qSlicerMarkupsSettingsPanel);
 
-  if (d->MarkupsLogic == 0)
+  if (d->MarkupsLogic == nullptr)
     {
     return;
     }
-  d->MarkupsLogic->SetDefaultMarkupsDisplayNodeGlyphScale(this->defaultGlyphScale());
+  // disable it for now; if we want a settings panel then use the same pattern that is used for default view options
+  // d->MarkupsLogic->SetDefaultMarkupsDisplayNodeGlyphScale(this->defaultGlyphScale());
 }
 
 // --------------------------------------------------------------------------
@@ -390,11 +397,12 @@ void qSlicerMarkupsSettingsPanel::updateMarkupsLogicDefaultTextScale()
 {
   Q_D(qSlicerMarkupsSettingsPanel);
 
-  if (d->MarkupsLogic == 0)
+  if (d->MarkupsLogic == nullptr)
     {
     return;
     }
-  d->MarkupsLogic->SetDefaultMarkupsDisplayNodeTextScale(this->defaultTextScale());
+  // disable it for now; if we want a settings panel then use the same pattern that is used for default view options
+  // d->MarkupsLogic->SetDefaultMarkupsDisplayNodeTextScale(this->defaultTextScale());
 }
 
 // --------------------------------------------------------------------------
@@ -410,9 +418,10 @@ void qSlicerMarkupsSettingsPanel::updateMarkupsLogicDefaultOpacity()
 {
   Q_D(qSlicerMarkupsSettingsPanel);
 
-  if (d->MarkupsLogic == 0)
+  if (d->MarkupsLogic == nullptr)
     {
     return;
     }
-  d->MarkupsLogic->SetDefaultMarkupsDisplayNodeOpacity(this->defaultOpacity());
+  // disable it for now; if we want a settings panel then use the same pattern that is used for default view options
+  // d->MarkupsLogic->SetDefaultMarkupsDisplayNodeOpacity(this->defaultOpacity());
 }

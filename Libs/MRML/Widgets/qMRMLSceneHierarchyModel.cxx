@@ -69,8 +69,7 @@ qMRMLSceneHierarchyModel::qMRMLSceneHierarchyModel(
 
 //------------------------------------------------------------------------------
 qMRMLSceneHierarchyModel::~qMRMLSceneHierarchyModel()
-{
-}
+= default;
 
 //------------------------------------------------------------------------------
 int qMRMLSceneHierarchyModel::expandColumn()const
@@ -139,7 +138,7 @@ vtkMRMLNode* qMRMLSceneHierarchyModel::parentNode(vtkMRMLNode* node)const
     {
     hierarchyNode = vtkMRMLHierarchyNode::GetAssociatedHierarchyNode(node->GetScene(), node->GetID());
     }
-  return hierarchyNode ? hierarchyNode->GetParentNode() : 0;
+  return hierarchyNode ? hierarchyNode->GetParentNode() : nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -151,8 +150,8 @@ int qMRMLSceneHierarchyModel::nodeIndex(vtkMRMLNode* node)const
     return -1;
     }
 
-  const char* nodeId = node ? node->GetID() : 0;
-  if (nodeId == 0)
+  const char* nodeId = node ? node->GetID() : nullptr;
+  if (nodeId == nullptr)
     {
     return -1;
     }
@@ -165,7 +164,7 @@ int qMRMLSceneHierarchyModel::nodeIndex(vtkMRMLNode* node)const
     return assocHierarchyNodeIndex + 1;
     }
 
-  const char* nId = 0;
+  const char* nId = nullptr;
   vtkMRMLNode* parent = this->parentNode(node);
   int index = 0;
   // if it's part of a hierarchy, use the GetIndexInParent call
@@ -175,7 +174,7 @@ int qMRMLSceneHierarchyModel::nodeIndex(vtkMRMLNode* node)const
     if (hnode)
       {
       vtkMRMLHierarchyNode* parentHierarchy = vtkMRMLHierarchyNode::SafeDownCast(parent);
-      if (parentHierarchy == 0)
+      if (parentHierarchy == nullptr)
         {
         // sometimes the parent is not a hierarchy node but the associated node
         // of a hierarchy node (if the hierarchy node is filtered out from the view).
@@ -203,17 +202,17 @@ int qMRMLSceneHierarchyModel::nodeIndex(vtkMRMLNode* node)const
 
   // otherwise, iterate through the scene
   vtkCollection* nodes = d->MRMLScene->GetNodes();
-  vtkMRMLNode* n = 0;
+  vtkMRMLNode* n = nullptr;
   vtkCollectionSimpleIterator it;
 
   for (nodes->InitTraversal(it);
        (n = (vtkMRMLNode*)nodes->GetNextItemAsObject(it)) ;)
     {
-    // note: parent can be NULL, it means that the scene is the parent
+    // note: parent can be nullptr, it means that the scene is the parent
     vtkMRMLHierarchyNode *currentHierarchyNode =
       vtkMRMLHierarchyNode::GetAssociatedHierarchyNode(d->MRMLScene, n->GetID());
     vtkMRMLNode *currentParentNode =
-        (currentHierarchyNode ? currentHierarchyNode->GetParentNode() : 0);
+        (currentHierarchyNode ? currentHierarchyNode->GetParentNode() : nullptr);
     if (parent == currentParentNode)
       {
       nId = n->GetID();
@@ -242,7 +241,7 @@ int qMRMLSceneHierarchyModel::nodeIndex(vtkMRMLNode* node)const
 //------------------------------------------------------------------------------
 bool qMRMLSceneHierarchyModel::canBeAChild(vtkMRMLNode* node)const
 {
-  return node != 0;
+  return node != nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -262,8 +261,8 @@ bool qMRMLSceneHierarchyModel::reparent(vtkMRMLNode* node, vtkMRMLNode* newParen
 
   vtkMRMLNode *mrmlNode = vtkMRMLNode::SafeDownCast(node);
   vtkMRMLHierarchyNode *hierarchyNode = vtkMRMLHierarchyNode::SafeDownCast(node);
-  vtkMRMLNode *mrmlParentNode = NULL;
-  vtkMRMLHierarchyNode *hierarchyParentNode = NULL;
+  vtkMRMLNode *mrmlParentNode = nullptr;
+  vtkMRMLHierarchyNode *hierarchyParentNode = nullptr;
   if (newParent)
     {
     mrmlParentNode = vtkMRMLNode::SafeDownCast(newParent);
@@ -291,7 +290,7 @@ bool qMRMLSceneHierarchyModel::reparent(vtkMRMLNode* node, vtkMRMLNode* newParen
     else
       {
       // reparenting to top with null parent id
-      hierarchyNode->SetParentNodeID(NULL);
+      hierarchyNode->SetParentNodeID(nullptr);
       }
     return true;
     }
@@ -338,7 +337,7 @@ bool qMRMLSceneHierarchyModel::reparent(vtkMRMLNode* node, vtkMRMLNode* newParen
       else
         {
         // reparenting to top with null parent id
-        hierarchyNode->SetParentNodeID(NULL);
+        hierarchyNode->SetParentNodeID(nullptr);
         }
       return true;
       }

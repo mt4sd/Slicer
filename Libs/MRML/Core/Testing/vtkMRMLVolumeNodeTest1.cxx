@@ -33,16 +33,16 @@ public:
 
   vtkTypeMacro(vtkMRMLVolumeNodeTestHelper1,vtkMRMLVolumeNode);
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE
+  vtkMRMLNode* CreateNodeInstance() override
     {
     return vtkMRMLVolumeNodeTestHelper1::New();
     }
-  virtual const char* GetNodeTagName() VTK_OVERRIDE
+  const char* GetNodeTagName() override
     {
     return "vtkMRMLVolumeNodeTestHelper1";
     }
 
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE { return vtkMRMLVolumeArchetypeStorageNode::New(); }
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override { return vtkMRMLVolumeArchetypeStorageNode::New(); }
 };
 vtkStandardNewMacro(vtkMRMLVolumeNodeTestHelper1);
 
@@ -188,8 +188,8 @@ int vtkMRMLVolumeNodeTest1(int , char * [])
 
   // Image Data
   vtkNew<vtkImageData> imageData;
-  node1->SetAndObserveImageData(NULL);
-  if (node1->GetImageData() != NULL)
+  node1->SetAndObserveImageData(nullptr);
+  if (node1->GetImageData() != nullptr)
     {
     std::cerr << "Get image data didn't return null" << std::endl;
     return EXIT_FAILURE;

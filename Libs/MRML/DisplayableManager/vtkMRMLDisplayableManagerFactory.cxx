@@ -61,8 +61,7 @@ public:
 
 //----------------------------------------------------------------------------
 vtkMRMLDisplayableManagerFactory::vtkInternal::vtkInternal()
-{
-}
+= default;
 
 //----------------------------------------------------------------------------
 // vtkMRMLDisplayableManagerFactory methods
@@ -205,7 +204,7 @@ vtkMRMLDisplayableManagerGroup* vtkMRMLDisplayableManagerFactory::InstantiateDis
   if (!newRenderer)
     {
     vtkWarningMacro(<<"InstanciateDisplayableManagers - newRenderer is NULL");
-    return 0;
+    return nullptr;
     }
 
   vtkMRMLDisplayableManagerGroup * displayableManagerGroup = vtkMRMLDisplayableManagerGroup::New();

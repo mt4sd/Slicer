@@ -47,24 +47,22 @@ if((NOT DEFINED VTK_DIR OR NOT DEFINED VTK_SOURCE_DIR) AND NOT Slicer_USE_SYSTEM
       )
   endif()
 
+  # Markups module needs vtkFrenetSerretFrame, which is available in
+  # SplineDrivenImageSlicer remote module.
+  list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
+    -DModule_SplineDrivenImageSlicer:BOOL=ON
+    )
+
   list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
     -DVTK_USE_GUISUPPORT:BOOL=ON
     -DVTK_USE_QVTK_QTOPENGL:BOOL=ON
     -DModule_vtkTestingRendering:BOOL=ON
     )
-  if(Slicer_REQUIRED_QT_VERSION VERSION_LESS "5")
-    list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
-      -DVTK_QT_VERSION:STRING=4
-      -DVTK_USE_QT:BOOL=ON
-      -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
-      )
-  else()
     list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
       -DVTK_QT_VERSION:STRING=5
       -DVTK_Group_Qt:BOOL=ON
       -DQt5_DIR:FILEPATH=${Qt5_DIR}
       )
-  endif()
   if("${Slicer_VTK_RENDERING_BACKEND}" STREQUAL "OpenGL2")
     list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
       -DModule_vtkGUISupportQtOpenGL:BOOL=ON
@@ -99,6 +97,14 @@ if((NOT DEFINED VTK_DIR OR NOT DEFINED VTK_SOURCE_DIR) AND NOT Slicer_USE_SYSTEM
         -DModule_vtkRenderingFreeTypeFontConfig:BOOL=ON
         )
     endif()
+
+    # OpenGL_GL_PREFERENCE
+    if(NOT "${OpenGL_GL_PREFERENCE}" MATCHES "^(LEGACY|GLVND)$")
+      message(FATAL_ERROR "OpenGL_GL_PREFERENCE variable is expected to be set to LEGACY or GLVND")
+    endif()
+    list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
+      -DOpenGL_GL_PREFERENCE:STRING=${OpenGL_GL_PREFERENCE}
+      )
   endif()
 
   # Disable Tk when Python wrapping is enabled
@@ -115,10 +121,8 @@ if((NOT DEFINED VTK_DIR OR NOT DEFINED VTK_SOURCE_DIR) AND NOT Slicer_USE_SYSTEM
     )
 
 set(_git_tag)
-if("${Slicer_VTK_VERSION_MAJOR}" STREQUAL "7")
-  set(_git_tag "43f6ee36f6e28c8347768bd97df4d767da6b4ce7")
-elseif("${Slicer_VTK_VERSION_MAJOR}" STREQUAL "8")
-  set(_git_tag "99797966b61cb208a4c50d7cace0f875dbae69b9")
+if("${Slicer_VTK_VERSION_MAJOR}" STREQUAL "8")
+  set(_git_tag "7a3af8c9ff14be2f959a4bed7a8c62dda857ada4")
 else()
   message(FATAL_ERROR "error: Unsupported Slicer_VTK_VERSION_MAJOR: ${Slicer_VTK_VERSION_MAJOR}")
 endif()
@@ -171,6 +175,18 @@ endif()
       ${${proj}_DEPENDENCIES}
     )
 
+  if(Slicer_USE_PYTHONQT AND NOT Slicer_USE_SYSTEM_python)
+    # Create the vtk-*.egg-info directory to prevent pip from re-installing
+    # vtk package as a wheel when listed as dependency in Slicer extension.
+    set(_vtk_egg_info_dir "${python_DIR}/${PYTHON_SITE_PACKAGES_SUBDIR}/vtk-8.2.0-py3.6.egg-info")
+    ExternalProject_Add_Step(${proj} create_egg_info
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${_vtk_egg_info_dir}
+      COMMAND ${CMAKE_COMMAND} -E touch ${_vtk_egg_info_dir}/PKG-INFO
+      COMMENT "Creating '${_vtk_egg_info_dir}' directory"
+      DEPENDEES build
+      )
+  endif()
+
   ExternalProject_GenerateProjectDescription_Step(${proj})
 
   set(VTK_DIR ${EP_BINARY_DIR})
@@ -196,22 +212,15 @@ endif()
     )
 
   # pythonpath
-  if(Slicer_VTK_VERSION_MAJOR VERSION_GREATER 7)
     if(UNIX)
       set(${proj}_PYTHONPATH_LAUNCHER_BUILD
-        ${VTK_DIR}/${_library_output_subdir}/python2.7/site-packages
+        ${VTK_DIR}/${_library_output_subdir}/python3.6/site-packages
         )
     else()
       set(${proj}_PYTHONPATH_LAUNCHER_BUILD
         ${VTK_DIR}/${_library_output_subdir}/<CMAKE_CFG_INTDIR>/Lib/site-packages
         )
     endif()
-  else()
-    set(${proj}_PYTHONPATH_LAUNCHER_BUILD
-      ${VTK_DIR}/Wrapping/Python
-      ${VTK_DIR}/${_library_output_subdir}/<CMAKE_CFG_INTDIR>
-      )
-  endif()
 
   mark_as_superbuild(
     VARS ${proj}_PYTHONPATH_LAUNCHER_BUILD
@@ -227,7 +236,7 @@ endif()
     # in a standard location using CMake/SlicerBlockInstallExternalPythonModules.cmake
     if(UNIX)
       set(${proj}_PYTHONPATH_LAUNCHER_INSTALLED
-        <APPLAUNCHER_SETTINGS_DIR>/../${Slicer_INSTALL_LIB_DIR}/python2.7/site-packages
+        <APPLAUNCHER_SETTINGS_DIR>/../${Slicer_INSTALL_LIB_DIR}/python3.6/site-packages
         )
     else()
       set(${proj}_PYTHONPATH_LAUNCHER_INSTALLED
@@ -235,7 +244,7 @@ endif()
         # Adding the following line is needed only for (<VTK_MAJOR_VERSION>.<VTK_MINOR_VERSION> <= 8.1),
         # but since we only have Slicer_VTK_VERSION_MAJOR variable, following the update of VTK
         # version from 9.0 to 8.2, there is no way to discriminate between 8.1 and 8.2.
-        <APPLAUNCHER_SETTINGS_DIR>/../${Slicer_INSTALL_LIB_DIR}/python2.7/site-packages
+        <APPLAUNCHER_SETTINGS_DIR>/../${Slicer_INSTALL_LIB_DIR}/python3.6/site-packages
         )
     endif()
     mark_as_superbuild(

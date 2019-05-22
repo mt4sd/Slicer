@@ -83,21 +83,21 @@ public:
 public:
   static vtkMRMLSegmentationDisplayNode *New();
   vtkTypeMacro(vtkMRMLSegmentationDisplayNode,vtkMRMLDisplayNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Set node attributes from name/value pairs
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE { return "SegmentationDisplay"; }
+  const char* GetNodeTagName() override { return "SegmentationDisplay"; }
 
 public:
   /// Get name of representation that is displayed in the 2D view if exists
@@ -110,10 +110,6 @@ public:
   /// Set name of representation that is displayed in the 3D view if exists
   vtkSetStringMacro(PreferredDisplayRepresentationName3D);
 
-  /// Get/Set 3D visibility
-  vtkGetMacro(Visibility3D, bool);
-  vtkSetMacro(Visibility3D, bool);
-  vtkBooleanMacro(Visibility3D, bool);
   /// Get/Set 2D fill visibility
   vtkGetMacro(Visibility2DFill, bool);
   vtkSetMacro(Visibility2DFill, bool);
@@ -278,7 +274,7 @@ protected:
 
 protected:
   vtkMRMLSegmentationDisplayNode();
-  virtual ~vtkMRMLSegmentationDisplayNode();
+  ~vtkMRMLSegmentationDisplayNode() override;
   vtkMRMLSegmentationDisplayNode(const vtkMRMLSegmentationDisplayNode&);
   void operator=(const vtkMRMLSegmentationDisplayNode&);
 
@@ -306,11 +302,13 @@ protected:
   vtkMTimeType SegmentListUpdateTime;
   vtkSegmentation* SegmentListUpdateSource;
 
-  /// 3D visibility for the whole segmentation
-  bool Visibility3D;
-  /// 2D fill visibility for the whole segmentation
+  /// 2D fill visibility for the whole segmentation.
+  /// In order for the fill to be visible, \sa Visibility, Visibility2D, and Visibility2DFill
+  /// need to be all enabled.
   bool Visibility2DFill;
-  /// 2D outline visibility for the whole segmentation
+  /// 2D outline visibility for the whole segmentation.
+  /// In order for the outline to be visible, \sa Visibility, Visibility2D, and Visibility2DOutline
+  /// need to be all enabled.
   bool Visibility2DOutline;
 
   /// 3D opacity for the whole segmentation

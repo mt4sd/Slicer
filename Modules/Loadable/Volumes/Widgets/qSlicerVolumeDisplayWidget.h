@@ -22,8 +22,8 @@ class Q_SLICER_QTMODULES_VOLUMES_WIDGETS_EXPORT qSlicerVolumeDisplayWidget : pub
 public:
   /// Constructors
   typedef QStackedWidget Superclass;
-  explicit qSlicerVolumeDisplayWidget(QWidget* parent=0);
-  virtual ~qSlicerVolumeDisplayWidget();
+  explicit qSlicerVolumeDisplayWidget(QWidget* parent=nullptr);
+  ~qSlicerVolumeDisplayWidget() override;
 
 public slots:
   /// Set the MRML node of interest

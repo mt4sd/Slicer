@@ -39,8 +39,8 @@ class Q_SLICER_MODULE_TERMINOLOGIES_WIDGETS_EXPORT qSlicerTerminologySelectorBut
   Q_OBJECT
 
 public:
-  explicit qSlicerTerminologySelectorButton(QWidget* parent=NULL);
-  virtual ~qSlicerTerminologySelectorButton();
+  explicit qSlicerTerminologySelectorButton(QWidget* parent=nullptr);
+  ~qSlicerTerminologySelectorButton() override;
 
   /// Get selected terminology and other metadata (name, color, auto-generated flags) into given info bundle object
   void terminologyInfo(qSlicerTerminologyNavigatorWidget::TerminologyInfoBundle &terminologyInfo);
@@ -60,7 +60,7 @@ protected slots:
   void onToggled(bool toggled=true);
 
 protected:
-  virtual void paintEvent(QPaintEvent* event);
+  void paintEvent(QPaintEvent* event) override;
 
   QScopedPointer<qSlicerTerminologySelectorButtonPrivate> d_ptr;
 private :

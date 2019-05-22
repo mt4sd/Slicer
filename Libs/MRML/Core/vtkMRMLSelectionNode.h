@@ -36,31 +36,31 @@ class VTK_MRML_EXPORT vtkMRMLSelectionNode : public vtkMRMLNode
   public:
   static vtkMRMLSelectionNode *New();
   vtkTypeMacro(vtkMRMLSelectionNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "Selection";}
+  const char* GetNodeTagName() override {return "Selection";}
 
   /// Set the nodes as references to the current scene.
-  virtual void SetSceneReferences() VTK_OVERRIDE;
+  void SetSceneReferences() override;
 
   /// Update the stored reference to another node in the scene
-  virtual void UpdateReferenceID(const char *oldID, const char *newID) VTK_OVERRIDE;
+  void UpdateReferenceID(const char *oldID, const char *newID) override;
 
   /// Updates this node if it depends on other nodes
   /// when the node is deleted in the scene
-  virtual void UpdateReferences() VTK_OVERRIDE;
+  void UpdateReferences() override;
 
   /// the ID of a MRMLVolumeNode (typically background)
   vtkGetStringMacro (ActiveVolumeID);
@@ -180,7 +180,7 @@ class VTK_MRML_EXPORT vtkMRMLSelectionNode : public vtkMRMLNode
 
   /// Add a new valid placeNode class name to the list, with optional qt resource
   /// reference string for updating GUI elements
-  void AddNewPlaceNodeClassNameToList(const char *newID, const char *resource = NULL, const char *iconName = "");
+  void AddNewPlaceNodeClassNameToList(const char *newID, const char *resource = nullptr, const char *iconName = "");
 
   // -- Units --
 
@@ -188,7 +188,7 @@ class VTK_MRML_EXPORT vtkMRMLSelectionNode : public vtkMRMLNode
   /// This is how the GUI or the logic can access the current node for
   /// a quantity. Changing the current node for a given quantity should only
   /// be done through the unit node settings panel.
-  /// There can be no node (i.e. NULL) associated to a quantity.
+  /// There can be no node (i.e. nullptr) associated to a quantity.
   /// To make sure to have the correct unit node, one should observe the
   /// selection node for UnitModifiedEvent.
   /// \sa GetUnitNode(), GetNodeReferenceID(), SetAndObserveNodeReferenceID()
@@ -213,7 +213,7 @@ class VTK_MRML_EXPORT vtkMRMLSelectionNode : public vtkMRMLNode
   /// Method to propagate events generated in units nodes.
   /// \sa GetNodeReferenceID(), SetAndObserveNodeReferenceID()
   /// \sa UnitModifiedEvent
-  void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData) VTK_OVERRIDE;
+  void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData) override;
 
   /// Remove a placeNode class name from the list
   /// \sa PlaceNodeClassNameInList
@@ -261,7 +261,7 @@ class VTK_MRML_EXPORT vtkMRMLSelectionNode : public vtkMRMLNode
 
 protected:
   vtkMRMLSelectionNode();
-  ~vtkMRMLSelectionNode();
+  ~vtkMRMLSelectionNode() override;
   vtkMRMLSelectionNode(const vtkMRMLSelectionNode&);
   void operator=(const vtkMRMLSelectionNode&);
 

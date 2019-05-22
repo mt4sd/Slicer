@@ -78,7 +78,7 @@ protected:
   qSlicerDICOMExportDialog* const q_ptr;
 public:
   qSlicerDICOMExportDialogPrivate(qSlicerDICOMExportDialog& object);
-  virtual ~qSlicerDICOMExportDialogPrivate();
+  ~qSlicerDICOMExportDialogPrivate() override;
 public:
   void init();
 private:
@@ -90,16 +90,15 @@ private:
 //-----------------------------------------------------------------------------
 qSlicerDICOMExportDialogPrivate::qSlicerDICOMExportDialogPrivate(qSlicerDICOMExportDialog& object)
   : q_ptr(&object)
-  , Scene(NULL)
+  , Scene(nullptr)
   , ItemToSelect(vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID)
-  , SelectedExportable(NULL)
+  , SelectedExportable(nullptr)
 {
 }
 
 //-----------------------------------------------------------------------------
 qSlicerDICOMExportDialogPrivate::~qSlicerDICOMExportDialogPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qSlicerDICOMExportDialogPrivate::init()
@@ -155,8 +154,7 @@ qSlicerDICOMExportDialog::qSlicerDICOMExportDialog(QObject* parent)
 
 //-----------------------------------------------------------------------------
 qSlicerDICOMExportDialog::~qSlicerDICOMExportDialog()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 bool qSlicerDICOMExportDialog::exec(vtkIdType itemToSelect/*=vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID*/)
@@ -604,7 +602,7 @@ void qSlicerDICOMExportDialog::exportSeries()
     {
     QString message = QString("DICOM dataset successfully exported to %1%2").arg(
       isDicomDatabaseFolder ? "the DICOM database folder " : "").arg(outputFolder.absolutePath());
-    QMessageBox::information(NULL, tr("Export successful"), message);
+    QMessageBox::information(nullptr, tr("Export successful"), message);
     }
 
   // Close the export dialog after successful export
@@ -640,7 +638,7 @@ void qSlicerDICOMExportDialog::exportEntireScene()
       {
       QString message = QString("Scene successfully exported as DICOM to %1/dicomExport").arg(
         qSlicerApplication::application()->temporaryPath());
-      QMessageBox::information(NULL, tr("Export successful"), message);
+      QMessageBox::information(nullptr, tr("Export successful"), message);
       }
     }
   else

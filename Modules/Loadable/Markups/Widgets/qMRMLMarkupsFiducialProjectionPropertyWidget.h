@@ -34,7 +34,8 @@
 #include "qSlicerMarkupsModuleWidgetsExport.h"
 
 class qMRMLMarkupsFiducialProjectionPropertyWidgetPrivate;
-class vtkMRMLMarkupsFiducialNode;
+class vtkMRMLMarkupsDisplayNode;
+class vtkMRMLMarkupsNode;
 
 /// \ingroup Slicer_QtModules_Markups
 class Q_SLICER_MODULE_MARKUPS_WIDGETS_EXPORT
@@ -46,11 +47,12 @@ qMRMLMarkupsFiducialProjectionPropertyWidget
 
 public:
   typedef qMRMLWidget Superclass;
-  qMRMLMarkupsFiducialProjectionPropertyWidget(QWidget *newParent = 0);
-  virtual ~qMRMLMarkupsFiducialProjectionPropertyWidget();
+  qMRMLMarkupsFiducialProjectionPropertyWidget(QWidget *newParent = nullptr);
+  ~qMRMLMarkupsFiducialProjectionPropertyWidget() override;
 
 public slots:
-  void setMRMLFiducialNode(vtkMRMLMarkupsFiducialNode* fiducialNode);
+  void setMRMLMarkupsNode(vtkMRMLMarkupsNode* markupsNode);
+  void setMRMLMarkupsDisplayNode(vtkMRMLMarkupsDisplayNode* markupsDisplayNode);
   void setProjectionVisibility(bool showProjection);
   void setProjectionColor(QColor newColor);
   void setUseFiducialColor(bool useFiducialColor);

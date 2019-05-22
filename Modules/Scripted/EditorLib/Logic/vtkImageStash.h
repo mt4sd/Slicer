@@ -31,7 +31,7 @@ class VTK_SLICER_EDITORLIB_MODULE_LOGIC_EXPORT vtkImageStash : public vtkObject
 public:
   static vtkImageStash *New();
   vtkTypeMacro(vtkImageStash,vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///
   /// The stash image:
@@ -93,7 +93,7 @@ public:
 
 protected:
   vtkImageStash();
-  ~vtkImageStash();
+  ~vtkImageStash() override;
 
   vtkImageData *StashImage;
   vtkUnsignedCharArray *StashedScalars;
@@ -107,8 +107,8 @@ protected:
 private:
   int StashingThreadID;
 
-  vtkImageStash(const vtkImageStash&);  /// Not implemented.
-  void operator=(const vtkImageStash&);  /// Not implemented.
+  vtkImageStash(const vtkImageStash&) = delete;
+  void operator=(const vtkImageStash&) = delete;
 };
 
 

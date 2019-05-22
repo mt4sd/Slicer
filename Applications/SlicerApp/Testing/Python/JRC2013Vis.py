@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import unittest
 import vtk, qt, ctk, slicer
@@ -86,7 +87,7 @@ class JRC2013VisWidget(ScriptedLoadableModuleWidget):
       processCurrentPath = dicomFilesDirectory + '/Dcmtk-db/'
 
       if slicer.util.confirmYesNoDisplay('Do you want to choose local DCMTK database folder?'):
-        print 'Yes'
+        print('Yes')
         dicomFilesDirectory = qt.QFileDialog.getExistingDirectory(None, 'Select DCMTK database folder')
         configFilePath = dicomFilesDirectory + '/dcmqrscp.cfg'
         processCurrentPath = dicomFilesDirectory
@@ -114,14 +115,14 @@ class JRC2013VisWidget(ScriptedLoadableModuleWidget):
           dcmqrscpExePath = testPath
           break
       if not dcmqrscpExePath:
-        raise( UserWarning("Could not find dcmqrscp executable") )
+        raise UserWarning("Could not find dcmqrscp executable")
 
       args = (dcmqrscpExePath, '-c', configFilePath)
-      print 'Start DICOM peer'
+      print('Start DICOM peer')
       self.popen = subprocess.Popen(args, stdout=subprocess.PIPE, cwd=processCurrentPath)
       self.startStopDicomPeerButton.setEnabled(True)
     else:
-      print 'Stop DICOM peer'
+      print('Stop DICOM peer')
       self.popen.kill()
 
 #
@@ -204,7 +205,7 @@ class JRC2013VisTestTest(ScriptedLoadableModuleTest):
           dcmqrscpExePath = testPath
           break
       if not dcmqrscpExePath:
-        raise( UserWarning("Could not find dcmqrscp executable") )
+        raise UserWarning("Could not find dcmqrscp executable")
 
       args = (dcmqrscpExePath, '-c', configFilePath)
       popen = subprocess.Popen(args, stdout=subprocess.PIPE, cwd=processCurrentPath)
@@ -279,7 +280,7 @@ class JRC2013VisTestTest(ScriptedLoadableModuleTest):
       slicer.util.clickAndDrag(threeDView,button='Right')
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -316,7 +317,7 @@ class JRC2013VisTestTest(ScriptedLoadableModuleTest):
       redWidget.sliceController().setSliceVisible(True);
 
       self.delayDisplay('Scroll Slices')
-      for offset in xrange(-20,20,2):
+      for offset in range(-20,20,2):
         redController.setSliceOffsetValue(offset)
 
       self.delayDisplay('Skin Opacity')
@@ -354,7 +355,7 @@ class JRC2013VisTestTest(ScriptedLoadableModuleTest):
       slicer.util.clickAndDrag(threeDView,button='Right')
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -422,7 +423,7 @@ class JRC2013VisTestTest(ScriptedLoadableModuleTest):
       cameraNode.GetCamera().Elevation(-20)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))
@@ -489,7 +490,7 @@ class JRC2013VisTestTest(ScriptedLoadableModuleTest):
             displayNode.SetVisibility(1 if node == showNode else 0)
 
       self.delayDisplay('Test passed!')
-    except Exception, e:
+    except Exception as e:
       import traceback
       traceback.print_exc()
       self.delayDisplay('Test caused exception!\n' + str(e))

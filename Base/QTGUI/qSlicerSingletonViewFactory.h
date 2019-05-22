@@ -40,11 +40,11 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerSingletonViewFactory : public ctkLayoutV
   Q_OBJECT
 public:
   typedef ctkLayoutViewFactory Superclass;
-  qSlicerSingletonViewFactory(QObject* parent=0);
-  virtual ~qSlicerSingletonViewFactory();
+  qSlicerSingletonViewFactory(QObject* parent=nullptr);
+  ~qSlicerSingletonViewFactory() override;
 
   /// Reimplemented to support custom element names
-  virtual QStringList supportedElementNames()const;
+  QStringList supportedElementNames()const override;
 
   /// Set the singleton widget instance that will be used to create the view
   /// The factory will become responsible for deleting the widget
@@ -61,7 +61,7 @@ protected:
   QScopedPointer<qSlicerSingletonViewFactoryPrivate> d_ptr;
 
   /// Reimplemented to instantiate desired singleton widget from the element.
-  Q_INVOKABLE virtual QWidget* createViewFromXML(QDomElement layoutElement);
+  Q_INVOKABLE QWidget* createViewFromXML(QDomElement layoutElement) override;
 
 private:
   Q_DECLARE_PRIVATE(qSlicerSingletonViewFactory)

@@ -37,28 +37,28 @@ public:
 
   static vtkMRMLAnnotationRulerDisplayableManager *New();
   vtkTypeMacro(vtkMRMLAnnotationRulerDisplayableManager, vtkMRMLAnnotationDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
 
   vtkMRMLAnnotationRulerDisplayableManager(){this->m_Focus="vtkMRMLAnnotationRulerNode";}
-  virtual ~vtkMRMLAnnotationRulerDisplayableManager(){}
+  ~vtkMRMLAnnotationRulerDisplayableManager() override = default;
 
   /// Callback for click in RenderWindow
-  virtual void OnClickInRenderWindow(double x, double y, const char *associatedNodeID) VTK_OVERRIDE;
+  void OnClickInRenderWindow(double x, double y, const char *associatedNodeID) override;
   /// Create a widget.
-  virtual vtkAbstractWidget * CreateWidget(vtkMRMLAnnotationNode* node) VTK_OVERRIDE;
+  vtkAbstractWidget * CreateWidget(vtkMRMLAnnotationNode* node) override;
 
   /// Gets called when widget was created
-  virtual void OnWidgetCreated(vtkAbstractWidget * widget, vtkMRMLAnnotationNode * node) VTK_OVERRIDE;
+  void OnWidgetCreated(vtkAbstractWidget * widget, vtkMRMLAnnotationNode * node) override;
 
   /// Propagate properties of MRML node to widget.
-  virtual void PropagateMRMLToWidget(vtkMRMLAnnotationNode* node, vtkAbstractWidget * widget) VTK_OVERRIDE;
+  void PropagateMRMLToWidget(vtkMRMLAnnotationNode* node, vtkAbstractWidget * widget) override;
   /// Propagate properties of widget to MRML node.
-  virtual void PropagateWidgetToMRML(vtkAbstractWidget * widget, vtkMRMLAnnotationNode* node) VTK_OVERRIDE;
+  void PropagateWidgetToMRML(vtkAbstractWidget * widget, vtkMRMLAnnotationNode* node) override;
 
   // update the ruler end point positions from the MRML node
-  virtual void UpdatePosition(vtkAbstractWidget *widget, vtkMRMLNode *node) VTK_OVERRIDE;
+  void UpdatePosition(vtkAbstractWidget *widget, vtkMRMLNode *node) override;
 
   // Get the label from the node and unit node
   std::string GetLabelFormat(vtkMRMLAnnotationRulerNode* rulerNode);
@@ -72,12 +72,12 @@ protected:
 
   /// When the unit has changed, modify the ruler nodes to refresh the label.
   /// \sa AddObserversToSelectionNode(), RemoveObserversFromSelectionNode()
-  virtual void OnMRMLSelectionNodeUnitModifiedEvent(vtkMRMLSelectionNode* selectionNode) VTK_OVERRIDE;
+  void OnMRMLSelectionNodeUnitModifiedEvent(vtkMRMLSelectionNode* selectionNode) override;
 
 private:
 
-  vtkMRMLAnnotationRulerDisplayableManager(const vtkMRMLAnnotationRulerDisplayableManager&); /// Not implemented
-  void operator=(const vtkMRMLAnnotationRulerDisplayableManager&); /// Not Implemented
+  vtkMRMLAnnotationRulerDisplayableManager(const vtkMRMLAnnotationRulerDisplayableManager&) = delete;
+  void operator=(const vtkMRMLAnnotationRulerDisplayableManager&) = delete;
 
 };
 

@@ -61,7 +61,7 @@ protected:
   qMRMLSliceView* const q_ptr;
 public:
   qMRMLSliceViewPrivate(qMRMLSliceView& object);
-  ~qMRMLSliceViewPrivate();
+  ~qMRMLSliceViewPrivate() override;
 
   virtual void init();
 
@@ -101,18 +101,18 @@ public:
 
   /// Method to query the mapping from an id of a LightBox frame to
   /// the Renderer for that frame
-  virtual vtkRenderer *GetRenderer(int id) VTK_OVERRIDE;
+  vtkRenderer *GetRenderer(int id) override;
 
   /// Method to set the real LightBoxManager
   virtual void SetLightBoxRendererManager(vtkLightBoxRendererManager *mgr);
 
 protected:
   vtkInternalLightBoxRendererManagerProxy();
-  virtual ~vtkInternalLightBoxRendererManagerProxy();
+  ~vtkInternalLightBoxRendererManagerProxy() override;
 
 private:
-  vtkInternalLightBoxRendererManagerProxy(const vtkInternalLightBoxRendererManagerProxy&); // Not implemented
-  void operator=(const vtkInternalLightBoxRendererManagerProxy&);                    // Not implemented
+  vtkInternalLightBoxRendererManagerProxy(const vtkInternalLightBoxRendererManagerProxy&) = delete;
+  void operator=(const vtkInternalLightBoxRendererManagerProxy&) = delete;
 
   vtkWeakPointer<vtkLightBoxRendererManager> LightBoxRendererManager;
 

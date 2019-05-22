@@ -20,11 +20,7 @@
 // QT includes
 #include <QButtonGroup>
 #include <QMetaProperty>
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QWeakPointer>
-#else
 #include <QPointer>
-#endif
 
 // CTK includes
 #include <ctkVTKWidgetsUtils.h>
@@ -61,14 +57,10 @@ public:
   void setupUi(QDialog* dialog);
   void setCheckedRadioButton(int type);
   void setWidgetEnabled(bool state);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-  QWeakPointer<qMRMLLayoutManager>   LayoutManager;
-#else
   QPointer<qMRMLLayoutManager>   LayoutManager;
-#endif
   vtkSmartPointer<vtkImageData>      ImageData;
   /// The ID of the associated snapshot node.
-  /// This is NULL if the dialog has no associated snapshot node (== new snapshot mode).
+  /// This is nullptr if the dialog has no associated snapshot node (== new snapshot mode).
   QVariant                           Data;
   QButtonGroup*                      WidgetTypeGroup;
 
@@ -83,7 +75,7 @@ qMRMLScreenShotDialogPrivate::qMRMLScreenShotDialogPrivate(qMRMLScreenShotDialog
 {
   qRegisterMetaType<qMRMLScreenShotDialog::WidgetType>(
       "qMRMLScreenShotDialog::WidgetType");
-  this->WidgetTypeGroup = 0;
+  this->WidgetTypeGroup = nullptr;
 
   this->LastWidgetType = qMRMLScreenShotDialog::FullLayout;
 }
@@ -146,8 +138,7 @@ qMRMLScreenShotDialog::qMRMLScreenShotDialog(QWidget * _parent)
 
 //-----------------------------------------------------------------------------
 qMRMLScreenShotDialog::~qMRMLScreenShotDialog()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 void qMRMLScreenShotDialog::setLayoutManager(qMRMLLayoutManager* newlayoutManager)
@@ -311,8 +302,8 @@ void qMRMLScreenShotDialog::grabScreenShot()
 void qMRMLScreenShotDialog::grabScreenShot(int screenshotWindow)
 {
   Q_D(qMRMLScreenShotDialog);
-  QWidget* widget = 0;
-  vtkRenderWindow* renderWindow = 0;
+  QWidget* widget = nullptr;
+  vtkRenderWindow* renderWindow = nullptr;
   switch (screenshotWindow)
     {
     case qMRMLScreenShotDialog::ThreeD:
@@ -356,7 +347,7 @@ void qMRMLScreenShotDialog::grabScreenShot(int screenshotWindow)
     renderLargeImage->Update();
     newImageData.GetPointer()->DeepCopy(renderLargeImage->GetOutput());
     }
-  else if (!qFuzzyCompare(scaleFactor, 1.0) && renderWindow != NULL)
+  else if (!qFuzzyCompare(scaleFactor, 1.0) && renderWindow != nullptr)
     {
     // Render slice widget at high resolution
 

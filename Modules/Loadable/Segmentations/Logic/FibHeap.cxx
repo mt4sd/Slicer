@@ -56,7 +56,7 @@ using namespace std;
 //***************************************************************************
 
 //FibHeapNode::FibHeapNode() {
-//  Left = Right = Parent = Child = NULL;
+//  Left = Right = Parent = Child = nullptr;
 //  Degree = Mark = NegInfinityFlag = 0;
 //}
 
@@ -68,7 +68,7 @@ using namespace std;
 // calls derived class destructors.
 //=========================================================
 
-FibHeapNode::~FibHeapNode() {}
+FibHeapNode::~FibHeapNode()  = default;
 
 //=========================================================
 // FHN_Assign()
@@ -153,7 +153,7 @@ void FibHeapNode::Print() {
 //***************************************************************************
 
 FibHeap::FibHeap() {
-  MinRoot = NULL;
+  MinRoot = nullptr;
   NumNodes = NumTrees = NumMarkedNodes = 0;
   ClearHeapOwnership();
 }
@@ -166,7 +166,7 @@ FibHeap::~FibHeap() {
   FibHeapNode *Temp;
 
   if (GetHeapOwnership()) {
-    while (MinRoot != NULL) {
+    while (MinRoot != nullptr) {
       Temp = ExtractMin();
       delete Temp;
     }
@@ -181,17 +181,17 @@ FibHeap::~FibHeap() {
 // of the work of inserting is done by other operations such as
 // ExtractMin(), which is where tree-balancing occurs.
 //
-// The child pointer is deliberately not set to NULL because Insert()
+// The child pointer is deliberately not set to nullptr because Insert()
 // is also used internally to help put whole trees onto the root list.
 //===========================================================================
 
 void FibHeap::Insert(FibHeapNode *NewNode) {
-  if (NewNode == NULL) return;
+  if (NewNode == nullptr) return;
 
   // If the heap is currently empty, then new node becomes singleton
   // circular root list
 
-  if (MinRoot == NULL)
+  if (MinRoot == nullptr)
     MinRoot = NewNode->Left = NewNode->Right = NewNode;
 
   else {
@@ -216,7 +216,7 @@ void FibHeap::Insert(FibHeapNode *NewNode) {
   NumNodes++;
 
   NumTrees++;
-  NewNode->Parent = NULL;
+  NewNode->Parent = nullptr;
 }
 
 //===========================================================================
@@ -226,7 +226,7 @@ void FibHeap::Insert(FibHeapNode *NewNode) {
 void FibHeap::Union(FibHeap *OtherHeap) {
   FibHeapNode *Min1, *Min2, *Next1, *Next2;
 
-  if (OtherHeap == NULL || OtherHeap->MinRoot == NULL) return;
+  if (OtherHeap == nullptr || OtherHeap->MinRoot == nullptr) return;
 
   // We join the two circular lists by cutting each list between its
   // min node and the node after the min.  This code just pulls those
@@ -262,7 +262,7 @@ void FibHeap::Union(FibHeap *OtherHeap) {
   // Complete the union by setting the other heap to emptiness
   // then destroying it
 
-  OtherHeap->MinRoot  = NULL;
+  OtherHeap->MinRoot  = nullptr;
   OtherHeap->NumNodes =
     OtherHeap->NumTrees =
     OtherHeap->NumMarkedNodes = 0;
@@ -284,17 +284,17 @@ void FibHeap::Union(FibHeap *OtherHeap) {
 
 FibHeapNode *FibHeap::ExtractMin() {
   FibHeapNode *Result;
-  FibHeap *ChildHeap = NULL;
+  FibHeap *ChildHeap = nullptr;
 
   // Remove minimum node and set MinRoot to next node
 
-  if ((Result = Minimum()) == NULL)
-    return NULL;
+  if ((Result = Minimum()) == nullptr)
+    return nullptr;
 
   MinRoot = Result->Right;
   Result->Right->Left = Result->Left;
   Result->Left->Right = Result->Right;
-  Result->Left = Result->Right = NULL;
+  Result->Left = Result->Right = nullptr;
 
   NumNodes --;
   if (Result->Mark) {
@@ -306,14 +306,14 @@ FibHeapNode *FibHeap::ExtractMin() {
   // Attach child list of Minimum node to the root list of the heap
   // If there is no child list, then do no work
 
-  if (Result->Child == NULL) {
+  if (Result->Child == nullptr) {
     if (MinRoot == Result)
-      MinRoot = NULL;
+      MinRoot = nullptr;
   }
 
   // If MinRoot==Result then there was only one root tree, so the
   // root list is simply the child list of that node (which is
-  // NULL if this is the last node in the list)
+  // nullptr if this is the last node in the list)
 
   else if (MinRoot == Result)
     MinRoot = Result->Child;
@@ -329,9 +329,9 @@ FibHeapNode *FibHeap::ExtractMin() {
 
   // Complete the disassociation of the Result node from the heap
 
-  if (Result->Child != NULL)
-    Result->Child->Parent = NULL;
-  Result->Child = Result->Parent = NULL;
+  if (Result->Child != nullptr)
+    Result->Child->Parent = nullptr;
+  Result->Child = Result->Parent = nullptr;
 
   // If there was a child list, then we now merge it with the
   //  rest of the root list
@@ -341,7 +341,7 @@ FibHeapNode *FibHeap::ExtractMin() {
 
   // Consolidate heap to find new minimum and do reorganize work
 
-  if (MinRoot != NULL)
+  if (MinRoot != nullptr)
     _Consolidate();
 
   // Return the minimum node, which is now disassociated with the heap
@@ -360,13 +360,13 @@ FibHeapNode *FibHeap::ExtractMin() {
 int  FibHeap::DecreaseKey(FibHeapNode *theNode, FibHeapNode& NewKey) {
   FibHeapNode *theParent;
 
-  if (theNode==NULL || *theNode < NewKey)
+  if (theNode==nullptr || *theNode < NewKey)
     return NOTOK;
 
   *theNode = NewKey;
 
   theParent = theNode->Parent;
-  if (theParent != NULL && *theNode < *theParent) {
+  if (theParent != nullptr && *theNode < *theParent) {
     _Cut(theNode, theParent);
     _CascadingCut(theParent);
   }
@@ -389,13 +389,13 @@ int  FibHeap::Delete(FibHeapNode *theNode) {
   FibHeapNode Temp;
   int Result;
 
-  if (theNode == NULL) return NOTOK;
+  if (theNode == nullptr) return NOTOK;
 
   Temp.NegInfinityFlag = 1;
   Result = DecreaseKey(theNode, Temp);
 
   if (Result == OK)
-    if (ExtractMin() == NULL)
+    if (ExtractMin() == nullptr)
       Result = NOTOK;
 
   if (Result == OK) {
@@ -417,19 +417,19 @@ int  FibHeap::Delete(FibHeapNode *theNode) {
 //========================================================================
 
 void FibHeap::Print(FibHeapNode *Tree, FibHeapNode *theParent) {
-  FibHeapNode* Temp = NULL;
+  FibHeapNode* Temp = nullptr;
 
-  if (Tree == NULL) Tree = MinRoot;
+  if (Tree == nullptr) Tree = MinRoot;
 
   Temp = Tree;
   do {
-    if (Temp->Left == NULL)
-      cout << "(Left is NULL)";
+    if (Temp->Left == nullptr)
+      cout << "(Left is nullptr)";
     Temp->Print();
     if (Temp->Parent != theParent)
       cout << "(Parent is incorrect)";
-    if (Temp->Right == NULL)
-      cout << "(Right is NULL)";
+    if (Temp->Right == nullptr)
+      cout << "(Right is nullptr)";
     else if (Temp->Right->Left != Temp)
       cout << "(Error in left link left) ->";
     else cout << " <-> ";
@@ -443,7 +443,7 @@ void FibHeap::Print(FibHeapNode *Tree, FibHeapNode *theParent) {
     break;
     }
     */
-  } while (Temp != NULL && Temp != Tree);
+  } while (Temp != nullptr && Temp != Tree);
   cout << '\n';
 
   Temp = Tree;
@@ -451,13 +451,13 @@ void FibHeap::Print(FibHeapNode *Tree, FibHeapNode *theParent) {
     cout << "Children of ";
     Temp->Print();
     cout << ": ";
-    if (Temp->Child == NULL)
+    if (Temp->Child == nullptr)
       cout << "NONE\n";
     else Print(Temp->Child, Temp);
     Temp = Temp->Right;
-  } while (Temp!=NULL && Temp != Tree);
+  } while (Temp!=nullptr && Temp != Tree);
 
-  if (theParent == NULL) {
+  if (theParent == nullptr) {
     char ch;
 
     cout << "Done Printing.  Hit a key.\n";
@@ -483,7 +483,7 @@ void FibHeap::Print(FibHeapNode *Tree, FibHeapNode *theParent) {
 // root list.  The search could be O(n) since all nodes could be on
 // the root list.  So, we reorganize the tree into more of a binomial forest
 // structure, and then find the new minimum on the consolidated O(lg n) sized
-// root list, and in the process set each Parent pointer to NULL, and count
+// root list, and in the process set each Parent pointer to nullptr, and count
 // the number of resulting subtrees.
 //
 // Note that after a list of n inserts, there will be n nodes on the root
@@ -504,7 +504,7 @@ void FibHeap::_Consolidate() {
   // Initialize the consolidation detection array
 
   for (I=0; I < Dn; I++)
-    A[I] = NULL;
+    A[I] = nullptr;
 
   // We need to loop through all elements on root list.
   // When a collision of degree is found, the two trees
@@ -515,8 +515,8 @@ void FibHeap::_Consolidate() {
   // because all root trees are subject to becoming a
   // child during the consolidation).
 
-  MinRoot->Left->Right = NULL;
-  MinRoot->Left = NULL;
+  MinRoot->Left->Right = nullptr;
+  MinRoot->Left = nullptr;
   w = MinRoot;
 
   do {
@@ -530,29 +530,29 @@ void FibHeap::_Consolidate() {
     // We need another loop here because the consolidated result
     // may collide with another large tree on the root list.
 
-    while (A[d] != NULL) {
+    while (A[d] != nullptr) {
       y = A[d];
       if (*y < *x)
         _Exchange(x, y);
       if (w == y) w = y->Right;
       _Link(y, x);
-      A[d] = NULL;
+      A[d] = nullptr;
       d++;
       //cout << "After a round of Linking\n";
       //Print(x);
     }
     A[d] = x;
 
-  } while (w != NULL);
+  } while (w != nullptr);
 
   // Now we rebuild the root list, find the new minimum,
-  // set all root list nodes' parent pointers to NULL and
+  // set all root list nodes' parent pointers to nullptr and
   // count the number of subtrees.
 
-  MinRoot = NULL;
+  MinRoot = nullptr;
   NumTrees = 0;
   for (I = 0; I < Dn; I++)
-    if (A[I] != NULL)
+    if (A[I] != nullptr)
       _AddToRootList(A[I]);
 }
 
@@ -563,9 +563,9 @@ void FibHeap::_Consolidate() {
 void FibHeap::_Link(FibHeapNode *y, FibHeapNode *x) {
   // Remove node y from root list
 
-  if (y->Right != NULL)
+  if (y->Right != nullptr)
     y->Right->Left = y->Left;
-  if (y->Left != NULL)
+  if (y->Left != nullptr)
     y->Left->Right = y->Right;
   NumTrees--;
 
@@ -576,7 +576,7 @@ void FibHeap::_Link(FibHeapNode *y, FibHeapNode *x) {
 
   // If node x has no children, then list y is its new child list
 
-  if (x->Child == NULL)
+  if (x->Child == nullptr)
     x->Child = y;
 
   // Otherwise, node y must be added to node x's child list
@@ -617,7 +617,7 @@ void FibHeap::_Cut(FibHeapNode *x, FibHeapNode *y) {
   if (y->Child == x)
     y->Child = x->Right;
   if (y->Child == x)
-    y->Child = NULL;
+    y->Child = nullptr;
 
   y->Degree --;
 
@@ -640,11 +640,11 @@ void FibHeap::_Cut(FibHeapNode *x, FibHeapNode *y) {
 void FibHeap::_CascadingCut(FibHeapNode *y) {
   FibHeapNode *z = y->Parent;
 
-  while (z != NULL) {
+  while (z != nullptr) {
     if (y->Mark == 0) {
       y->Mark = 1;
       NumMarkedNodes++;
-      z = NULL;
+      z = nullptr;
     } else {
       _Cut(y, z);
       y = z;

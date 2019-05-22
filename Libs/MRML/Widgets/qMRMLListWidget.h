@@ -36,8 +36,8 @@ class QMRML_WIDGETS_EXPORT qMRMLListWidget : public QListView
 {
   Q_OBJECT
 public:
-  qMRMLListWidget(QWidget *parent=0);
-  virtual ~qMRMLListWidget();
+  qMRMLListWidget(QWidget *parent=nullptr);
+  ~qMRMLListWidget() override;
 
   vtkMRMLScene* mrmlScene()const;
 

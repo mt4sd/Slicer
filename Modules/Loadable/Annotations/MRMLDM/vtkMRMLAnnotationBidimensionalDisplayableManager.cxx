@@ -49,9 +49,9 @@ public:
   static vtkAnnotationBidimensionalWidgetCallback *New()
   { return new vtkAnnotationBidimensionalWidgetCallback; }
 
-  vtkAnnotationBidimensionalWidgetCallback(){}
+  vtkAnnotationBidimensionalWidgetCallback() = default;
 
-  virtual void Execute (vtkObject *vtkNotUsed(caller), unsigned long event, void*)
+  void Execute (vtkObject *vtkNotUsed(caller), unsigned long event, void*) override
   {
 
     if ((event == vtkCommand::EndInteractionEvent) || (event == vtkCommand::InteractionEvent))
@@ -169,7 +169,7 @@ vtkAbstractWidget * vtkMRMLAnnotationBidimensionalDisplayableManager::CreateWidg
   if (!node)
     {
     vtkErrorMacro("CreateWidget: Node not set!")
-    return 0;
+    return nullptr;
     }
 
   vtkMRMLAnnotationBidimensionalNode* bidimensionalNode = vtkMRMLAnnotationBidimensionalNode::SafeDownCast(node);
@@ -177,7 +177,7 @@ vtkAbstractWidget * vtkMRMLAnnotationBidimensionalDisplayableManager::CreateWidg
   if (!bidimensionalNode)
     {
     vtkErrorMacro("CreateWidget: Could not get bidimensional node!")
-    return 0;
+    return nullptr;
     }
 
   vtkAnnotationBidimensionalWidget * bidimensionalWidget = vtkAnnotationBidimensionalWidget::New();

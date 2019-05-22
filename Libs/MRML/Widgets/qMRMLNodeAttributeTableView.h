@@ -44,9 +44,9 @@ class QMRML_WIDGETS_EXPORT qMRMLNodeAttributeTableView : public QWidget
 
 public:
   /// Constructor
-  explicit qMRMLNodeAttributeTableView(QWidget* parent = 0);
+  explicit qMRMLNodeAttributeTableView(QWidget* parent = nullptr);
   /// Destructor
-  virtual ~qMRMLNodeAttributeTableView();
+  ~qMRMLNodeAttributeTableView() override;
 
   /// Set the inspected MRML node
   void setInspectedNode(vtkMRMLNode* node);

@@ -46,7 +46,7 @@ public:
 
   static vtkMRMLDisplayableManagerGroup *New();
   vtkTypeMacro(vtkMRMLDisplayableManagerGroup,vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Convenient method equivalent to call SetAndObserveDisplayableManagerFactory, SetRenderer,
   /// then instantiate and add all displayable managers registered within the \a factory.
@@ -120,7 +120,7 @@ public:
 protected:
 
   vtkMRMLDisplayableManagerGroup();
-  virtual ~vtkMRMLDisplayableManagerGroup();
+  ~vtkMRMLDisplayableManagerGroup() override;
 
   typedef vtkMRMLDisplayableManagerGroup Self;
   static void DoCallback(vtkObject* vtk_obj, unsigned long event,
@@ -135,8 +135,8 @@ protected:
 
 private:
 
-  vtkMRMLDisplayableManagerGroup(const vtkMRMLDisplayableManagerGroup&);
-  void operator=(const vtkMRMLDisplayableManagerGroup&);
+  vtkMRMLDisplayableManagerGroup(const vtkMRMLDisplayableManagerGroup&) = delete;
+  void operator=(const vtkMRMLDisplayableManagerGroup&) = delete;
 
 };
 

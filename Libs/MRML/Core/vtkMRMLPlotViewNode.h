@@ -32,7 +32,7 @@ class VTK_MRML_EXPORT vtkMRMLPlotViewNode : public vtkMRMLAbstractViewNode
 public:
   static vtkMRMLPlotViewNode *New();
   vtkTypeMacro(vtkMRMLPlotViewNode, vtkMRMLAbstractViewNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Enum of the available plot types
   enum {
@@ -47,23 +47,23 @@ public:
   /// MRMLNode methods
   //--------------------------------------------------------------------------
 
-   virtual vtkMRMLNode* CreateNodeInstance()  VTK_OVERRIDE;
+   vtkMRMLNode* CreateNodeInstance()  override;
 
   ///
   /// Read node attributes from XML file.
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object.
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model).
-  virtual const char* GetNodeTagName() VTK_OVERRIDE { return "PlotView"; };
+  const char* GetNodeTagName() override { return "PlotView"; };
 
   ///
   /// Set and Update the PlotChart node id displayed in this PlotView.
@@ -112,9 +112,9 @@ public:
 
   ///
   /// Method to propagate events generated in mrml.
-  virtual void ProcessMRMLEvents(vtkObject *caller,
+  void ProcessMRMLEvents(vtkObject *caller,
                                  unsigned long event,
-                                 void *callData) VTK_OVERRIDE;
+                                 void *callData) override;
 
   /// PlotModifiedEvent is fired when:
   ///  - a new PlotChart node is observed
@@ -133,7 +133,7 @@ public:
 
 protected:
   vtkMRMLPlotViewNode();
-  ~vtkMRMLPlotViewNode();
+  ~vtkMRMLPlotViewNode() override;
   vtkMRMLPlotViewNode(const vtkMRMLPlotViewNode&);
   void operator=(const vtkMRMLPlotViewNode&);
 
@@ -144,15 +144,15 @@ protected:
 
   ///
   /// Called when a node reference ID is added (list size increased).
-  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceAdded(vtkMRMLNodeReference *reference) override;
 
   ///
   /// Called when a node reference ID is modified.
-  virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceModified(vtkMRMLNodeReference *reference) override;
 
   ///
   /// Called after a node reference ID is removed (list size decreased).
-  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference) VTK_OVERRIDE;
+  void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference) override;
 
   bool DoPropagatePlotChartSelection;
 

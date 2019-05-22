@@ -30,18 +30,18 @@ class QMRML_WIDGETS_EXPORT qMRMLSceneCategoryModel : public qMRMLSceneModel
   Q_OBJECT
 
 public:
-  qMRMLSceneCategoryModel(QObject *parent=0);
-  virtual ~qMRMLSceneCategoryModel();
+  qMRMLSceneCategoryModel(QObject *parent=nullptr);
+  ~qMRMLSceneCategoryModel() override;
 
   QStandardItem* itemFromCategory(const QString& category)const;
   int categoryCount()const;
 
 protected:
-  virtual QStandardItem* insertNode(vtkMRMLNode* node);
+  QStandardItem* insertNode(vtkMRMLNode* node) override;
   using qMRMLSceneModel::insertNode;
-  virtual bool isANode(const QStandardItem * item)const;
-  virtual void updateItemFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
-  virtual void updateNodeFromItem(vtkMRMLNode* node, QStandardItem* item);
+  bool isANode(const QStandardItem * item)const override;
+  void updateItemFromNode(QStandardItem* item, vtkMRMLNode* node, int column) override;
+  void updateNodeFromItem(vtkMRMLNode* node, QStandardItem* item) override;
 
   virtual void updateItemFromCategory(QStandardItem* item, const QString& category);
   virtual QStandardItem* insertCategory(const QString& category, int row);

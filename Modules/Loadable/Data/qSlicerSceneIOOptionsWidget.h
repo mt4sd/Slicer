@@ -35,12 +35,12 @@ class Q_SLICER_QTMODULES_DATA_EXPORT qSlicerSceneIOOptionsWidget
 {
   Q_OBJECT
 public:
-  qSlicerSceneIOOptionsWidget(QWidget *parent=0);
-  virtual ~qSlicerSceneIOOptionsWidget();
+  qSlicerSceneIOOptionsWidget(QWidget *parent=nullptr);
+  ~qSlicerSceneIOOptionsWidget() override;
 
   // Update checkboxes in the widget based on
   // "clear" and "copyCameras" Boolean properties.
-  void updateGUI(const qSlicerIO::IOProperties& ioProperties);
+  void updateGUI(const qSlicerIO::IOProperties& ioProperties) override;
 
 protected slots:
   void updateProperties();

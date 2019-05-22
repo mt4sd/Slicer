@@ -36,35 +36,35 @@ class VTK_MRML_EXPORT vtkMRMLTensorVolumeNode : public vtkMRMLScalarVolumeNode
   public:
   static vtkMRMLTensorVolumeNode *New();
   vtkTypeMacro(vtkMRMLTensorVolumeNode,vtkMRMLScalarVolumeNode);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual vtkMRMLNode* CreateNodeInstance() VTK_OVERRIDE;
+  vtkMRMLNode* CreateNodeInstance() override;
 
   ///
   /// Set node attributes
-  virtual void ReadXMLAttributes( const char** atts) VTK_OVERRIDE;
+  void ReadXMLAttributes( const char** atts) override;
 
   ///
   /// Write this node's information to a MRML file in XML format.
-  virtual void WriteXML(ostream& of, int indent) VTK_OVERRIDE;
+  void WriteXML(ostream& of, int indent) override;
 
   ///
   /// Copy the node's attributes to this object
-  virtual void Copy(vtkMRMLNode *node) VTK_OVERRIDE;
+  void Copy(vtkMRMLNode *node) override;
 
   ///
   /// Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() VTK_OVERRIDE {return "TensorVolume";}
+  const char* GetNodeTagName() override {return "TensorVolume";}
 
   ///
   /// Updates this node if it depends on other nodes
   /// when the node is deleted in the scene
-  virtual void UpdateReferences() VTK_OVERRIDE
+  void UpdateReferences() override
     { Superclass::UpdateReferences(); }
 
  /// Description:
  /// Update the stored reference to another node in the scene
-  virtual void UpdateReferenceID(const char *oldID, const char *newID) VTK_OVERRIDE
+  void UpdateReferenceID(const char *oldID, const char *newID) override
     { Superclass::UpdateReferenceID(oldID, newID); }
 
   ///
@@ -88,12 +88,12 @@ class VTK_MRML_EXPORT vtkMRMLTensorVolumeNode : public vtkMRMLScalarVolumeNode
   void GetMeasurementFrameMatrix(vtkMatrix4x4 *mat);
 
   ///
-  /// Create default storage node or NULL if does not have one
-  virtual vtkMRMLStorageNode* CreateDefaultStorageNode() VTK_OVERRIDE;
+  /// Create default storage node or nullptr if does not have one
+  vtkMRMLStorageNode* CreateDefaultStorageNode() override;
 
 protected:
   vtkMRMLTensorVolumeNode();
-  ~vtkMRMLTensorVolumeNode();
+  ~vtkMRMLTensorVolumeNode() override;
   vtkMRMLTensorVolumeNode(const vtkMRMLTensorVolumeNode&);
   void operator=(const vtkMRMLTensorVolumeNode&);
 

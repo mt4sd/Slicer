@@ -40,43 +40,43 @@ public:
 
   static vtkMRMLSegmentationsDisplayableManager3D* New();
   vtkTypeMacro(vtkMRMLSegmentationsDisplayableManager3D,vtkMRMLAbstractThreeDViewDisplayableManager);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
 
   vtkMRMLSegmentationsDisplayableManager3D();
-  virtual ~vtkMRMLSegmentationsDisplayableManager3D();
+  ~vtkMRMLSegmentationsDisplayableManager3D() override;
 
-  virtual void UnobserveMRMLScene() VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) VTK_OVERRIDE;
-  virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) VTK_OVERRIDE;
+  void UnobserveMRMLScene() override;
+  void OnMRMLSceneNodeAdded(vtkMRMLNode* node) override;
+  void OnMRMLSceneNodeRemoved(vtkMRMLNode* node) override;
+  void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void* callData) override;
 
   /// Update actors based on segmentations in the scene
-  virtual void UpdateFromMRML() VTK_OVERRIDE;
+  void UpdateFromMRML() override;
 
-  virtual void OnMRMLSceneStartClose() VTK_OVERRIDE;
-  virtual void OnMRMLSceneEndClose() VTK_OVERRIDE;
+  void OnMRMLSceneStartClose() override;
+  void OnMRMLSceneEndClose() override;
 
-  virtual void OnMRMLSceneEndBatchProcess() VTK_OVERRIDE;
+  void OnMRMLSceneEndBatchProcess() override;
 
   /// Initialize the displayable manager
-  virtual void Create() VTK_OVERRIDE;
+  void Create() override;
 
   /// Find display node managed by the displayable manager at a specified world RAS position.
   /// \return Non-zero in case a node is found at the position, 0 otherwise
-  virtual int Pick3D(double ras[3]) VTK_OVERRIDE;
+  int Pick3D(double ras[3]) override;
 
   /// Get the MRML ID of the picked node, returns empty string if no pick
-  virtual const char* GetPickedNodeID() VTK_OVERRIDE;
+  const char* GetPickedNodeID() override;
 
   /// Get the ID of the picked segment, returns empty string if no pick
   virtual const char* GetPickedSegmentID();
 
 private:
 
-  vtkMRMLSegmentationsDisplayableManager3D(const vtkMRMLSegmentationsDisplayableManager3D&); // Not implemented
-  void operator=(const vtkMRMLSegmentationsDisplayableManager3D&);                 // Not Implemented
+  vtkMRMLSegmentationsDisplayableManager3D(const vtkMRMLSegmentationsDisplayableManager3D&) = delete;
+  void operator=(const vtkMRMLSegmentationsDisplayableManager3D&) = delete;
 
   class vtkInternal;
   vtkInternal* Internal;

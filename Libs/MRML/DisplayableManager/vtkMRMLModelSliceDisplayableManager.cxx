@@ -26,6 +26,7 @@
 #include <vtkMRMLDisplayableNode.h>
 #include <vtkMRMLModelDisplayNode.h>
 #include <vtkMRMLModelNode.h>
+#include <vtkMRMLProceduralColorNode.h>
 #include <vtkMRMLScene.h>
 #include <vtkMRMLSliceCompositeNode.h>
 #include <vtkMRMLSliceLogic.h>
@@ -37,6 +38,7 @@
 #include <vtkActor2D.h>
 #include <vtkAlgorithmOutput.h>
 #include <vtkCallbackCommand.h>
+#include <vtkColorTransferFunction.h>
 #include <vtkDataSetSurfaceFilter.h>
 #include <vtkEventBroker.h>
 #include <vtkLookupTable.h>
@@ -153,8 +155,7 @@ vtkMRMLModelSliceDisplayableManager::vtkInternal
 }
 
 //---------------------------------------------------------------------------
-bool vtkMRMLModelSliceDisplayableManager::vtkInternal
-::UseDisplayNode(vtkMRMLDisplayNode* displayNode)
+bool vtkMRMLModelSliceDisplayableManager::vtkInternal::UseDisplayNode(vtkMRMLDisplayNode* displayNode)
 {
   // Check whether DisplayNode should be shown in this view
   bool show = displayNode
@@ -165,59 +166,28 @@ bool vtkMRMLModelSliceDisplayableManager::vtkInternal
 }
 
 //---------------------------------------------------------------------------
-bool vtkMRMLModelSliceDisplayableManager::vtkInternal
-::IsVisible(vtkMRMLDisplayNode* displayNode)
+bool vtkMRMLModelSliceDisplayableManager::vtkInternal::IsVisible(vtkMRMLDisplayNode* displayNode)
 {
   if (!displayNode)
     {
     return 0;
     }
-  bool visibleOnNode = true;
-  // for volume slice model display nodes, don't want to only show the slice
-  // intersection if the slice is visible in 3d, but do want to do the check for
-  // other types of models
-  bool isSliceModel = vtkMRMLSliceLogic::IsSliceModelDisplayNode(displayNode);
-  if (!isSliceModel)
+  if (vtkMRMLSliceLogic::IsSliceModelDisplayNode(displayNode))
     {
-    vtkMRMLSliceNode *sliceNode = this->SliceNode;
-    if (sliceNode)
-      {
-      visibleOnNode = displayNode->GetVisibility(sliceNode->GetID());
-      }
-    else
-      {
-      visibleOnNode = (displayNode->GetVisibility() == 1 ? true : false);
-      }
+    // slice intersections are displayed by vtkMRMLCrosshairDisplayableManager
+    return 0;
+    }
+  bool visibleOnNode = true;
+  vtkMRMLSliceNode *sliceNode = this->SliceNode;
+  if (sliceNode)
+    {
+    visibleOnNode = displayNode->GetVisibility(sliceNode->GetID());
     }
   else
     {
-    // Only show slice intersection if it is mapped into layout and in the same view group
-    vtkMRMLSliceNode* intersectedSliceNode = NULL;
-    vtkMRMLApplicationLogic *mrmlAppLogic = this->External->GetMRMLApplicationLogic();
-    if (mrmlAppLogic)
-      {
-      vtkMRMLSliceLogic *sliceLogic = mrmlAppLogic->GetSliceLogicByModelDisplayNode(vtkMRMLModelDisplayNode::SafeDownCast(displayNode));
-      if (sliceLogic)
-        {
-        intersectedSliceNode = sliceLogic->GetSliceNode();
-        }
-      }
-    if (intersectedSliceNode)
-      {
-      if (!intersectedSliceNode->IsMappedInLayout())
-        {
-        visibleOnNode = false;
-        }
-      else if (this->SliceNode)
-        {
-        if (this->SliceNode->GetViewGroup() != intersectedSliceNode->GetViewGroup())
-          {
-          visibleOnNode = false;
-          }
-        }
-      }
+    visibleOnNode = (displayNode->GetVisibility() == 1);
     }
-  return visibleOnNode && (displayNode->GetSliceIntersectionVisibility() != 0) ;
+  return visibleOnNode && (displayNode->GetVisibility2D() != 0) ;
 }
 
 //---------------------------------------------------------------------------
@@ -505,7 +475,7 @@ void vtkMRMLModelSliceDisplayableManager::vtkInternal
 
     // optimization for slice to slice intersections which are 1 quad polydatas
     // no need for 50^3 default locator divisions
-    if (pointSet->GetPoints() != NULL && pointSet->GetNumberOfPoints() <= 4)
+    if (pointSet->GetPoints() != nullptr && pointSet->GetNumberOfPoints() <= 4)
     {
       vtkNew<vtkPointLocator> locator;
       double *bounds = pointSet->GetBounds();
@@ -515,6 +485,18 @@ void vtkMRMLModelSliceDisplayableManager::vtkInternal
     }
 #endif
     pipeline->Cutter->SetInputConnection(pipeline->ModelWarper->GetOutputPort());
+
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2)
+    // If there is no input or if the input has no points, the vtkTransformPolyDataFilter will display an error message
+    // on every update: "No input data".
+    // To prevent the error, if the input is empty then the actor should not be visible since there is nothing to display.
+    pipeline->GeometryFilter->Update();
+    if (!pipeline->GeometryFilter->GetOutput() || pipeline->GeometryFilter->GetOutput()->GetNumberOfPoints() < 1)
+      {
+      pipeline->Actor->SetVisibility(false);
+      return;
+      }
+#endif
 
     //  Set Poly Data Transform
     vtkNew<vtkMatrix4x4> rasToSliceXY;
@@ -533,13 +515,26 @@ void vtkMRMLModelSliceDisplayableManager::vtkInternal
     if (modelDisplayNode->GetSliceDisplayMode() == vtkMRMLModelDisplayNode::SliceDisplayDistanceEncodedProjection)
       {
       vtkMRMLColorNode* colorNode = modelDisplayNode->GetDistanceEncodedProjectionColorNode();
-      vtkLookupTable* dNodeLUT = (colorNode ? colorNode->GetLookupTable() : NULL);
-      if (dNodeLUT)
+      vtkSmartPointer<vtkScalarsToColors> lut = nullptr;
+      vtkSmartPointer<vtkMRMLProceduralColorNode> proceduralColor = vtkMRMLProceduralColorNode::SafeDownCast(colorNode);
+      if (proceduralColor)
         {
-        mapper->SetScalarRange(modelDisplayNode->GetScalarRange());
-        vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::Take(
-          vtkMRMLModelDisplayableManager::CreateLookupTableCopy(dNodeLUT));
-        lut->SetAlpha(displayNode->GetSliceIntersectionOpacity());
+        lut = vtkScalarsToColors::SafeDownCast(proceduralColor->GetColorTransferFunction());
+        }
+      else
+        {
+        vtkLookupTable* dNodeLUT = (colorNode ? colorNode->GetLookupTable() : nullptr);
+        if (dNodeLUT)
+          {
+          mapper->SetScalarRange(modelDisplayNode->GetScalarRange());
+          lut = vtkSmartPointer<vtkLookupTable>::Take(
+            vtkMRMLModelDisplayableManager::CreateLookupTableCopy(dNodeLUT));
+          lut->SetAlpha(displayNode->GetSliceIntersectionOpacity());
+          }
+        }
+
+      if (lut != nullptr)
+        {
         mapper->SetLookupTable(lut.GetPointer());
         mapper->SetScalarRange(lut->GetRange());
         mapper->SetScalarVisibility(true);
@@ -565,7 +560,7 @@ void vtkMRMLModelSliceDisplayableManager::vtkInternal
       if (modelDisplayNode->GetScalarRangeFlag() == vtkMRMLDisplayNode::UseDirectMapping)
         {
         mapper->SetColorModeToDirectScalars();
-        mapper->SetLookupTable(NULL);
+        mapper->SetLookupTable(nullptr);
         }
       else
         {
@@ -585,7 +580,7 @@ void vtkMRMLModelSliceDisplayableManager::vtkInternal
         // of the colorNode vtkLookupTable in order not to impact
         // that lookup table original range.
         vtkLookupTable* dNodeLUT = modelDisplayNode->GetColorNode() ?
-          modelDisplayNode->GetColorNode()->GetLookupTable() : NULL;
+          modelDisplayNode->GetColorNode()->GetLookupTable() : nullptr;
         vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::Take(
           vtkMRMLModelDisplayableManager::CreateLookupTableCopy(dNodeLUT));
         lut->SetAlpha(displayNode->GetSliceIntersectionOpacity());
@@ -819,8 +814,8 @@ void vtkMRMLModelSliceDisplayableManager
     return;
     }
 
-  vtkMRMLDisplayableNode* modelNode = NULL;
-  vtkMRMLDisplayNode* displayNode = NULL;
+  vtkMRMLDisplayableNode* modelNode = nullptr;
+  vtkMRMLDisplayNode* displayNode = nullptr;
 
   bool modified = false;
   if ( (modelNode = vtkMRMLDisplayableNode::SafeDownCast(node)) )
@@ -893,7 +888,7 @@ void vtkMRMLModelSliceDisplayableManager::UpdateFromMRML()
     }
   this->Internal->ClearDisplayableNodes();
 
-  vtkMRMLDisplayableNode* mNode = NULL;
+  vtkMRMLDisplayableNode* mNode = nullptr;
   std::vector<vtkMRMLNode *> mNodes;
   int nnodes = scene ? scene->GetNodesByClass("vtkMRMLDisplayableNode", mNodes) : 0;
   for (int i=0; i<nnodes; i++)

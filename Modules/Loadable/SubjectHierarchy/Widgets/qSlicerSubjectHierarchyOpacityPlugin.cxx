@@ -53,7 +53,7 @@ protected:
   qSlicerSubjectHierarchyOpacityPlugin* const q_ptr;
 public:
   qSlicerSubjectHierarchyOpacityPluginPrivate(qSlicerSubjectHierarchyOpacityPlugin& object);
-  ~qSlicerSubjectHierarchyOpacityPluginPrivate();
+  ~qSlicerSubjectHierarchyOpacityPluginPrivate() override;
   void init();
 public:
   QAction* OpacityAction;
@@ -68,9 +68,9 @@ public:
 qSlicerSubjectHierarchyOpacityPluginPrivate::qSlicerSubjectHierarchyOpacityPluginPrivate(qSlicerSubjectHierarchyOpacityPlugin& object)
 : q_ptr(&object)
 {
-  this->OpacityAction = NULL;
-  this->OpacityMenu = NULL;
-  this->OpacitySlider = NULL;
+  this->OpacityAction = nullptr;
+  this->OpacityMenu = nullptr;
+  this->OpacitySlider = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -95,8 +95,7 @@ void qSlicerSubjectHierarchyOpacityPluginPrivate::init()
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyOpacityPluginPrivate::~qSlicerSubjectHierarchyOpacityPluginPrivate()
-{
-}
+= default;
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyOpacityPlugin methods
@@ -114,8 +113,7 @@ qSlicerSubjectHierarchyOpacityPlugin::qSlicerSubjectHierarchyOpacityPlugin(QObje
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyOpacityPlugin::~qSlicerSubjectHierarchyOpacityPlugin()
-{
-}
+= default;
 
 //---------------------------------------------------------------------------
 QList<QAction*> qSlicerSubjectHierarchyOpacityPlugin::visibilityContextMenuActions()const
@@ -158,7 +156,7 @@ void qSlicerSubjectHierarchyOpacityPlugin::showVisibilityContextMenuActionsForIt
     d->OpacitySlider->setValue(displayNode->GetOpacity());
     }
 
-  d->OpacityAction->setVisible(displayNode != NULL);
+  d->OpacityAction->setVisible(displayNode != nullptr);
 }
 
 //---------------------------------------------------------------------------

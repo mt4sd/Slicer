@@ -26,7 +26,7 @@ class VTK_ADDON_EXPORT vtkPersonInformation : public vtkObject
 public:
   static vtkPersonInformation *New();
   vtkTypeMacro(vtkPersonInformation,vtkObject);
-  virtual void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/Get username.
@@ -92,7 +92,7 @@ public:
 
 protected:
   vtkPersonInformation();
-  ~vtkPersonInformation();
+  ~vtkPersonInformation() override;
 
   std::string EncodeString(const std::string& value);
   std::string DecodeString(const std::string& value);
@@ -100,8 +100,8 @@ protected:
   std::map<std::string, std::string> Data;
 
 private:
-  vtkPersonInformation(const vtkPersonInformation&);  // Not implemented.
-  void operator=(const vtkPersonInformation&);  // Not implemented.
+  vtkPersonInformation(const vtkPersonInformation&) = delete;
+  void operator=(const vtkPersonInformation&) = delete;
 };
 
 #endif

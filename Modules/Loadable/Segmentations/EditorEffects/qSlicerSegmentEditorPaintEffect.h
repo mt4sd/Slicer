@@ -33,54 +33,72 @@ class vtkPolyData;
 class Q_SLICER_SEGMENTATIONS_EFFECTS_EXPORT qSlicerSegmentEditorPaintEffect :
   public qSlicerSegmentEditorAbstractLabelEffect
 {
-public:
   Q_OBJECT
 
 public:
+  Q_PROPERTY(double minimumPaintPointDistance READ minimumPaintPointDistance WRITE setMinimumPaintPointDistance)
+  Q_PROPERTY(bool delayedPaint READ delayedPaint WRITE setDelayedPaint)
+
   typedef qSlicerSegmentEditorAbstractLabelEffect Superclass;
-  qSlicerSegmentEditorPaintEffect(QObject* parent = NULL);
-  virtual ~qSlicerSegmentEditorPaintEffect();
+  qSlicerSegmentEditorPaintEffect(QObject* parent = nullptr);
+  ~qSlicerSegmentEditorPaintEffect() override;
 
 public:
   /// Get icon for effect to be displayed in segment editor
-  virtual QIcon icon();
+  QIcon icon() override;
 
   /// Get help text for effect to be displayed in the help box
-  Q_INVOKABLE virtual const QString helpText()const;
+  Q_INVOKABLE const QString helpText()const override;
 
   /// Clone editor effect
-  virtual qSlicerSegmentEditorAbstractEffect* clone();
+  qSlicerSegmentEditorAbstractEffect* clone() override;
 
   /// Perform actions to deactivate the effect (such as destroy actors, etc.)
-  Q_INVOKABLE virtual void deactivate();
+  Q_INVOKABLE void deactivate() override;
 
   /// Callback function invoked when interaction happens
   /// \param callerInteractor Interactor object that was observed to catch the event
   /// \param eid Event identifier
   /// \param viewWidget Widget of the Slicer layout view. Can be \sa qMRMLSliceWidget or \sa qMRMLThreeDWidget
-  virtual bool processInteractionEvents(vtkRenderWindowInteractor* callerInteractor, unsigned long eid, qMRMLWidget* viewWidget);
+  bool processInteractionEvents(vtkRenderWindowInteractor* callerInteractor, unsigned long eid, qMRMLWidget* viewWidget) override;
 
   /// Callback function invoked when view node is modified
   /// \param callerViewNode View node that was observed to catch the event. Can be either \sa vtkMRMLSliceNode or \sa vtkMRMLViewNode
   /// \param eid Event identifier
   /// \param viewWidget Widget of the Slicer layout view. Can be \sa qMRMLSliceWidget or \sa qMRMLThreeDWidget
-  virtual void processViewNodeEvents(vtkMRMLAbstractViewNode* callerViewNode, unsigned long eid, qMRMLWidget* viewWidget);
+  void processViewNodeEvents(vtkMRMLAbstractViewNode* callerViewNode, unsigned long eid, qMRMLWidget* viewWidget) override;
 
   /// Create options frame widgets, make connections, and add them to the main options frame using \sa addOptionsWidget
-  virtual void setupOptionsFrame();
+  void setupOptionsFrame() override;
 
   /// Set default parameters in the parameter MRML node
-  virtual void setMRMLDefaults();
+  void setMRMLDefaults() override;
 
   /// Perform actions needed on reference geometry change
-  virtual void referenceGeometryChanged();
+  void referenceGeometryChanged() override;
+
+  /// If a new point is added at less than this squared distance
+  /// (in display coordinate system) then the point is not added.
+  /// This is an experimental feature
+  /// that may help in limiting number of paint points to
+  /// improve performance.
+  double minimumPaintPointDistance();
+
+  /// If enabled then segmentation is only modified when the mouse button is released.
+  bool delayedPaint();
 
 public slots:
   /// Update user interface from parameter set node
-  virtual void updateGUIFromMRML();
+  void updateGUIFromMRML() override;
 
   /// Update parameter set node from user interface
-  virtual void updateMRMLFromGUI();
+  void updateMRMLFromGUI() override;
+
+  /// \sa minimumPaintPointDistance
+  void setMinimumPaintPointDistance(double dist);
+
+  /// \sa delayedPaint
+  void setDelayedPaint(bool delayed);
 
 protected:
   /// Flag determining to always erase (not just when smudge from empty region)
