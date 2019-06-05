@@ -507,7 +507,7 @@ void qSlicerExtensionsManagerModelPrivate::addExtensionPathToLauncherSettings(co
   QSettings settings(this->ExtensionsSettingsFilePath, QSettings::IniFormat);
   if (settings.status() != QSettings::NoError)
     {
-    this->warning(QObject::tr("Failed to open extensions settings file %1").arg(this->ExtensionsSettingsFilePath));
+    this->warning(qSlicerExtensionsManagerModel::tr("Failed to open extensions settings file %1").arg(this->ExtensionsSettingsFilePath));
     return;
     }
 
@@ -538,7 +538,7 @@ void qSlicerExtensionsManagerModelPrivate::removeExtensionPathFromLauncherSettin
   QSettings settings(this->ExtensionsSettingsFilePath, QSettings::IniFormat);
   if (settings.status() != QSettings::NoError)
     {
-    this->warning(QObject::tr("Failed to open extensions settings file: %1").arg(this->ExtensionsSettingsFilePath));
+	this->warning(qSlicerExtensionsManagerModel::tr("Failed to open extensions settings file: %1").arg(this->ExtensionsSettingsFilePath));
     return;
     }
 
@@ -569,7 +569,7 @@ bool qSlicerExtensionsManagerModelPrivate::checkExtensionsInstallDestinationPath
 {
   if (!QDir(destinationPath).exists())
     {
-    error = QObject::tr("Extensions install directory does NOT exist: <strong>%1</strong>").arg(destinationPath);
+    error = qSlicerExtensionsManagerModel::tr("Extensions install directory does NOT exist: <strong>%1</strong>").arg(destinationPath);
     return false;
     }
 
@@ -586,7 +586,7 @@ bool qSlicerExtensionsManagerModelPrivate::checkExtensionsInstallDestinationPath
       || !destinationPathInfo.isWritable()
       || !destinationPathInfo.isExecutable())
     {
-    error = QObject::tr("Extensions install directory is expected to be "
+    error = qSlicerExtensionsManagerModel::tr("Extensions install directory is expected to be "
                         "readable/writable/executable: <strong>%1</strong>").arg(destinationPath);
     return false;
     }
@@ -755,31 +755,32 @@ QStringList qSlicerExtensionsManagerModelPrivate::isExtensionCompatible(
 {
   if (slicerRevision.isEmpty())
     {
-    return QStringList() << QObject::tr("slicerRevision is not specified");
+    return QStringList() << qSlicerExtensionsManagerModel::tr("slicerRevision is not specified");
     }
   if (slicerOs.isEmpty())
     {
-    return QStringList() << QObject::tr("slicerOs is not specified");
+    return QStringList() << qSlicerExtensionsManagerModel::tr("slicerOs is not specified");
     }
   if (slicerArch.isEmpty())
     {
-    return QStringList() << QObject::tr("slicerArch is not specified");
+    return QStringList() << qSlicerExtensionsManagerModel::tr("slicerArch is not specified");
     }
   QStringList reasons;
   QString extensionSlicerRevision = metadata.value("slicer_revision").toString();
   if (slicerRevision != extensionSlicerRevision)
     {
-    reasons << QObject::tr("extensionSlicerRevision [%1] is different from slicerRevision [%2]").arg(extensionSlicerRevision).arg(slicerRevision);
+    reasons << qSlicerExtensionsManagerModel::tr(
+		"extensionSlicerRevision [%1] is different from slicerRevision [%2]").arg(extensionSlicerRevision).arg(slicerRevision);
     }
   QString extensionArch = metadata.value("arch").toString();
   if (slicerArch != extensionArch)
     {
-    reasons << QObject::tr("extensionArch [%1] is different from slicerArch [%2]").arg(extensionArch).arg(slicerArch);
+    reasons << qSlicerExtensionsManagerModel::tr("extensionArch [%1] is different from slicerArch [%2]").arg(extensionArch).arg(slicerArch);
     }
   QString extensionOs = metadata.value("os").toString();
   if (slicerOs != extensionOs)
     {
-    reasons << QObject::tr("extensionOs [%1] is different from slicerOs [%2]").arg(extensionOs).arg(slicerOs);
+    reasons << qSlicerExtensionsManagerModel::tr("extensionOs [%1] is different from slicerOs [%2]").arg(extensionOs).arg(slicerOs);
     }
   return reasons;
 }
