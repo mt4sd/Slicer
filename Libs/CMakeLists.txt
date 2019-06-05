@@ -64,6 +64,11 @@ set(MRMLIDImageIO_INSTALL_ITKFACTORIES_DIR ${Slicer_INSTALL_ITKFACTORIES_DIR})
 # Name of the environment variable that contains the application home directory.
 set(MRML_APPLICATION_HOME_DIR_ENV "SLICER_HOME")
 
+# Name of the environment variable that contains the requested OpenGL profile.
+# Accepted values are "default" (same as not specifying a value) or
+# to force a specific profile: "no", "core", or  "compatibility".
+set(MRML_APPLICATION_OPENGL_PROFILE_ENV "SLICER_OPENGL_PROFILE")
+
 # Name of the subdirectory within the application directory where shared files are stored.
 set(MRML_APPLICATION_SHARE_SUBDIR ${Slicer_SHARE_DIR})
 
@@ -72,7 +77,7 @@ set(MRML_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/MRML/Core/Testing/TestData)
 
 set(VTKITK_BUILD_DICOM_SUPPORT ${Slicer_BUILD_DICOM_SUPPORT})
 
-set(MRML_WIDGETS_HAVE_WEBGINE_SUPPORT ${Slicer_BUILD_WEBENGINE_SUPPORT})
+set(MRML_WIDGETS_HAVE_WEBENGINE_SUPPORT ${Slicer_BUILD_WEBENGINE_SUPPORT})
 
 #-----------------------------------------------------------------------------
 # Loop over list of directories

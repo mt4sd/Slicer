@@ -30,6 +30,7 @@
 #include "vtkMRMLCrosshairNode.h"
 #include "vtkMRMLInteractionEventData.h"
 #include "vtkMRMLScene.h"
+#include "vtkMRMLViewNode.h"
 
 vtkStandardNewMacro(vtkMRMLCameraWidget);
 
@@ -345,6 +346,16 @@ bool vtkMRMLCameraWidget::ProcessInteractionEvent(vtkMRMLInteractionEventData* e
       processedEvent = false;
     }
 
+  if (processedEvent)
+    {
+    // invoke interaction event for compatibility with pre-camera-widget
+    // behavior of vtk event processing.  This enables events to pass
+    // through the qMRMLThreeDView to the cameraNode
+    // for broadcast to other cameras
+    vtkRenderWindowInteractor* interactor = this->Renderer->GetRenderWindow()->GetInteractor();
+    interactor->InvokeEvent(vtkCommand::InteractionEvent);
+    }
+
   return processedEvent;
 }
 
@@ -377,6 +388,22 @@ bool vtkMRMLCameraWidget::ProcessStartMouseDrag(vtkMRMLInteractionEventData* eve
 {
   this->SaveStateForUndo();
 
+  if (this->Renderer && this->Renderer->GetRenderWindow() && this->Renderer->GetRenderWindow()->GetInteractor())
+    {
+    vtkInteractorStyle* interactorStyle = vtkInteractorStyle::SafeDownCast(this->Renderer->GetRenderWindow()->GetInteractor()->GetInteractorStyle());
+    if (interactorStyle)
+      {
+      // Put the interactor to interactive mode (we always use VTKIS_ROTATE state as it does not matter how exactl we manipulate
+      // the camera). This changes the desired frame rate (so that for example volume rendering is performed at lower resolution)
+      // and also invokes StartInteractionState (and later EndInteractionState) events, which allow performing operations
+      // when interaction is completed.
+      if (interactorStyle->GetState() != VTKIS_ROTATE)
+        {
+        interactorStyle->StartState(VTKIS_ROTATE);
+        }
+      }
+    }
+
   const int* displayPos = eventData->GetDisplayPosition();
 
   this->StartEventPosition[0] = displayPos[0];
@@ -392,6 +419,18 @@ bool vtkMRMLCameraWidget::ProcessStartMouseDrag(vtkMRMLInteractionEventData* eve
 //-------------------------------------------------------------------------
 bool vtkMRMLCameraWidget::ProcessEndMouseDrag(vtkMRMLInteractionEventData* vtkNotUsed(eventData))
 {
+  if (this->Renderer && this->Renderer->GetRenderWindow() && this->Renderer->GetRenderWindow()->GetInteractor())
+    {
+    vtkInteractorStyle* interactorStyle = vtkInteractorStyle::SafeDownCast(this->Renderer->GetRenderWindow()->GetInteractor()->GetInteractorStyle());
+    if (interactorStyle)
+      {
+      if (interactorStyle->GetState() != VTKIS_NONE)
+        {
+        interactorStyle->StopState();
+        }
+      }
+    }
+
   if (this->WidgetState == WidgetStateIdle)
     {
     return false;
@@ -687,6 +726,15 @@ bool vtkMRMLCameraWidget::Dolly(double factor)
   if (camera->GetParallelProjection())
     {
     camera->SetParallelScale(camera->GetParallelScale() / factor);
+    if (this->GetCameraNode() && this->GetCameraNode()->GetScene())
+      {
+      vtkMRMLScene* scene = this->GetCameraNode()->GetScene();
+      vtkMRMLViewNode* viewNode = vtkMRMLViewNode::SafeDownCast(scene->GetNodeByID(this->GetCameraNode()->GetActiveTag()));
+      if (viewNode)
+        {
+        viewNode->SetFieldOfView(camera->GetParallelScale());
+        }
+      }
     }
   else
     {

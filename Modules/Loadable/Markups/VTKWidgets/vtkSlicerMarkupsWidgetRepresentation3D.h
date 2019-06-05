@@ -39,6 +39,8 @@ class vtkPolyDataMapper;
 class vtkProperty;
 class vtkSelectVisiblePoints;
 
+class vtkMRMLInteractionEventData;
+
 class VTK_SLICER_MARKUPS_MODULE_VTKWIDGETS_EXPORT vtkSlicerMarkupsWidgetRepresentation3D : public vtkSlicerMarkupsWidgetRepresentation
 {
 public:
@@ -64,12 +66,12 @@ public:
   /// Return the bounds of the representation
   double *GetBounds() override;
 
-  void CanInteract(const int displayPosition[2], const double worldPosition[3],
+  void CanInteract(vtkMRMLInteractionEventData* interactionEventData,
     int &foundComponentType, int &foundComponentIndex, double &closestDistance2) override;
 
   /// Checks if interaction with straight line between visible points is possible.
   /// Can be used on the output of CanInteract, as if no better component is found then the input is returned.
-  void CanInteractWithLine(const int displayPosition[2], const double worldPosition[3],
+  void CanInteractWithLine(vtkMRMLInteractionEventData* interactionEventData,
     int &foundComponentType, int &foundComponentIndex, double &closestDistance2);
 
   bool AccuratePick(int x, int y, double pickPoint[3]);
@@ -91,6 +93,7 @@ protected:
     ~ControlPointsPipeline3D() override;
 
     vtkSmartPointer<vtkSelectVisiblePoints> SelectVisiblePoints;
+    vtkSmartPointer<vtkIdTypeArray> ControlPointIndices;  // store original ID to determine which control point is actually visible
     vtkSmartPointer<vtkActor> Actor;
     vtkSmartPointer<vtkPolyDataMapper> Mapper;
     vtkSmartPointer<vtkGlyph3D> Glypher;
