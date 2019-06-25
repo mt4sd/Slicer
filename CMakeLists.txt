@@ -406,7 +406,8 @@ include(SlicerFunctionAddPythonQtResources)
 #-----------------------------------------------------------------------------
 if(Slicer_BUILD_I18N_SUPPORT)
   set(Slicer_LANGUAGES
-    "fr"
+  "es_Es"
+  "fr_FR"
     )
   set_property(GLOBAL PROPERTY Slicer_LANGUAGES ${Slicer_LANGUAGES})
 endif()
@@ -888,6 +889,7 @@ if(Slicer_USE_PYTHONQT)
   message(STATUS "Configuring ${Slicer_MAIN_PROJECT_APPLICATION_NAME} with python ${Slicer_PYTHON_VERSION_DOT}")
 
   set(CTK_COMPILE_PYTHON_SCRIPTS_GLOBAL_TARGET_NAME "Slicer")
+  set(QMTSFiles)
 endif()
 
 #-----------------------------------------------------------------------------
@@ -1210,10 +1212,19 @@ ExternalData_Add_Target(${Slicer_ExternalData_DATA_MANAGEMENT_TARGET})
 #-----------------------------------------------------------------------------
 # Create targets CopySlicerPython{Resource, Script}Files, CompileSlicerPythonFiles
 if(Slicer_USE_PYTHONQT)
+
+  get_property(QM_SCRIPTED_MODULE_FILES GLOBAL PROPERTY QM_SCRIPTED_MODULE_FILES)
+  add_custom_target(AddOrUpdate${CTK_COMPILE_PYTHON_SCRIPTS_GLOBAL_TARGET_NAME}TranslationFiles
+    DEPENDS ${QM_SCRIPTED_MODULE_FILES}
+    )
+
+
   slicerFunctionAddPythonQtResourcesTargets(SlicerPythonResources)
   ctkFunctionAddCompilePythonScriptTargets(
     ${CTK_COMPILE_PYTHON_SCRIPTS_GLOBAL_TARGET_NAME}
-    DEPENDS SlicerPythonResources
+    DEPENDS
+      SlicerPythonResources
+      AddOrUpdate${CTK_COMPILE_PYTHON_SCRIPTS_GLOBAL_TARGET_NAME}TranslationFiles
     )
 endif()
 
