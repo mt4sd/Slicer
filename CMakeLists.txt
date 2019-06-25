@@ -889,7 +889,6 @@ if(Slicer_USE_PYTHONQT)
   message(STATUS "Configuring ${Slicer_MAIN_PROJECT_APPLICATION_NAME} with python ${Slicer_PYTHON_VERSION_DOT}")
 
   set(CTK_COMPILE_PYTHON_SCRIPTS_GLOBAL_TARGET_NAME "Slicer")
-  set(QMTSFiles)
 endif()
 
 #-----------------------------------------------------------------------------
@@ -1217,7 +1216,6 @@ if(Slicer_USE_PYTHONQT)
   add_custom_target(AddOrUpdate${CTK_COMPILE_PYTHON_SCRIPTS_GLOBAL_TARGET_NAME}TranslationFiles
     DEPENDS ${QM_SCRIPTED_MODULE_FILES}
     )
-
 
   slicerFunctionAddPythonQtResourcesTargets(SlicerPythonResources)
   ctkFunctionAddCompilePythonScriptTargets(

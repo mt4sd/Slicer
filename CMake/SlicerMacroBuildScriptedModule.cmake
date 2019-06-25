@@ -169,15 +169,16 @@ macro(slicerMacroBuildScriptedModule)
       # store the paths where the qm files are located
       set_property(GLOBAL APPEND PROPERTY Slicer_QM_OUTPUT_DIRS ${QM_OUTPUT_DIR})
 
-      set_property(GLOBAL APPEND PROPERTY QMTSFiles ${QM_OUTPUT_DIR})
-        message(STATUS "   QM_OUTPUT_DIR_VAR is ${QM_OUTPUT_DIR}")
-        message(STATUS "   QM_OUTPUT_FILES is '${QM_OUTPUT_FILES}'")
+      # keep track of .qm files associated with scripter modules
+      set_property(GLOBAL APPEND PROPERTY QM_SCRIPTED_MODULE_FILES ${QM_OUTPUT_FILES})
+      message(STATUS "   QM_OUTPUT_DIR_VAR is ${QM_OUTPUT_DIR}")
+      message(STATUS "   QM_OUTPUT_FILES is '${QM_OUTPUT_FILES}'")
 
-        if(MY_SLICER_NAME STREQUAL "Endoscopy")
-        add_custom_target(Generate${MY_SLICER_NAME}QmFiles
-          DEPENDS ${QM_OUTPUT_FILES}
-          )
-      endif()
+      # if(MY_SLICER_NAME STREQUAL "Endoscopy")
+      #   add_custom_target(Generate${MY_SLICER_NAME}QmFiles
+      #     DEPENDS ${QM_OUTPUT_FILES}
+      #     )
+      # endif()
 
    endif()
   endif()
