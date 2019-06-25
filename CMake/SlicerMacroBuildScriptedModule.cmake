@@ -97,6 +97,98 @@ macro(slicerMacroBuildScriptedModule)
     set(_no_install_subdir_option "")
   endif()
 
+  #--------------------------------------------------------------------------
+  # Translation
+  # --------------------------------------------------------------------------
+
+  # to test
+  if(NOT DEFINED Slicer_BUILD_I18N_SUPPORT)
+      message(FATAL_ERROR "Slicer_BUILD_I18N_SUPPORT")
+  endif()
+
+
+  if(Slicer_BUILD_I18N_SUPPORT)
+    message(STATUS "  Slicer_BUILD_I18N_SUPPORT")
+    message(STATUS "  Available module translations: ${Slicer_UPDATE_TRANSLATION}")
+    message(STATUS "Language: '${Slicer_LANGUAGES}' ")
+
+    set(TS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources/Translations/")
+    message(STATUS "TS_DIR: '${TS_DIR}' ")
+    #get_property(Slicer_LANGUAGES GLOBAL PROPERTY Slicer_LANGUAGES)
+
+    # Generating the TS Files
+    if(Slicer_UPDATE_TRANSLATION)
+      message(STATUS "  Generating the files *.ts: '${Slicer_LANGUAGES}'")
+      # find_package(PythonInterp REQUIRED)
+      # set(MY_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
+      # if (EXISTS "${MY_PYTHON_EXECUTABLE}" )
+      #   message(STATUS "python found")
+      # endif()
+      # if(NOT EXISTS "${MY_PYTHON_EXECUTABLE}")
+      #   if(MY_REQUIRED)
+      #     message(FATAL_ERROR "Could not find Python interpreter for required dependency ${MY_SLICER_NAME}."
+      #                         "Path '${MY_PYTHON_EXECUTABLE}' corresponds to a nonexistent file.")
+      #   else()
+      #     message(STATUS "Could not find ${MY_SLICER_NAME} because no Python interpreter was found")
+      #     return()
+      #   endif()
+      # endif()
+      message(STATUS  "Slicer_INSTALL_QM_DIR is ${Slicer_INSTALL_QM_DIR}")
+
+      set(SCRIPTEDMODULE_UI_SRCS "")
+        include(SlicerMacroTranslation)
+        SlicerMacroTranslation(
+          SRCS ${MY_SLICER_SCRIPTS}
+          UI_SRCS ${SCRIPTEDMODULE_UI_SRCS}
+          TS_DIR ${TS_DIR}
+          TS_BASEFILENAME ${MY_SLICER_NAME}
+          TS_LANGUAGES ${Slicer_LANGUAGES}
+          QM_OUTPUT_DIR_VAR QM_OUTPUT_DIR
+          QM_OUTPUT_FILES_VAR QM_OUTPUT_FILES
+          )
+
+          message(STATUS "   QM_OUTPUT_DIR_VAR is ${QM_OUTPUT_DIR}")
+          message(STATUS "   QM_OUTPUT_FILES is '${QM_OUTPUT_FILES}'")
+
+
+    else()
+      # Lookup loadable module translation files
+      set(_available_ts_languages "")
+      foreach(language ${Slicer_LANGUAGES})
+        set(_expected_ts_file "${TS_DIR}${MY_SLICER_NAME}_${language}.ts")
+        if(EXISTS "${_expected_ts_file}")
+          list(APPEND _available_ts_languages ${language})
+        endif()
+      endforeach()
+
+      if(NOT _available_ts_languages STREQUAL "")
+        message(STATUS "  Available module translations: ${_available_ts_languages}")
+
+        set(SCRIPTEDMODULE_UI_SRCS "")
+        include(SlicerMacroTranslation)
+        SlicerMacroTranslation(
+          SRCS ${MY_SLICER_SCRIPTS}
+          UI_SRCS ${SCRIPTEDMODULE_UI_SRCS}
+          TS_DIR ${TS_DIR}
+          TS_BASEFILENAME ${MY_SLICER_NAME}
+          TS_LANGUAGES ${Slicer_LANGUAGES}
+          QM_OUTPUT_DIR_VAR QM_OUTPUT_DIR
+          QM_OUTPUT_FILES_VAR QM_OUTPUT_FILES
+          )
+
+        # store the paths where the qm files are located
+        set_property(GLOBAL APPEND PROPERTY Slicer_QM_OUTPUT_DIRS ${QM_OUTPUT_DIR})
+        message(STATUS "   QM_OUTPUT_DIR_VAR is ${QM_OUTPUT_DIR}")
+        message(STATUS "   QM_OUTPUT_FILES is '${QM_OUTPUT_FILES}'")
+      endif()
+   endif()
+
+  else() # TODO: Checking these sentences
+    set(QM_OUTPUT_FILES )
+  endif()
+
+
+
   ctkMacroCompilePythonScript(
     TARGET_NAME ${MY_SLICER_NAME}
     SCRIPTS "${MY_SLICER_SCRIPTS}"
