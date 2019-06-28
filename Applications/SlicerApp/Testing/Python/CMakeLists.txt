@@ -200,6 +200,23 @@ set_tests_properties(py_nomainwindow_${testname} PROPERTIES
 endif()
 
 #
+# Check that an exception raised during scripted module cleanup sets exit code
+#
+set(testname ScriptedModuleCleanupTest_with_testing)
+add_test(
+  NAME py_${testname}
+  COMMAND ${PYTHON_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/ScriptedModuleCleanupTest.py ${Slicer_LAUNCHER_EXECUTABLE} --with-testing
+  )
+
+set(testname ScriptedModuleCleanupTest_without_testing)
+add_test(
+  NAME py_${testname}
+  COMMAND ${PYTHON_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/ScriptedModuleCleanupTest.py ${Slicer_LAUNCHER_EXECUTABLE}
+  )
+
+#
 # Application tests
 #
 slicer_add_python_unittest(
@@ -244,6 +261,12 @@ endif()
 slicer_add_python_unittest(
   SCRIPT ${Slicer_SOURCE_DIR}/Base/Python/tests/test_PythonManager.py
   SLICER_ARGS --no-main-window --disable-modules
+  TESTNAME_PREFIX nomainwindow_
+  )
+
+slicer_add_python_unittest(
+  SCRIPT ${Slicer_SOURCE_DIR}/Base/Python/slicer/tests/test_slicer_util_without_modules.py
+  SLICER_ARGS --no-main-window  --disable-modules
   TESTNAME_PREFIX nomainwindow_
   )
 

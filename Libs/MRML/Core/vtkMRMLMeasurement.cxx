@@ -22,8 +22,8 @@ vtkMRMLMeasurement::vtkMRMLMeasurement()
 : Name(nullptr)
 , Value(0.0)
 , Units(nullptr)
-, PrintFormat(nullptr)
 , Description(nullptr)
+, PrintFormat(nullptr)
 , QuantityCode(nullptr)
 , DerivationCode(nullptr)
 , UnitsCode(nullptr)
@@ -143,7 +143,7 @@ std::string vtkMRMLMeasurement::GetAsString()
 }
 
 //----------------------------------------------------------------------------
-bool vtkMRMLMeasurement::SetFromString(const std::string& content)
+bool vtkMRMLMeasurement::SetFromString(const std::string& vtkNotUsed(content))
 {
   this->Initialize();
   bool success = true;

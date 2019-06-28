@@ -121,7 +121,7 @@ void qSlicerCLIProgressBarPrivate::init()
 
   this->DetailsTextExpandButton = new ctkExpandButton();
   this->DetailsTextExpandButton->setObjectName(QString::fromUtf8("DetailsTextExpandButton"));
-  this->DetailsTextExpandButton->setToolTip(QObject::tr("Show details"));
+  this->DetailsTextExpandButton->setToolTip(qSlicerCLIProgressBar::tr("Show details"));
   this->DetailsTextExpandButton->setOrientation(Qt::Vertical);
 
   this->GridLayout->addWidget(DetailsTextExpandButton, 1, 2, 1, 1);
@@ -144,9 +144,9 @@ void qSlicerCLIProgressBarPrivate::init()
   this->StageProgressBar->setValue(0);
   this->GridLayout->addWidget(StageProgressBar, 4, 0, 1, 3);
 
-  this->NameLabel->setText(QObject::tr(""));
-  this->StatusLabelLabel->setText(QObject::tr("Status:"));
-  this->StatusLabel->setText(QObject::tr("Idle"));
+  this->NameLabel->setText("");
+  this->StatusLabelLabel->setText(qSlicerCLIProgressBar::tr("Status:"));
+  this->StatusLabel->setText(qSlicerCLIProgressBar::tr("Idle"));
 
   QObject::connect(this->DetailsTextExpandButton, SIGNAL(toggled(bool)),
     q, SLOT(showDetails(bool)));

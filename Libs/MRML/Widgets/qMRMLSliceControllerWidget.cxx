@@ -76,7 +76,7 @@ qMRMLSliceControllerWidgetPrivate::qMRMLSliceControllerWidgetPrivate(qMRMLSliceC
   qMRMLOrientation axialOrientation = {qMRMLSliceControllerWidget::tr("S: "), qMRMLSliceControllerWidget::tr("I <-----> S")};
   qMRMLOrientation sagittalOrientation = {qMRMLSliceControllerWidget::tr("R: "), qMRMLSliceControllerWidget::tr("L <-----> R")};
   qMRMLOrientation coronalOrientation = {qMRMLSliceControllerWidget::tr("A: "), qMRMLSliceControllerWidget::tr("P <-----> A")};
-  qMRMLOrientation obliqueOrientation = {qMRMLSliceControllerWidget::tr(""), qMRMLSliceControllerWidget::tr("Oblique")};
+  qMRMLOrientation obliqueOrientation = {"", qMRMLSliceControllerWidget::tr("Oblique")};
 
   this->SliceOrientationToDescription["Axial"] = axialOrientation;
   this->SliceOrientationToDescription["Sagittal"] = sagittalOrientation;
@@ -400,7 +400,7 @@ void qMRMLSliceControllerWidgetPrivate::init()
 
   this->SliceOffsetSlider = new qMRMLSliderWidget(q);
   this->SliceOffsetSlider->setTracking(false);
-  this->SliceOffsetSlider->setToolTip(q->tr("Slice distance from RAS origin"));
+  this->SliceOffsetSlider->setToolTip(qMRMLSliceControllerWidget::tr("Slice distance from RAS origin"));
   this->SliceOffsetSlider->setQuantity("length");
   this->SliceOffsetSlider->setUnitAwareProperties(
     qMRMLSliderWidget::Suffix|qMRMLSliderWidget::Precision|qMRMLSliderWidget::Scaling);
@@ -1537,7 +1537,7 @@ qMRMLOrientation qMRMLSliceControllerWidgetPrivate::mrmlOrientation(const QStrin
     {
     return it.value();
     }
-  qMRMLOrientation obliqueOrientation = {qMRMLSliceControllerWidget::tr(""), qMRMLSliceControllerWidget::tr("Oblique")};
+  qMRMLOrientation obliqueOrientation = {"", qMRMLSliceControllerWidget::tr("Oblique")};
   return obliqueOrientation;
 }
 

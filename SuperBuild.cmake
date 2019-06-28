@@ -170,6 +170,13 @@ if(Slicer_USE_TBB)
   list(APPEND Slicer_DEPENDENCIES tbb)
 endif()
 
+include(SlicerCheckModuleEnabled)
+
+# JsonCpp is required to build VolumeRendering module
+slicer_is_loadable_builtin_module_enabled("VolumeRendering" _build_volume_rendering_module)
+if(_build_volume_rendering_module)
+  list(APPEND Slicer_DEPENDENCIES JsonCpp)
+endif()
 
 #------------------------------------------------------------------------------
 # Include remote modules
@@ -199,7 +206,7 @@ mark_as_advanced(Slicer_BUILD_MULTIVOLUME_SUPPORT)
 
 Slicer_Remote_Add(MultiVolumeExplorer
   GIT_REPOSITORY ${EP_GIT_PROTOCOL}://github.com/fedorov/MultiVolumeExplorer.git
-  GIT_TAG 299f2d982d0ffca166f8a39093e0782cd44c1778
+  GIT_TAG fb36fb94924bcf868724facd32d440e6b83dfc86
   OPTION_NAME Slicer_BUILD_MultiVolumeExplorer
   OPTION_DEPENDS "Slicer_BUILD_QTLOADABLEMODULES;Slicer_BUILD_MULTIVOLUME_SUPPORT;Slicer_USE_PYTHONQT"
   LABELS REMOTE_MODULE

@@ -119,6 +119,22 @@ public:
 
   bool GetPointsOnPlaneWorld(vtkPlane* plane, vtkPoints* intersectionPoints);
 
+  int GetCurveType();
+  void SetCurveType(int type);
+  void SetCurveTypeToLinear();
+  void SetCurveTypeToCardinalSpline();
+  void SetCurveTypeToKochanekSpline();
+  void SetCurveTypeToPolynomial();
+  const char* GetCurveTypeAsString(int id);
+  int GetCurveTypeFromString(const char* name);
+
+  //@{
+  /// Get/set how many curve points are inserted between control points.
+  /// Higher values are recommended if distance between control points is large.
+  int GetNumberOfPointsPerInterpolatingSegment();
+  void SetNumberOfPointsPerInterpolatingSegment(int pointsPerSegment);
+  //@}
+
 protected:
   vtkMRMLMarkupsCurveNode();
   ~vtkMRMLMarkupsCurveNode() override;

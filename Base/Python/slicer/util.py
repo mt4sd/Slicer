@@ -616,6 +616,17 @@ def modulePath(moduleName):
 
 def reloadScriptedModule(moduleName):
   """Generic reload method for any scripted module.
+
+  The function performs the following:
+  * Ensure ``sys.path`` includes the module path and use ``imp.load_module``
+    to load the associated script.
+  * For the current module widget representation:
+    * Hide all children widgets
+    * Call ``cleanup()`` function and disconnect ``ScriptedLoadableModuleWidget_onModuleAboutToBeUnloaded``
+    * Remove layout items
+  * Instantiate new widget representation
+  * Call ``setup()`` function
+  * Update ``slicer.modules.<moduleName>Widget`` attribute
   """
   import imp, sys, os
   import slicer
@@ -639,16 +650,21 @@ def reloadScriptedModule(moduleName):
     except AttributeError:
       pass
 
-  # remove spacer items
+  # if the module widget has been instantiated, call cleanup function and
+  # disconnect "_onModuleAboutToBeUnloaded" (this avoids double-cleanup on
+  # application exit)
+  if hasattr(slicer.modules, widgetName):
+    widget = getattr(slicer.modules, widgetName)
+    widget.cleanup()
+
+    if hasattr(widget, '_onModuleAboutToBeUnloaded'):
+      slicer.app.moduleManager().disconnect('moduleAboutToBeUnloaded(QString)', widget._onModuleAboutToBeUnloaded)
+
+  # remove layout items
   item = parent.layout().itemAt(0)
   while item:
     parent.layout().removeItem(item)
     item = parent.layout().itemAt(0)
-
-  # delete the old widget instance
-  if hasattr(slicer.modules, widgetName):
-    w = getattr(slicer.modules, widgetName)
-    w.cleanup()
 
   # create new widget inside existing parent
   widget = eval('reloaded_module.%s(parent)' % widgetName)
@@ -1283,13 +1299,21 @@ interactor.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, onClick)
   interactor.SetShiftKey(0)
   interactor.SetControlKey(0)
 
-def downloadFile(url, targetFilePath):
+def downloadFile(url, targetFilePath, checksum=None, reDownloadIfChecksumInvalid=True):
   """ Download ``url`` to local storage as ``targetFilePath``
 
   Target file path needs to indicate the file name and extension as well
+
+  If specified, the ``checksum`` is used to verify that the downloaded file is the expected one.
+  It must be specified as ``<algo>:<digest>``. For example, ``SHA256:cc211f0dfd9a05ca3841ce1141b292898b2dd2d3f08286affadf823a7e58df93``.
   """
   import os
   import logging
+  try:
+    (algo, digest) = extractAlgoAndDigest(checksum)
+  except ValueError as excinfo:
+    logging.error('Failed to parse checksum: ' + excinfo.message)
+    return False
   if not os.path.exists(targetFilePath) or os.stat(targetFilePath).st_size == 0:
     logging.info('Downloading from\n  %s\nas file\n  %s\nIt may take a few minutes...' % (url,targetFilePath))
     try:
@@ -1300,8 +1324,33 @@ def downloadFile(url, targetFilePath):
       traceback.print_exc()
       logging.error('Failed to download file from ' + url)
       return False
+    if algo is not None:
+      logging.info('Verifying checksum\n  %s' % targetFilePath)
+      current_digest = computeChecksum(algo, targetFilePath)
+      if current_digest != digest:
+        logging.error('Downloaded file does not have expected checksum.'
+          '\n   current checksum: %s'
+          '\n  expected checksum: %s' % (current_digest, digest))
+        return False
+      else:
+        logging.info('Checksum OK')
   else:
-    logging.info('Requested file has been found: ' + targetFilePath)
+    if algo is not None:
+      current_digest = computeChecksum(algo, targetFilePath)
+      if current_digest != digest:
+        if reDownloadIfChecksumInvalid:
+          logging.info('Requested file has been found but its checksum is different: deleting and re-downloading')
+          os.remove(targetFilePath)
+          return downloadFile(url, targetFilePath, checksum, reDownloadIfChecksumInvalid=False)
+        else:
+          logging.error('Requested file has been found but its checksum is different:'
+            '\n   current checksum: %s'
+            '\n  expected checksum: %s' % (current_digest, digest))
+          return False
+      else:
+        logging.info('Requested file has been found and checksum is OK: ' + targetFilePath)
+    else:
+      logging.info('Requested file has been found: ' + targetFilePath)
   return True
 
 def extractArchive(archiveFilePath, outputDir, expectedNumberOfExtractedFiles=None):
@@ -1338,12 +1387,61 @@ def extractArchive(archiveFilePath, outputDir, expectedNumberOfExtractedFiles=No
   logging.info('Unzipping %s into %s successful' % (archiveFilePath, outputDir))
   return True
 
+def computeChecksum(algo, filePath):
+  """Compute digest of ``filePath`` using ``algo``.
+
+  Supported hashing algorithms are SHA256 and SHA512.
+
+  It internally reads the file by chunk of 8192 bytes.
+
+  Raises :class:`ValueError` if algo is unknown.
+  Raises :class:`IOError` if filePath does not exist.
+  """
+  import hashlib
+
+  if algo not in ['SHA256', 'SHA512']:
+    raise ValueError("unsupported hashing algorithm %s" % algo)
+
+  with open(filePath, 'rb') as content:
+    hash = hashlib.new(algo)
+    while True:
+        chunk = content.read(8192)
+        if not chunk:
+            break
+        hash.update(chunk)
+    return hash.hexdigest()
+
+def extractAlgoAndDigest(checksum):
+  """Given a checksum string formatted as ``<algo>:<digest>`` returns
+  the tuple ``(algo, digest)``.
+
+  ``<algo>`` is expected to be `SHA256` or `SHA512`.
+  ``<digest>`` is expected to be the full length hexdecimal digest.
+
+  Raises :class:`ValueError` if checksum is incorrectly formatted.
+  """
+  if checksum is None:
+    return None, None
+  if len(checksum.split(':')) != 2:
+    raise ValueError("invalid checksum '%s'. Expected format is '<algo>:<digest>'." % checksum)
+  (algo, digest) = checksum.split(':')
+  expected_algos = ['SHA256', 'SHA512']
+  if algo not in expected_algos:
+    raise ValueError("invalid algo '%s'. Algo must be one of %s" % (algo, ", ".join(expected_algos)))
+  expected_digest_length = {'SHA256': 64, 'SHA512': 128}
+  if len(digest) != expected_digest_length[algo]:
+    raise ValueError("invalid digest length %d. Expected digest length for %s is %d" % (len(digest), algo, expected_digest_length[algo]))
+  return algo, digest
+
 def downloadAndExtractArchive(url, archiveFilePath, outputDir, \
-                              expectedNumberOfExtractedFiles=None, numberOfTrials=3):
+                              expectedNumberOfExtractedFiles=None, numberOfTrials=3, checksum=None):
   """ Downloads an archive from ``url`` as ``archiveFilePath``, and extracts it to ``outputDir``.
 
   This combined function tests the success of the download by the extraction step,
   and re-downloads if extraction failed.
+
+  If specified, the ``checksum`` is used to verify that the downloaded file is the expected one.
+  It must be specified as ``<algo>:<digest>``. For example, ``SHA256:cc211f0dfd9a05ca3841ce1141b292898b2dd2d3f08286affadf823a7e58df93``.
   """
   import os
   import shutil
@@ -1359,7 +1457,7 @@ def downloadAndExtractArchive(url, archiveFilePath, outputDir, \
     os.mkdir(outputDir)
 
   while numberOfTrials:
-    if not downloadFile(url, archiveFilePath):
+    if not downloadFile(url, archiveFilePath, checksum):
       numberOfTrials -= 1
       _cleanup()
       continue
@@ -1524,3 +1622,93 @@ def plot(narray, xColumnIndex = -1, columnNames = None, title = None, show = Tru
     nodes['series'] = seriesNodes
 
   return chartNode
+
+def launchConsoleProcess(args, useStartupEnvironment=True):
+  """Launch a process. Hiding the console and captures the process output.
+  The console window is hidden when running on Windows.
+  :param args: executable name, followed by
+  :return: process object.
+
+  Example 1: simple plot
+
+  .. code-block:: python
+
+    # Get sample data
+    import numpy as np
+    import SampleData
+    volumeNode = SampleData.downloadSample("MRHead")
+  """
+  import subprocess
+  if useStartupEnvironment:
+    startupEnv = startupEnvironment()
+  else:
+    startupEnv = None
+  import os
+  if os.name == 'nt':
+    # Hide console window (only needed on Windows)
+    info = subprocess.STARTUPINFO()
+    info.dwFlags = 1
+    info.wShowWindow = 0
+    proc = subprocess.Popen(args, env=startupEnv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, startupinfo=info)
+  else:
+    proc = subprocess.Popen(args, env=startupEnv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+  return proc
+
+def logProcessOutput(proc):
+  """Continuously write process output to the application log and the Python console.
+  :param proc: process object.
+  """
+  from subprocess import Popen, PIPE, CalledProcessError
+  import logging
+  try:
+    from slicer import app
+    guiApp = app
+  except ImportError:
+    # Running from console
+    guiApp = None
+  for line in proc.stdout:
+    if guiApp:
+      logging.info(line.rstrip())
+      guiApp.processEvents()  # give a chance the application to refresh GUI
+    else:
+      print(line.rstrip())
+  proc.wait()
+  retcode=proc.returncode
+  if retcode != 0:
+    raise CalledProcessError(retcode, proc.args, output=proc.stdout, stderr=proc.stderr)
+
+def pip_install(req):
+  """Install python packages.
+  Currently, the method simply calls ``python -m pip install`` but in the future further checks, optimizations,
+  user confirmation may be implemented, therefore it is recommended over to use this method call instead of a plain
+  pip install.
+  :param req: requirement specifier, same format as used by pip (https://docs.python.org/3/installing/index.html)
+
+  Example: calling from Slicer GUI
+
+  .. code-block:: python
+
+    pip_install("tensorflow keras scikit-learn ipywidgets")
+
+  Example: calling from PythonSlicer console
+
+  .. code-block:: python
+
+    from slicer.util import pip_install
+    pip_install("tensorflow")
+
+  """
+  import os
+  import sys
+  try:
+    from slicer import app
+    pythonSlicerExecutablePath = app.slicerHome+"/bin/PythonSlicer"
+  except ImportError:
+    # Running from console
+    pythonSlicerExecutablePath = os.path.dirname(sys.executable)+"/PythonSlicer"
+  if os.name == 'nt':
+    pythonSlicerExecutablePath += ".exe"
+  command_line = [pythonSlicerExecutablePath, "-m", "pip", "install"]
+  command_line.extend(req.split(" "))
+  proc=launchConsoleProcess(command_line, useStartupEnvironment = False)
+  logProcessOutput(proc)
