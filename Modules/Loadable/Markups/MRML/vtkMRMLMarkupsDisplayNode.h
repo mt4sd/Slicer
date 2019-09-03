@@ -29,6 +29,10 @@
 #include "vtkMRMLDisplayNode.h"
 #include "vtkMRMLMarkupsNode.h"
 
+// STD includes
+#include <map>
+
+class vtkMRMLInteractionEventData;
 class vtkMRMLProceduralColorNode;
 
 /// \ingroup Slicer_QtModules_Markups
@@ -43,35 +47,41 @@ public:
   // MRMLNode methods
   //--------------------------------------------------------------------------
 
-  vtkMRMLNode* CreateNodeInstance (  ) override;
+  vtkMRMLNode* CreateNodeInstance() override;
 
-  // Read node attributes from XML (MRML) file
-  void ReadXMLAttributes ( const char** atts ) override;
+  /// Read node attributes from XML (MRML) file
+  void ReadXMLAttributes(const char** atts) override;
 
-  // Write this node's information to a MRML file in XML format.
-  void WriteXML ( ostream& of, int indent ) override;
+  /// Write this node's information to a MRML file in XML format.
+  void WriteXML(ostream& of, int indent) override;
 
 
-  // Copy the node's attributes to this object
-  void Copy ( vtkMRMLNode *node ) override;
+  /// Copy the node's attributes to this object
+  void Copy(vtkMRMLNode *node) override;
 
-  // Get node XML tag name (like Volume, Markups)
+  /// Get node XML tag name (like Volume, Markups)
   const char* GetNodeTagName() override {return "MarkupsDisplay";};
 
-  // Finds the storage node and read the data
+  /// Finds the storage node and read the data
   void UpdateScene(vtkMRMLScene *scene) override;
 
-  // Alternative method to propagate events generated in Display nodes
-  void ProcessMRMLEvents ( vtkObject * /*caller*/,
-                                   unsigned long /*event*/,
-                                   void * /*callData*/ ) override;
+  /// Alternative method to propagate events generated in Display nodes
+  void ProcessMRMLEvents(vtkObject * /*caller*/,
+                         unsigned long /*event*/, void * /*callData*/ ) override;
 
-  /// Convenienve function for getting the displayable markups node
+  /// Convenience function for getting the displayable markups node
   vtkMRMLMarkupsNode* GetMarkupsNode();
 
-  /// Active item (item that the mouse is hovered over).
-  /// This propoerty is computed on-the-fly and saved to file.
-  vtkGetMacro(ActiveComponentType, int);
+  /// Get name of the default interaction context (typically the mouse)
+  static const std::string GetDefaultContextName() { return ""; };
+
+  /// Active component (that the mouse or other interaction context is hovered over).
+  /// This property is computed on-the-fly and saved to file.
+  /// \param context Name of the interaction context. By default it is empty string, meaning mouse.
+  ///   Additional devices, such as virtual reality controllers can specify additional context names.
+  ///   This mechanism allows interacting with multiple markups at the same time (user can grab
+  ///   different markup points with each controller at the same time).
+  int GetActiveComponentType(std::string context=vtkMRMLMarkupsDisplayNode::GetDefaultContextName());
   enum ComponentType
     {
     ComponentNone = 0,
@@ -79,13 +89,32 @@ public:
     ComponentCenterPoint,
     ComponentLine
     };
+  struct ComponentInfo
+    {
+    ComponentInfo()
+      {
+      this->Type = ComponentNone;
+      this->Index = -1;
+      }
+    int Type;
+    int Index;
+    };
 
-  /// Index of active item (item that the mouse is hovered over).
-  /// This propoerty is computed on-the-fly and saved to file.
-  vtkGetMacro(ActiveComponentIndex, int);
+  /// Index of active component (that the mouse or other interaction context is hovered over).
+  /// This property is computed on-the-fly and saved to file.
+  /// \param context Name of the interaction context. By default it is empty string, meaning mouse
+  int GetActiveComponentIndex(std::string context=vtkMRMLMarkupsDisplayNode::GetDefaultContextName());
 
-  /// Set active component type and index.
-  void SetActiveComponent(int componentType, int componentIndex);
+  /// Set active component type and index for interaction context (empty by default, meaning mouse)
+  void SetActiveComponent(int componentType, int componentIndex,
+                          std::string context=vtkMRMLMarkupsDisplayNode::GetDefaultContextName());
+
+  /// Query if there is an active component for any interaction context
+  bool HasActiveComponent();
+
+  /// Get list of interaction context names that have active components
+  /// \return List of interaction context names that have active components
+  std::vector<std::string> GetActiveComponentInteractionContexts();
 
   /// Set active component index to the provided value and component type to ComponentControlPoint.
   void SetActiveControlPoint(int controlPointIndex);
@@ -94,13 +123,17 @@ public:
   /// It updates the active control point index (if controlPointIndex<0 then it creates a new point) and
   /// updates its position and orientation.
   /// Returns the control point index (different from the input if the input was < 0).
-  int UpdateActiveControlPointWorld(int controlPointIndex, double accurateWorldPos[3],
+  int UpdateActiveControlPointWorld(int controlPointIndex, vtkMRMLInteractionEventData* eventData,
     double accurateWorldOrientationMatrix[9], const char* viewNodeID,
     const char* associatedNodeID, int positionStatus);
 
-  /// Returns index of active control point if active component type is ComponentControlPoint,
-  /// -1 otherwise.
-  int GetActiveControlPoint();
+  /// Returns index of active control point for all interaction contexts if active component type is
+  /// ComponentControlPoint.
+  void GetActiveControlPoints(std::vector<int>& controlPointIndices);
+  /// Returns index of active control point for interaction context if active component type is
+  /// ComponentControlPoint, -1 otherwise.
+  /// \param context Name of the interaction context. By default it is empty string, meaning mouse
+  int GetActiveControlPoint(std::string context=vtkMRMLMarkupsDisplayNode::GetDefaultContextName());
 
   /// Set the text scale of the associated text.
   vtkGetMacro(TextScale,double);
@@ -271,9 +304,9 @@ protected:
   vtkMRMLMarkupsDisplayNode( const vtkMRMLMarkupsDisplayNode& );
   void operator= ( const vtkMRMLMarkupsDisplayNode& );
 
-  // current active point or widget part (hovered by the mouse)
-  int ActiveComponentType;
-  int ActiveComponentIndex;
+  /// Current active point or widget component type and index (hovered by the mouse or other interaction context)
+  /// Map interaction context identifier (empty string for mouse) to component type enum
+  std::map<std::string, ComponentInfo> ActiveComponents;
 
   bool PropertiesLabelVisibility;
   bool PointLabelsVisibility;

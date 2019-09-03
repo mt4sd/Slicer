@@ -112,6 +112,7 @@ qSlicerSegmentEditorAbstractEffect::qSlicerSegmentEditorAbstractEffect(QObject* 
  , m_Name(QString())
  , m_Active(false)
  , m_PerSegment(true)
+ , m_RequireSegments(true)
  , m_ShowEffectCursorInSliceView(true)
  , m_ShowEffectCursorInThreeDView(false)
  , m_FillValue(1.0)
@@ -152,6 +153,18 @@ void qSlicerSegmentEditorAbstractEffect::setPerSegment(bool perSegment)
 {
   Q_UNUSED(perSegment);
   qCritical() << Q_FUNC_INFO << ": Cannot set per-segment flag by method, only in constructor!";
+}
+
+//-----------------------------------------------------------------------------
+bool qSlicerSegmentEditorAbstractEffect::requireSegments()const
+{
+  return this->m_RequireSegments;
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerSegmentEditorAbstractEffect::setRequireSegments(bool requireSegments)
+{
+  this->m_RequireSegments = requireSegments;
 }
 
 //-----------------------------------------------------------------------------
@@ -278,7 +291,7 @@ void qSlicerSegmentEditorAbstractEffect::modifySelectedSegmentByLabelmap(vtkOrie
     threshold->ThresholdBetween(parameterSetNode->GetMasterVolumeIntensityMaskRange()[0], parameterSetNode->GetMasterVolumeIntensityMaskRange()[1]);
     threshold->SetInValue(1);
     threshold->SetOutValue(0);
-    threshold->SetOutputScalarType(modifierLabelmap->GetScalarType());
+    threshold->SetOutputScalarType(VTK_UNSIGNED_CHAR);
     threshold->Update();
 
     vtkSmartPointer<vtkOrientedImageData> thresholdMask = vtkSmartPointer<vtkOrientedImageData>::New();
@@ -373,6 +386,15 @@ void qSlicerSegmentEditorAbstractEffect::modifySelectedSegmentByLabelmap(vtkOrie
       invertedModifierLabelmap.GetPointer(), segmentationNode, selectedSegmentID, vtkSlicerSegmentationsModuleLogic::MODE_MERGE_MIN, extent))
       {
       qCritical() << Q_FUNC_INFO << ": Failed to remove modifier labelmap from selected segment";
+      }
+    }
+
+  vtkSegment* segment = segmentationNode->GetSegmentation()->GetSegment(selectedSegmentID);
+  if (segment)
+    {
+    if (vtkSlicerSegmentationsModuleLogic::GetSegmentStatus(segment) == vtkSlicerSegmentationsModuleLogic::NotStarted)
+      {
+      vtkSlicerSegmentationsModuleLogic::SetSegmentStatus(segment, vtkSlicerSegmentationsModuleLogic::InProgress);
       }
     }
 

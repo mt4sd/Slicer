@@ -370,80 +370,197 @@ def setSliceViewerLayers(background='keep-current', foreground='keep-current', l
 #
 
 def loadNodeFromFile(filename, filetype, properties={}, returnNode=False):
+  """Load node into the scene from a file.
+  :param filename: full path of the file to load.
+  :param filetype: specifies the file type, which determines which IO class will load the file.
+  :param properties: map containing additional parameters for the loading.
+  :param returnNode: Deprecated. If set to true then the method returns status flag and node
+    instead of signalling error by throwing an exception.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   from slicer import app
   from vtk import vtkCollection
   properties['fileName'] = filename
 
+  loadedNodesCollection = vtkCollection()
+  success = app.coreIOManager().loadNodes(filetype, properties, loadedNodesCollection)
+  loadedNode = loadedNodesCollection.GetItemAsObject(0) if loadedNodesCollection.GetNumberOfItems() > 0 else None
+
+  # Deprecated way of returning status and node
   if returnNode:
-      loadedNodes = vtkCollection()
-      success = app.coreIOManager().loadNodes(filetype, properties, loadedNodes)
-      return success, loadedNodes.GetItemAsObject(0)
-  else:
-      success = app.coreIOManager().loadNodes(filetype, properties)
-      return success
+    import logging
+    logging.warning("loadNodeFromFile `returnNode` argument is deprecated. Loaded node is now returned directly if `returnNode` is not specified.")
+    return success, loadedNode
+
+  if not success:
+    errorMessage = "Failed to load node from file: " + str(filename)
+    raise RuntimeError(errorMessage)
+
+  return loadedNode
+
+def loadNodesFromFile(filename, filetype, properties={}, returnNode=False):
+  """Load nodes into the scene from a file. It differs from `loadNodeFromFile` in that
+  it returns loaded node(s) in an iterator.
+  :param filename: full path of the file to load.
+  :param filetype: specifies the file type, which determines which IO class will load the file.
+  :param properties: map containing additional parameters for the loading.
+  :return: loaded node(s) in an iterator object.
+  """
+  from slicer import app
+  from vtk import vtkCollection
+  properties['fileName'] = filename
+
+  loadedNodesCollection = vtkCollection()
+  success = app.coreIOManager().loadNodes(filetype, properties, loadedNodesCollection)
+  if not success:
+    errorMessage = "Failed to load nodes from file: " + str(filename)
+    raise RuntimeError(errorMessage)
+
+  return iter(loadedNodesCollection)
 
 def loadColorTable(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'ColorTableFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadFiberBundle(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'FiberBundleFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadFiducialList(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'FiducialListFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadAnnotationFiducial(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'AnnotationFile'
   properties = {}
   properties['fiducial'] = 1
   return loadNodeFromFile(filename, filetype, properties, returnNode)
 
 def loadAnnotationRuler(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'AnnotationFile'
   properties = {}
   properties['ruler'] = 1
   return loadNodeFromFile(filename, filetype, properties, returnNode)
 
 def loadAnnotationROI(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'AnnotationFile'
   properties = {}
   properties['roi'] = 1
   return loadNodeFromFile(filename, filetype, properties, returnNode)
 
 def loadMarkupsFiducialList(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'MarkupsFiducials'
   properties = {}
   return loadNodeFromFile(filename, filetype, properties, returnNode)
 
 def loadModel(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'ModelFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadScalarOverlay(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'ScalarOverlayFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadSegmentation(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'SegmentationFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadTransform(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'TransformFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadLabelVolume(filename, properties={}, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'VolumeFile'
   properties['labelmap'] = True
   return loadNodeFromFile(filename, filetype, properties, returnNode)
 
 def loadShaderProperty(filename, returnNode=False):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'ShaderPropertyFile'
   return loadNodeFromFile(filename, filetype, {}, returnNode)
 
 def loadVolume(filename, properties={}, returnNode=False):
-  """Properties:
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param properties:
   - name: this name will be used as node name for the loaded volume
   - labelmap: interpret volume as labelmap
   - singleFile: ignore all other files in the directory
@@ -452,11 +569,20 @@ def loadVolume(filename, properties={}, returnNode=False):
   - autoWindowLevel: compute window/level automatically
   - show: display volume in slice viewers after loading is completed
   - fileNames: list of filenames to load the volume from
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
   """
   filetype = 'VolumeFile'
   return loadNodeFromFile(filename, filetype, properties, returnNode)
 
 def loadScene(filename, properties={}):
+  """Load node from file.
+  :param filename: full path of the file to load.
+  :param returnNode: Deprecated.
+  :return: loaded node (if multiple nodes are loaded then a list of nodes).
+    If returnNode is True then a status flag and loaded node are returned.
+  """
   filetype = 'SceneFile'
   return loadNodeFromFile(filename, filetype, properties, returnNode=False)
 
@@ -797,9 +923,13 @@ def array(pattern = "", index = 0):
     return arrayFromModelPoints(node)
   elif isinstance(node, slicer.vtkMRMLGridTransformNode):
     return arrayFromGridTransform(node)
+  elif isinstance(node, slicer.vtkMRMLMarkupsNode):
+    return arrayFromMarkupsControlPoints(node)
+  elif isinstance(node, slicer.vtkMRMLTransformNode):
+    return arrayFromTransformMatrix(node)
 
   # TODO: accessors for other node types: polydata (verts, polys...), colors
-  return None
+  raise RuntimeError("Cannot get node "+node.GetID()+" as array")
 
 def arrayFromVolume(volumeNode):
   """Return voxel array from volume node as numpy array.
@@ -898,6 +1028,102 @@ def arrayFromGridTransform(gridTransformNode):
   narray = vtk.util.numpy_support.vtk_to_numpy(displacementGrid.GetPointData().GetScalars()).reshape(nshape)
   return narray
 
+def arrayFromVTKMatrix(vmatrix):
+  """Return vtkMatrix4x4 or vtkMatrix3x3 elements as numpy array.
+  The returned array is just a copy and so any modification in the array will not affect the input matrix.
+  To set VTK matrix from a numpy array, use :py:meth:`vtkMatrixFromArray` or
+  :py:meth:`updateVTKMatrixFromArray`.
+  """
+  from vtk import vtkMatrix4x4
+  from vtk import vtkMatrix3x3
+  import numpy as np
+  if isinstance(vmatrix, vtkMatrix4x4):
+    matrixSize = 4
+  elif isinstance(vmatrix, vtkMatrix3x3):
+    matrixSize = 3
+  else:
+    raise RuntimeError("Input must be vtk.vtkMatrix3x3 or vtk.vtkMatrix4x4")
+  narray = np.eye(matrixSize)
+  vmatrix.DeepCopy(narray.ravel(), vmatrix)
+  return narray
+
+def vtkMatrixFromArray(narray):
+  """Create VTK matrix from a 3x3 or 4x4 numpy array.
+  :param narray: input numpy array
+  The returned matrix is just a copy and so any modification in the array will not affect the output matrix.
+  To set numpy array from VTK matrix, use :py:meth:`arrayFromVTKMatrix`.
+  """
+  from vtk import vtkMatrix4x4
+  from vtk import vtkMatrix3x3
+  narrayshape = narray.shape
+  if narrayshape == (4,4):
+    vmatrix = vtkMatrix4x4()
+    updateVTKMatrixFromArray(vmatrix, narray)
+    return vmatrix
+  elif narrayshape == (3,3):
+    vmatrix = vtkMatrix3x3()
+    updateVTKMatrixFromArray(vmatrix, narray)
+    return vmatrix
+  else:
+    raise RuntimeError("Unsupported numpy array shape: "+str(narrayshape)+" expected (4,4)")
+
+def updateVTKMatrixFromArray(vmatrix, narray):
+  """Update VTK matrix values from a numpy array.
+  :param vmatrix: VTK matrix (vtkMatrix4x4 or vtkMatrix3x3) that will be update
+  :param narray: input numpy array
+  To set numpy array from VTK matrix, use :py:meth:`arrayFromVTKMatrix`.
+  """
+  from vtk import vtkMatrix4x4
+  from vtk import vtkMatrix3x3
+  if isinstance(vmatrix, vtkMatrix4x4):
+    matrixSize = 4
+  elif isinstance(vmatrix, vtkMatrix3x3):
+    matrixSize = 3
+  else:
+    raise RuntimeError("Output vmatrix must be vtk.vtkMatrix3x3 or vtk.vtkMatrix4x4")
+  if narray.shape != (matrixSize, matrixSize):
+    raise RuntimeError("Input narray size must match output vmatrix size ({0}x{0})".format(matrixSize))
+  vmatrix.DeepCopy(narray.ravel())
+
+def arrayFromTransformMatrix(transformNode, toWorld=False):
+  """Return 4x4 transformation matrix as numpy array.
+  :param toWorld: if set to True then the transform to world coordinate system is returned
+    (effect of parent transform to the node is applied), otherwise transform to parent transform is returned.
+  The returned array is just a copy and so any modification in the array will not affect the transform node.
+  To set transformation matrix from a numpy array, use :py:meth:`updateTransformMatrixFromArray`.
+  """
+  import numpy as np
+  from vtk import vtkMatrix4x4
+  vmatrix = vtkMatrix4x4()
+  if toWorld:
+    success = transformNode.GetMatrixTransformToWorld(vmatrix)
+  else:
+    success = transformNode.GetMatrixTransformToParent(vmatrix)
+  if not success:
+    raise RuntimeError("Failed to get transformation matrix from node "+transformNode.GetID())
+  return arrayFromVTKMatrix(vmatrix)
+
+def updateTransformMatrixFromArray(transformNode, narray, toWorld = False):
+  """Set transformation matrix from a numpy array of size 4x4 (toParent).
+  :param world: if set to True then the transform will be set so that transform
+    to world matrix will be equal to narray; otherwise transform to parent will be
+    set as narray.
+  """
+  import numpy as np
+  from vtk import vtkMatrix4x4
+  narrayshape = narray.shape
+  if narrayshape != (4,4):
+    raise RuntimeError("Unsupported numpy array shape: "+str(narrayshape)+" expected (4,4)")
+  if toWorld and transformNode.GetParentTransformNode():
+    # thisToParent = worldToParent * thisToWorld = inv(parentToWorld) * toWorld
+    narrayParentToWorld = arrayFromTransformMatrix(transformNode.GetParentTransformNode())
+    thisToParent = np.dot(np.linalg.inv(narrayParentToWorld), narray)
+    updateTransformMatrixFromArray(transformNode, thisToParent, toWorld = False)
+  else:
+    vmatrix = vtkMatrix4x4()
+    updateVTKMatrixFromArray(vmatrix, narray)
+    transformNode.SetMatrixTransformToParent(vmatrix)
+
 def arrayFromGridTransformModified(gridTransformNode):
   """Indicate that modification of a numpy array returned by :py:meth:`arrayFromModelPoints` has been completed."""
   transformGrid = gridTransformNode.GetTransformFromParent()
@@ -921,6 +1147,55 @@ def arrayFromSegment(segmentationNode, segmentId):
   import vtk.util.numpy_support
   narray = vtk.util.numpy_support.vtk_to_numpy(vimage.GetPointData().GetScalars()).reshape(nshape)
   return narray
+
+def arrayFromMarkupsControlPoints(markupsNode, world = False):
+  """Return control point positions of a markups node as rows in a numpy array (of size Nx3).
+  :param world: if set to True then the control points coordinates are returned in world coordinate system
+    (effect of parent transform to the node is applied).
+  The returned array is just a copy and so any modification in the array will not affect the markup node.
+  To modify markup control points based on a numpy array, use :py:meth:`updateMarkupControlPointsFromArray`.
+  """
+  numberOfControlPoints = markupsNode.GetNumberOfControlPoints()
+  import numpy as np
+  narray = np.zeros([numberOfControlPoints, 3])
+  for controlPointIndex in range(numberOfControlPoints):
+    if world:
+      markupsNode.GetNthControlPointPositionWorld(controlPointIndex, narray[controlPointIndex,:])
+    else:
+      markupsNode.GetNthControlPointPosition(controlPointIndex, narray[controlPointIndex,:])
+  return narray
+
+def updateMarkupControlPointsFromArray(markupsNode, narray, world = False):
+  """Sets control point positions in a markups node from a numpy array of size Nx3.
+  :param world: if set to True then the control points coordinates are expected in world coordinate system.
+  All previous content of the node is deleted.
+  """
+  narrayshape = narray.shape
+  if narrayshape == (0,):
+    markupsNode.RemoveAllControlPoints()
+    return
+  if len(narrayshape) != 2 or narrayshape[1] != 3:
+    raise RuntimeError("Unsupported numpy array shape: "+str(narrayshape)+" expected (N,3)")
+  numberOfControlPoints = narrayshape[0]
+  oldNumberOfControlPoints = markupsNode.GetNumberOfControlPoints()
+  # Update existing control points
+  for controlPointIndex in range(min(numberOfControlPoints, oldNumberOfControlPoints)):
+    if world:
+      markupsNode.SetNthControlPointPositionWorldFromArray(controlPointIndex, narray[controlPointIndex,:])
+    else:
+      markupsNode.SetNthControlPointPositionFromArray(controlPointIndex, narray[controlPointIndex,:])
+  if numberOfControlPoints >= oldNumberOfControlPoints:
+    # Add new points to the markup node
+    from vtk import vtkVector3d
+    for controlPointIndex in range(oldNumberOfControlPoints, numberOfControlPoints):
+      if world:
+        markupsNode.AddControlPointWorld(vtkVector3d(narray[controlPointIndex,:]))
+      else:
+        markupsNode.AddControlPoint(vtkVector3d(narray[controlPointIndex,:]))
+  else:
+    # Remove extra point from the markup node
+    for controlPointIndex in range(oldNumberOfControlPoints, numberOfControlPoints, -1):
+      markupsNode.RemoveNthControlPoint(controlPointIndex-1)
 
 def updateVolumeFromArray(volumeNode, narray):
   """Sets voxels of a volume node from a numpy array.
@@ -961,6 +1236,27 @@ def updateVolumeFromArray(volumeNode, narray):
   volumeNode.StorableModified()
   volumeNode.Modified()
   volumeNode.InvokeEvent(slicer.vtkMRMLVolumeNode.ImageDataModifiedEvent, volumeNode)
+
+def arrayFromTableColumn(tableNode, columnName):
+  """Return values of a table node's column as numpy array.
+  Values can be modified by modifying the numpy array.
+  After all modifications has been completed, call :py:meth:`arrayFromTableColumnModified`.
+
+  .. warning:: Important: memory area of the returned array is managed by VTK,
+    therefore values in the array may be changed, but the array must not be reallocated.
+    See :py:meth:`arrayFromVolume` for details.
+  """
+  import vtk.util.numpy_support
+  columnData = tableNode.GetTable().GetColumnByName(columnName)
+  narray = vtk.util.numpy_support.vtk_to_numpy(columnData)
+  return narray
+
+def arrayFromTableColumnModified(tableNode, columnName):
+  """Indicate that modification of a numpy array returned by :py:meth:`arrayFromModelPoints` has been completed."""
+  import vtk.util.numpy_support
+  columnData = tableNode.GetTable().GetColumnByName(columnName)
+  columnData.Modified()
+  tableNode.GetTable().Modified()
 
 def updateTableFromArray(tableNode, narrays, columnNames=None):
   """Sets values in a table node from a numpy array.
@@ -1077,16 +1373,16 @@ def tempDirectory(key='__SlicerTemp__',tempDir=None,includeDateTime=True):
   qt.QDir().mkpath(dirPath)
   return dirPath
 
-def delayDisplay(message,autoCloseMsec=1000):
+def delayDisplay(message, autoCloseMsec=1000):
   """Display an information message in a popup window for a short time.
-  If autoCloseMsec<400, then only slicer.app.processEvents() is called.
-  If autoCloseMsec>=400 then the window is closed after waiting for autoCloseMsec milliseconds
-  If autoCloseMsec=0 then the window is not closed until the user clicks on it.
+  If autoCloseMsec < 0 then the window is not closed until the user clicks on it
+  If 0 <= autoCloseMsec < 400 then only slicer.app.processEvents() is called.
+  If autoCloseMsec >= 400 then the window is closed after waiting for autoCloseMsec milliseconds
   """
   import qt, slicer
   import logging
   logging.info(message)
-  if autoCloseMsec < 400:
+  if 0 <= autoCloseMsec < 400:
     slicer.app.processEvents()
     return
   messagePopup = qt.QDialog()
@@ -1094,7 +1390,7 @@ def delayDisplay(message,autoCloseMsec=1000):
   messagePopup.setLayout(layout)
   label = qt.QLabel(message,messagePopup)
   layout.addWidget(label)
-  if autoCloseMsec>0:
+  if autoCloseMsec >= 0:
     qt.QTimer.singleShot(autoCloseMsec, messagePopup.close)
   else:
     okButton = qt.QPushButton("OK")
@@ -1698,17 +1994,99 @@ def pip_install(req):
     pip_install("tensorflow")
 
   """
-  import os
-  import sys
+
+  # Determine pythonSlicerExecutablePath
   try:
     from slicer import app
-    pythonSlicerExecutablePath = app.slicerHome+"/bin/PythonSlicer"
+    # If we get to this line then import from "app" is succeeded,
+    # which means that we run this function from Slicer Python interpreter.
+    # PythonSlicer is added to PATH environment variable in Slicer
+    # therefore shutil.which will be able to find it.
+    import shutil
+    import subprocess
+    pythonSlicerExecutablePath = shutil.which('PythonSlicer')
+    if not pythonSlicerExecutablePath:
+      raise RuntimeError("PythonSlicer executable not found")
   except ImportError:
     # Running from console
+    import os
+    import sys
     pythonSlicerExecutablePath = os.path.dirname(sys.executable)+"/PythonSlicer"
-  if os.name == 'nt':
-    pythonSlicerExecutablePath += ".exe"
+    if os.name == 'nt':
+      pythonSlicerExecutablePath += ".exe"
+
   command_line = [pythonSlicerExecutablePath, "-m", "pip", "install"]
   command_line.extend(req.split(" "))
   proc=launchConsoleProcess(command_line, useStartupEnvironment = False)
   logProcessOutput(proc)
+
+def setToolbarsVisible(visible, ignore=None):
+  """Show/hide all existing toolbars, except those listed in
+  ignore list.
+  """
+
+  for toolbar in mainWindow().findChildren('QToolBar'):
+    if ignore is not None and toolbar in ignore:
+      continue
+    toolbar.setVisible(visible)
+
+  # Prevent sequence browser toolbar showing up automatically
+  # when a sequence is loaded.
+  # (put in try block because Sequence Browser module is not always installed)
+  try:
+    import slicer
+    slicer.modules.sequencebrowser.autoShowToolBar = visible
+  except:
+    # Sequences module is not installed
+    pass
+
+def setMenuBarsVisible(visible, ignore=None):
+  """Show/hide all menu bars, except those listed in
+  ignore list."""
+  for menubar in mainWindow().findChildren('QMenuBar'):
+    if ignore is not None and menubar in ignore:
+      continue
+    menubar.setVisible(visible)
+
+def setPythonConsoleVisible(visible):
+  """Show/hide Python console."""
+  mainWindow().pythonConsole().parent().setVisible(visible)
+
+def setStatusBarVisible(visible):
+  """Show/hide status bar"""
+  mainWindow(verbose=False).statusBar().setVisible(visible)
+
+def setViewControllersVisible(visible):
+  """Show/hide view controller toolbar at the top of slice and 3D views"""
+  import slicer
+  lm = slicer.app.layoutManager()
+  for viewIndex in range(lm.threeDViewCount):
+    lm.threeDWidget(viewIndex).threeDController().setVisible(visible)
+  for sliceViewName in lm.sliceViewNames():
+    lm.sliceWidget(sliceViewName).sliceController().setVisible(visible)
+
+def setModulePanelTitleVisible(visible):
+  """Show/hide module panel title bar at the top of module panel.
+  If the title bar is not visible then it is not possible to drag and dock the
+  module panel to a different location."""
+  modulePanelDockWidget = mainWindow().findChildren('QDockWidget','PanelDockWidget')[0]
+  if visible:
+    modulePanelDockWidget.setTitleBarWidget(None)
+  else:
+    import qt
+    modulePanelDockWidget.setTitleBarWidget(qt.QWidget(modulePanelDockWidget))
+
+def setApplicationLogoVisible(visible):
+  """Show/hide application logo at the top of module panel."""
+  widget = findChild(mainWindow(), "LogoLabel")
+  widget.setVisible(visible)
+
+def setModuleHelpSectionVisible(visible):
+  """Show/hide Help section at the top of module panel."""
+  modulePanel = findChild(mainWindow(), "ModulePanel")
+  modulePanel.helpAndAcknowledgmentVisible=False
+
+def setDataProbeVisible(visible):
+  """Show/hide Data probe at the bottom of module panel."""
+  widget = findChild(mainWindow(), "DataProbeCollapsibleWidget")
+  widget.setVisible(visible)

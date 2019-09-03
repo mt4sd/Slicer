@@ -215,7 +215,7 @@ list_conditional_append(Slicer_BUILD_MultiVolumeExplorer Slicer_REMOTE_DEPENDENC
 
 Slicer_Remote_Add(MultiVolumeImporter
   GIT_REPOSITORY ${EP_GIT_PROTOCOL}://github.com/fedorov/MultiVolumeImporter.git
-  GIT_TAG 28cde0cab271a6fe2e3dd6c57f911b90de56428b
+  GIT_TAG be514af43101da5d0dfe90cd8636d385e6adcc9e
   OPTION_NAME Slicer_BUILD_MultiVolumeImporter
   OPTION_DEPENDS "Slicer_BUILD_QTLOADABLEMODULES;Slicer_BUILD_MULTIVOLUME_SUPPORT;Slicer_USE_PYTHONQT"
   LABELS REMOTE_MODULE
@@ -233,6 +233,7 @@ list_conditional_append(Slicer_BUILD_SimpleFilters Slicer_REMOTE_DEPENDENCIES Si
 
 set(BRAINSTools_options
   BRAINSTools_SUPERBUILD:BOOL=OFF
+  BRAINSTools_BUILD_DICOM_SUPPORT:BOOL=ON
   BRAINSTools_CLI_LIBRARY_OUTPUT_DIRECTORY:PATH=${CMAKE_BINARY_DIR}/${Slicer_BINARY_INNER_SUBDIR}/${Slicer_CLIMODULES_LIB_DIR}
   BRAINSTools_CLI_ARCHIVE_OUTPUT_DIRECTORY:PATH=${CMAKE_BINARY_DIR}/${Slicer_BINARY_INNER_SUBDIR}/${Slicer_CLIMODULES_LIB_DIR}
   BRAINSTools_CLI_RUNTIME_OUTPUT_DIRECTORY:PATH=${CMAKE_BINARY_DIR}/${Slicer_BINARY_INNER_SUBDIR}/${Slicer_CLIMODULES_BIN_DIR}
@@ -244,8 +245,8 @@ set(BRAINSTools_options
   USE_BRAINSFit:BOOL=ON
   USE_BRAINSROIAuto:BOOL=ON
   USE_BRAINSResample:BOOL=ON
-  USE_BRAINSDemonWarp:BOOL=ON
   # BRAINSTools comes with some extra tool that should not be compiled by default
+  USE_BRAINSDemonWarp:BOOL=OFF
   USE_AutoWorkup:BOOL=OFF
   USE_ReferenceAtlas:BOOL=OFF
   USE_ANTS:BOOL=OFF
@@ -271,13 +272,12 @@ set(BRAINSTools_options
   BRAINS_DEBUG_IMAGE_WRITE:BOOL=OFF
   USE_BRAINSTransformConvert:BOOL=ON
   USE_DWIConvert:BOOL=${Slicer_BUILD_DICOM_SUPPORT} ## Need to figure out library linking
-  USE_BRAINSDemonWarp:BOOL=ON
   USE_BRAINSRefacer:BOOL=OFF
   )
 
 Slicer_Remote_Add(BRAINSTools
-  GIT_REPOSITORY ${EP_GIT_PROTOCOL}://github.com/Slicer/BRAINSTools.git
-  GIT_TAG 53c15d6beac5b8d65689054da89deb69e61c7d32 # slicer-2019-03-07-v5.0.0-2af1e31
+  GIT_REPOSITORY ${EP_GIT_PROTOCOL}://github.com/BRAINSIA/BRAINSTools.git
+  GIT_TAG d0e6c01c712e73f47b7e99c3194514a888a1b4a7 # post ITK 5.0.1
   LICENSE_FILES "http://www.apache.org/licenses/LICENSE-2.0.txt"
   OPTION_NAME Slicer_BUILD_BRAINSTOOLS
   OPTION_DEPENDS "Slicer_BUILD_CLI_SUPPORT;Slicer_BUILD_CLI"
@@ -338,6 +338,14 @@ Slicer_Remote_Add(LandmarkRegistration
   )
 list_conditional_append(Slicer_BUILD_LandmarkRegistration Slicer_REMOTE_DEPENDENCIES LandmarkRegistration)
 
+Slicer_Remote_Add(SurfaceToolbox
+  GIT_REPOSITORY "${EP_GIT_PROTOCOL}://github.com/Slicer/SlicerSurfaceToolbox"
+  GIT_TAG 68db27ca9950f9fc3d829530e074c5127481348a
+  OPTION_NAME Slicer_BUILD_SurfaceToolbox
+  OPTION_DEPENDS "Slicer_USE_PYTHONQT"
+  LABELS REMOTE_MODULE
+  )
+list_conditional_append(Slicer_BUILD_SurfaceToolbox Slicer_REMOTE_DEPENDENCIES SurfaceToolbox)
 
 #------------------------------------------------------------------------------
 # Superbuild-type bundled extensions

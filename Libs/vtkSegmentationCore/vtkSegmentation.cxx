@@ -151,7 +151,7 @@ void vtkSegmentation::DeepCopy(vtkSegmentation* aSegmentation)
     {
     vtkSmartPointer<vtkSegment> segment = vtkSmartPointer<vtkSegment>::New();
     segment->DeepCopy(aSegmentation->Segments[*segmentIdIt]);
-    this->AddSegment(segment);
+    this->AddSegment(segment, *segmentIdIt);
     }
 }
 
@@ -695,7 +695,8 @@ bool vtkSegmentation::SetSegmentIndex(const std::string& segmentId, unsigned int
     vtkErrorMacro("vtkSegmentation::SetSegmentIndex failed: segment " << segmentId << " not found");
     return false;
     }
-  std::swap(*foundIt, this->SegmentIds[newIndex]);
+  this->SegmentIds.erase(foundIt);
+  this->SegmentIds.insert(this->SegmentIds.begin() + newIndex, segmentId);
   this->Modified();
   this->InvokeEvent(vtkSegmentation::SegmentsOrderModified);
   return true;

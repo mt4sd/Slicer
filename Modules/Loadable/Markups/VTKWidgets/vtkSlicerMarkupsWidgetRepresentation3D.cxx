@@ -161,8 +161,7 @@ void vtkSlicerMarkupsWidgetRepresentation3D::UpdateNthPointAndLabelFromMRML(int 
 //----------------------------------------------------------------------
 void vtkSlicerMarkupsWidgetRepresentation3D::UpdateAllPointsAndLabelsFromMRML()
 {
-  vtkMRMLMarkupsDisplayNode* display = this->MarkupsDisplayNode;
-  if (!display)
+  if (!this->MarkupsDisplayNode)
     {
     return;
     }
@@ -173,19 +172,22 @@ void vtkSlicerMarkupsWidgetRepresentation3D::UpdateAllPointsAndLabelsFromMRML()
     }
 
   int numPoints = markupsNode->GetNumberOfControlPoints();
-
-  for (int i = 0; i<NumberOfControlPointTypes; i++)
-    {
-    ControlPointsPipeline3D* controlPoints = reinterpret_cast<ControlPointsPipeline3D*>(this->ControlPoints[i]);
-    this->UpdateRelativeCoincidentTopologyOffsets(controlPoints->Mapper);
-    controlPoints->Glypher->SetScaleFactor(this->ControlPointSize);
-    }
-
-  int activeControlPointIndex = this->MarkupsDisplayNode->GetActiveControlPoint();
-
+  std::vector<int> activeControlPointIndices;
+  this->MarkupsDisplayNode->GetActiveControlPoints(activeControlPointIndices);
   for (int controlPointType = 0; controlPointType < NumberOfControlPointTypes; ++controlPointType)
     {
     ControlPointsPipeline3D* controlPoints = reinterpret_cast<ControlPointsPipeline3D*>(this->ControlPoints[controlPointType]);
+
+    if (controlPointType == Project || controlPointType == ProjectBack)
+      {
+      // no projection display in 3D
+      controlPoints->Actor->SetVisibility(false);
+      controlPoints->LabelsActor->SetVisibility(false);
+      continue;
+      }
+
+    this->UpdateRelativeCoincidentTopologyOffsets(controlPoints->Mapper);
+    controlPoints->Glypher->SetScaleFactor(this->ControlPointSize);
 
     controlPoints->ControlPoints->SetNumberOfPoints(0);
     controlPoints->ControlPointsPolyData->GetPointData()->GetNormals()->SetNumberOfTuples(0);
@@ -197,38 +199,18 @@ void vtkSlicerMarkupsWidgetRepresentation3D::UpdateAllPointsAndLabelsFromMRML()
     controlPoints->LabelsPriority->SetNumberOfValues(0);
     controlPoints->ControlPointIndices->SetNumberOfValues(0);
 
-    int startIndex = 0;
-    int stopIndex = numPoints - 1;
-    if (controlPointType == Active)
+    for (int pointIndex = 0; pointIndex < numPoints; ++pointIndex)
       {
-      if (activeControlPointIndex >= 0 && activeControlPointIndex < numPoints &&
-        markupsNode->GetNthControlPointVisibility(activeControlPointIndex))
-        {
-        startIndex = activeControlPointIndex;
-        stopIndex = startIndex;
-        controlPoints->Actor->VisibilityOn();
-        controlPoints->LabelsActor->SetVisibility(display->GetPointLabelsVisibility());
-        }
-      else
-        {
-        controlPoints->Actor->VisibilityOff();
-        controlPoints->LabelsActor->VisibilityOff();
-        continue;
-        }
-      }
-    else
-      {
-      controlPoints->LabelsActor->SetVisibility(display->GetPointLabelsVisibility());
-      }
-
-    for (int pointIndex = startIndex; pointIndex <= stopIndex; pointIndex++)
-      {
-
-      if (controlPointType != Active
-        && (!markupsNode->GetNthControlPointVisibility(pointIndex) || pointIndex == activeControlPointIndex ||
-        ((controlPointType == Selected) != (markupsNode->GetNthControlPointSelected(pointIndex) != 0))))
+      if (!markupsNode->GetNthControlPointVisibility(pointIndex))
         {
         continue;
+        }
+      bool isPointActive = std::find(activeControlPointIndices.begin(), activeControlPointIndices.end(), pointIndex) != activeControlPointIndices.end();
+      switch (controlPointType)
+        {
+        case Active: if (!isPointActive) continue; break;
+        case Unselected: if (isPointActive || markupsNode->GetNthControlPointSelected(pointIndex)) continue; break;
+        case Selected: if (isPointActive || !markupsNode->GetNthControlPointSelected(pointIndex)) continue; break;
         }
 
       double worldPos[3] = { 0.0, 0.0, 0.0 };
@@ -252,13 +234,24 @@ void vtkSlicerMarkupsWidgetRepresentation3D::UpdateAllPointsAndLabelsFromMRML()
       controlPoints->ControlPointIndices->InsertNextValue(pointIndex);
       }
 
-    controlPoints->ControlPoints->Modified();
-    controlPoints->ControlPointsPolyData->GetPointData()->GetNormals()->Modified();
-    controlPoints->ControlPointsPolyData->Modified();
+    if (controlPoints->ControlPointIndices->GetNumberOfValues() > 0)
+      {
+      controlPoints->ControlPoints->Modified();
+      controlPoints->ControlPointsPolyData->GetPointData()->GetNormals()->Modified();
+      controlPoints->ControlPointsPolyData->Modified();
 
-    controlPoints->LabelControlPoints->Modified();
-    controlPoints->LabelControlPointsPolyData->GetPointData()->GetNormals()->Modified();
-    controlPoints->LabelControlPointsPolyData->Modified();
+      controlPoints->LabelControlPoints->Modified();
+      controlPoints->LabelControlPointsPolyData->GetPointData()->GetNormals()->Modified();
+      controlPoints->LabelControlPointsPolyData->Modified();
+
+      controlPoints->Actor->SetVisibility(true);
+      controlPoints->LabelsActor->SetVisibility(this->MarkupsDisplayNode->GetPointLabelsVisibility());
+      }
+    else
+      {
+      controlPoints->Actor->SetVisibility(false);
+      controlPoints->LabelsActor->SetVisibility(false);
+      }
     }
 }
 
@@ -574,12 +567,17 @@ int vtkSlicerMarkupsWidgetRepresentation3D::RenderOpaqueGeometry(
   if (this->MarkupsDisplayNode->GetUseGlyphScale())
     {
     double newControlPointSize = 1.0;
+    double oldScreenSizePixel = this->ScreenSizePixel;
     this->UpdateViewScaleFactor();
+    if (this->ScreenSizePixel != oldScreenSizePixel)
+      {
+      updateControlPointSize = true;
+      }
     newControlPointSize = this->ScreenSizePixel * this->ScreenScaleFactor
       * this->MarkupsDisplayNode->GetGlyphScale() / 100.0 * this->ViewScaleFactorMmPerPixel;
     // Only update the size if there is noticeable difference to avoid slight flickering
     // when the camera is moved
-    if (this->ControlPointSize > 0 && fabs(newControlPointSize - this->ControlPointSize) / this->ControlPointSize > 0.05)
+    if (this->ControlPointSize <= 0.0 || fabs(newControlPointSize - this->ControlPointSize) / this->ControlPointSize > 0.05)
       {
       this->ControlPointSize = newControlPointSize;
       updateControlPointSize = true;
@@ -809,8 +807,13 @@ double vtkSlicerMarkupsWidgetRepresentation3D::GetViewScaleFactorAtPosition(doub
     bottomCenter[2] = 0.0;
     double distInPixels = sqrt(vtkMath::Distance2BetweenPoints(topCenter, bottomCenter));
 
-    // 2.0 = 2x length of viewUp vector in mm (because viewUp is unit vector)
-    viewScaleFactorMmPerPixel = 2.0 / distInPixels;
+    // if render window is not initialized yet then distInPixels == 0.0,
+    // in that case just leave the default viewScaleFactorMmPerPixel
+    if (distInPixels > 1e-3)
+      {
+      // 2.0 = 2x length of viewUp vector in mm (because viewUp is unit vector)
+      viewScaleFactorMmPerPixel = 2.0 / distInPixels;
+      }
     }
   return viewScaleFactorMmPerPixel;
 }
@@ -827,7 +830,13 @@ void vtkSlicerMarkupsWidgetRepresentation3D::UpdateViewScaleFactor()
     }
 
   int* screenSize = this->Renderer->GetRenderWindow()->GetScreenSize();
-  this->ScreenSizePixel = sqrt(screenSize[0] * screenSize[0] + screenSize[1] * screenSize[1]);
+  double screenSizePixel = sqrt(screenSize[0] * screenSize[0] + screenSize[1] * screenSize[1]);
+  if (screenSizePixel < 1.0)
+    {
+    // render window is not fully initialized yet
+    return;
+    }
+  this->ScreenSizePixel = screenSizePixel;
 
   double cameraFP[3] = { 0.0 };
   this->Renderer->GetActiveCamera()->GetFocalPoint(cameraFP);
@@ -851,4 +860,45 @@ void vtkSlicerMarkupsWidgetRepresentation3D::UpdateControlPointSize()
     ControlPointsPipeline3D* controlPoints = reinterpret_cast<ControlPointsPipeline3D*>(this->ControlPoints[controlPointType]);
     controlPoints->SelectVisiblePoints->SetToleranceWorld(this->ControlPointSize*0.5);
     }
+}
+
+//----------------------------------------------------------------------
+bool vtkSlicerMarkupsWidgetRepresentation3D::GetNthControlPointViewVisibility(int n)
+{
+  vtkMRMLMarkupsNode* markupsNode = this->GetMarkupsNode();
+  if (!markupsNode || !this->GetVisibility())
+    {
+    return false;
+    }
+
+  // Check SelectVisiblePoints output to see if the point is occluded or not.
+  // SelectVisiblePoints is very sensitive to when it is executed (it has to check the z buffer after
+  // opaque geometry is rendered but 2D labels are not yet), therefore we do not
+  // update its output but just use the last output generated for the last rendering.
+  bool pointVisible = false;
+  for (int controlPointType = 0; controlPointType <= Active; ++controlPointType)
+    {
+    if ((controlPointType == Unselected && markupsNode->GetNthControlPointSelected(n))
+      || (controlPointType == Selected && !markupsNode->GetNthControlPointSelected(n)))
+      {
+      continue;
+      }
+    ControlPointsPipeline3D* controlPoints = this->GetControlPointsPipeline(controlPointType);
+    vtkPolyData* visiblePointsPoly = controlPoints->SelectVisiblePoints->GetOutput();
+    if (!visiblePointsPoly || !visiblePointsPoly->GetPointData())
+      {
+      continue;
+      }
+    vtkIdTypeArray* visiblePointIndices = vtkIdTypeArray::SafeDownCast(visiblePointsPoly->GetPointData()->GetAbstractArray("controlPointIndices"));
+    if (!visiblePointIndices)
+      {
+      continue;
+      }
+    if (visiblePointIndices->LookupValue(n) >= 0)
+      {
+      // visible
+      return true;
+      }
+    }
+  return false;
 }

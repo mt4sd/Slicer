@@ -552,11 +552,14 @@ public:
     this->EndModify(oldMode);
     }
 
-  /// \brief Only the scene can set itself to the node.
+  /// Get the scene this node has been added to.
+  virtual vtkMRMLScene* GetScene();
+
+  /// \brief This method is for internal use only.
+  /// Use AddNode method of vtkMRMLScene to add a node to the scene.
   ///
   /// Internally calls SetSceneReferences()
   /// \sa SetSceneReferences()
-  virtual vtkMRMLScene* GetScene();
   virtual void SetScene(vtkMRMLScene* scene);
 
   /// \brief Update the references of the node to the scene.
@@ -948,6 +951,36 @@ private:
   int DisableModifiedEvent;
   int ModifiedEventPending;
   std::map<int, int> CustomModifiedEventPending; // event id, pending value (number of events grouped together)
+};
+
+/// \brief Safe replacement of MRML node start/end modify.
+///
+/// MRMLNodeModifyBlocker can be used wherever you would otherwise use
+/// a pair of calls to node->StartModify() and node->EndModify().
+/// It temporarily blocks invoke of node modify and custom modify events
+/// in its constructor and in the destructor it resets the state to what
+/// it was before the constructor ran.
+///
+class VTK_MRML_EXPORT MRMLNodeModifyBlocker
+{
+public:
+  vtkWeakPointer<vtkMRMLNode> Node;
+  int WasModifying;
+  MRMLNodeModifyBlocker(vtkMRMLNode* node)
+  {
+    this->Node = node;
+    if (this->Node)
+      {
+      this->WasModifying = this->Node->StartModify();
+      }
+  };
+  ~MRMLNodeModifyBlocker()
+  {
+    if (this->Node)
+      {
+      this->Node->EndModify(this->WasModifying);
+      }
+  }
 };
 
 #endif

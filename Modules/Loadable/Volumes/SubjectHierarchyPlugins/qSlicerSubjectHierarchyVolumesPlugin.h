@@ -37,12 +37,6 @@
 class qSlicerSubjectHierarchyVolumesPluginPrivate;
 class vtkMRMLScalarVolumeNode;
 
-// Due to some reason the Python wrapping of this class fails, therefore
-// put everything between BTX/ETX to exclude from wrapping.
-// TODO investigate why the wrapping fails:
-//   https://www.assembla.com/spaces/slicerrt/tickets/210-python-wrapping-error-when-starting-up-slicer-with-slicerrt
-//BTX
-
 /// \ingroup Slicer_QtModules_SubjectHierarchy_Plugins
 class Q_SLICER_VOLUMES_SUBJECT_HIERARCHY_PLUGINS_EXPORT qSlicerSubjectHierarchyVolumesPlugin : public qSlicerSubjectHierarchyAbstractPlugin
 {
@@ -96,12 +90,13 @@ public:
   /// \return Display visibility (0: hidden, 1: shown, 2: partially shown)
   int getDisplayVisibility(vtkIdType itemID)const override;
 
-  /// Get item context menu item actions to add to tree view
-  QList<QAction*> itemContextMenuActions()const override;
+  /// Get visibility context menu item actions to add to tree view.
+  /// These item visibility context menu actions can be shown in the implementations of \sa showVisibilityContextMenuActionsForItem
+  virtual QList<QAction*> visibilityContextMenuActions()const;
 
-  /// Show context menu actions valid for a given subject hierarchy item.
-  /// \param itemID Subject Hierarchy item to show the context menu items for
-  void showContextMenuActionsForItem(vtkIdType itemID) override;
+  /// Show visibility context menu actions valid for a given subject hierarchy item.
+  /// \param itemID Subject Hierarchy item to show the visibility context menu items for
+  virtual void showVisibilityContextMenuActionsForItem(vtkIdType itemID);
 
 public:
   /// Show volume in all slice views. The argument node replaces any volume shown on the specified layer
@@ -123,6 +118,9 @@ protected slots:
   /// Hides other volumes if there are less in the current study.
   void showVolumesInBranch();
 
+  /// Show volume in the slice views as foreground
+  void showVolumeInForeground();
+
   /// Re-connect slice composite node events so that visibility icons are updated when volumes
   /// are shown/hidden from outside subject hierarchy
   void onLayoutChanged();
@@ -134,6 +132,10 @@ protected slots:
   ///       to know after a Modified event if a volume was hidden in the process
   void onSliceCompositeNodeModified();
 
+  /// Toggle flag determining whether field of view in slice views is reset when showing a volume
+  /// in subject hierarchy. By default it is off. State is stored in the application settings.
+  void toggleResetFieldOfViewOnShowAction(bool);
+
 protected:
   QScopedPointer<qSlicerSubjectHierarchyVolumesPluginPrivate> d_ptr;
 
@@ -141,7 +143,5 @@ private:
   Q_DECLARE_PRIVATE(qSlicerSubjectHierarchyVolumesPlugin);
   Q_DISABLE_COPY(qSlicerSubjectHierarchyVolumesPlugin);
 };
-
-//ETX
 
 #endif

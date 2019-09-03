@@ -261,7 +261,7 @@ class SampleDataWidget(ScriptedLoadableModuleWidget):
     self.log = qt.QTextEdit()
     self.log.readOnly = True
     self.layout.addWidget(self.log)
-    self.logMessage('<p>Status: <i>Idle</i>')
+    self.logMessage('<p>Status: <i>Idle</i></p>')
 
     # Add spacer to layout
     self.layout.addStretch(1)
@@ -568,7 +568,7 @@ class SampleDataLogic(object):
 
     if not os.access(destFolderPath, os.W_OK):
       try:
-        os.mkdir(destFolderPath)
+        os.makedirs(destFolderPath, exist_ok=True)
       except:
         self.logMessage('<b>Failed to create cache folder %s</b>' % destFolderPath, logging.ERROR)
       if not os.access(destFolderPath, os.W_OK):
@@ -677,6 +677,15 @@ class SampleDataLogic(object):
       for source in slicer.modules.sampleDataSources[category]:
         if sampleName == source.sampleName:
           return source
+    return None
+
+  def categoryForSource(self, a_source):
+    """For a given SampleDataSource return the associated category name.
+    """
+    for category in slicer.modules.sampleDataSources.keys():
+      for source in slicer.modules.sampleDataSources[category]:
+        if a_source == source:
+          return category
     return None
 
   def downloadFromURL(self, uris=None, fileNames=None, nodeNames=None, checksums=None, loadFiles=None,
@@ -804,6 +813,7 @@ class SampleDataLogic(object):
         self.logMessage('<b>Download finished</b>')
       except IOError as e:
         self.logMessage('<b>\tDownload failed: %s</b>' % e, logging.ERROR)
+        raise ValueError(f"Failed to download {uri} to {filePath}")
 
       if algo is not None:
         self.logMessage('<b>Verifying checksum</b>')
@@ -896,6 +906,7 @@ class SampleDataTest(ScriptedLoadableModuleTest):
       self.test_setCategoriesFromSampleDataSources,
       self.test_isSampleDataSourceRegistered,
       self.test_customDownloader,
+      self.test_categoryForSource,
     ]:
       self.setUp()
       test()
@@ -1100,3 +1111,8 @@ class SampleDataTest(ScriptedLoadableModuleTest):
 
     self.assertEqual(len(self.customDownloads), 1)
     self.assertEqual(self.customDownloads[0].sampleName, 'customDownloader')
+
+  def test_categoryForSource(self):
+    logic = SampleDataLogic()
+    source = slicer.modules.sampleDataSources[logic.builtInCategoryName][0]
+    self.assertEqual(logic.categoryForSource(source), logic.builtInCategoryName)

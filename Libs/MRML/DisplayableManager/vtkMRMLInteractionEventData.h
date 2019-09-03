@@ -89,7 +89,14 @@ public:
   double GetRotation() const;
   void SetLastRotation(double v);
   double GetLastRotation() const;
-
+  void SetScale(double scale);
+  double GetScale() const;
+  void SetLastScale(double scale);
+  double GetLastScale() const;
+  void SetTranslation(const double translation[2]);
+  const double *GetTranslation() const;
+  void SetLastTranslation(const double translation[2]);
+  const double* GetLastTranslation() const;
   void SetWorldToPhysicalScale(double v);
   double GetWorldToPhysicalScale() const;
 
@@ -101,6 +108,9 @@ public:
 
   void SetAccuratePicker(vtkCellPicker* picker);
   vtkCellPicker* GetAccuratePicker() const;
+
+  void SetInteractionContextName(const std::string& v);
+  const std::string& GetInteractionContextName();
 
 protected:
   int Modifiers;
@@ -122,15 +132,23 @@ protected:
   std::string KeySym;
   //@}
 
+  // Gesture events
   //@{
   /// MacOSX touchpad events
   double Rotation;
   double LastRotation;
+  double Scale;
+  double LastScale;
+  double Translation[2];
+  double LastTranslation[2];
   //@}
 
   /// For VR events
   /// World to physical scale: Value greater than 1 means that objects appear larger in VR than their real world size.
   double WorldToPhysicalScale;
+
+  /// Name of interaction context. In case of the mouse, it is empty string
+  std::string InteractionContextName;
 
   bool Equivalent(const vtkEventData *e) const override;
 

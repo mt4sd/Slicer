@@ -33,6 +33,7 @@ endif()
 
 if(NOT Slicer_USE_SYSTEM_QT)
   set(SlicerBlockInstallQtPlugins_subdirectories
+    audio
     imageformats
     sqldrivers
     )
@@ -75,6 +76,9 @@ if(Slicer_BUILD_QT_DESIGNER_PLUGINS)
     set(installed_designer_executable "Designer")
     set(installed_designer_subdir "Designer.app/Contents/MacOS")
   endif()
+  # Ensure directory exists at configuration time
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${Slicer_BIN_DIR})
+  # Configure designer launcher
   find_package(CTKAppLauncher REQUIRED)
   ctkAppLauncherConfigureForExecutable(
     APPLICATION_NAME ${executablename}
@@ -370,8 +374,9 @@ if(CPACK_GENERATOR STREQUAL "NSIS")
   endif()
 
   if(NOT CPACK_NSIS_INSTALL_SUBDIRECTORY STREQUAL "")
-    set(_nsis_install_root "${_nsis_install_root}\\\\${CPACK_NSIS_INSTALL_SUBDIRECTORY}")
+    set(_nsis_install_root "${_nsis_install_root}/${CPACK_NSIS_INSTALL_SUBDIRECTORY}")
   endif()
+  string(REPLACE "/" "\\\\" _nsis_install_root "${_nsis_install_root}")
   slicer_verbose_set(CPACK_NSIS_INSTALL_ROOT ${_nsis_install_root})
 
   # Slicer does *NOT* require setting the windows path
