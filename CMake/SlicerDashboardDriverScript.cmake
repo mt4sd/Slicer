@@ -94,6 +94,8 @@ if(NOT DEFINED CTEST_BUILD_NAME)
     Slicer_USE_PYTHONQT
     Slicer_BUILD_CLI
     Slicer_USE_VTK_DEBUG_LEAKS
+    Slicer_BUILD_I18N_SUPPORT
+    Slicer_UPDATE_TRANSLATION
     BUILD_NAME_SUFFIX
     )
   set(name "${OPERATING_SYSTEM}-${COMPILER}-${BITNESS}bits-QT${QT_VERSION}")
@@ -110,6 +112,12 @@ if(NOT DEFINED CTEST_BUILD_NAME)
   endif()
   if(NOT Slicer_USE_VTK_DEBUG_LEAKS)
     set(name "${name}-NoVTKDebugLeaks")
+  endif()
+  if(NOT Slicer_BUILD_I18N_SUPPORT)
+    set(name "${name}-I18nSupport")
+  endif()
+  if(NOT Slicer_UPDATE_TRANSLATION)
+    set(name "${name}-UpdateTranslation")
   endif()
   if(NOT "${BUILD_NAME_SUFFIX}" STREQUAL "")
     set(name "${name}-${BUILD_NAME_SUFFIX}")
@@ -513,6 +521,16 @@ Slicer_USE_PYTHONQT:BOOL=${Slicer_USE_PYTHONQT}")
     if(DEFINED Slicer_BUILD_CLI)
       set(OPTIONAL_CACHE_CONTENT "${OPTIONAL_CACHE_CONTENT}
 Slicer_BUILD_CLI:BOOL=${Slicer_BUILD_CLI}")
+    endif()
+
+    if(DEFINED Slicer_BUILD_I18N_SUPPORT)
+      set(OPTIONAL_CACHE_CONTENT "${OPTIONAL_CACHE_CONTENT}
+      Slicer_BUILD_I18N_SUPPORT:BOOL=${Slicer_BUILD_I18N_SUPPORT}")
+    endif()
+
+    if(DEFINED Slicer_UPDATE_TRANSLATION)
+      set(OPTIONAL_CACHE_CONTENT "${OPTIONAL_CACHE_CONTENT}
+      Slicer_UPDATE_TRANSLATION:BOOL=${Slicer_UPDATE_TRANSLATION}")
     endif()
 
     #-----------------------------------------------------------------------------
