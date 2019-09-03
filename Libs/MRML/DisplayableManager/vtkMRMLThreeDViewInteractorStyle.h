@@ -62,7 +62,8 @@ public:
 
   /// Give a chance to displayable managers to process the event.
   /// Return true if the event is processed.
-  bool DelegateInteractionEventToDisplayableManagers(unsigned long event) override;
+  using vtkMRMLViewInteractorStyle::DelegateInteractionEventToDisplayableManagers;
+  bool DelegateInteractionEventToDisplayableManagers(vtkEventData* inputEventData) override;
 
   ///
   /// Get/Set the CameraNode

@@ -44,6 +44,8 @@ class vtkPlane;
 class vtkPolyDataMapper2D;
 class vtkProperty2D;
 
+class vtkMRMLInteractionEventData;
+
 class VTK_SLICER_MARKUPS_MODULE_VTKWIDGETS_EXPORT vtkSlicerMarkupsWidgetRepresentation2D : public vtkSlicerMarkupsWidgetRepresentation
 {
 public:
@@ -52,12 +54,12 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Position is displayed (slice) position
-  void CanInteract(const int displayPosition[2], const double worldPosition[3],
+  void CanInteract(vtkMRMLInteractionEventData* interactionEventData,
     int &foundComponentType, int &foundComponentIndex, double &closestDistance2) override;
 
   /// Checks if interaction with straight line between visible points is possible.
   /// Can be used on the output of CanInteract, as if no better component is found then the input is returned.
-  void CanInteractWithLine(const int displayPosition[2], const double worldPosition[3],
+  void CanInteractWithLine(vtkMRMLInteractionEventData* interactionEventData,
     int &foundComponentType, int &foundComponentIndex, double &closestDistance2);
 
   /// Subclasses of vtkSlicerMarkupsWidgetRepresentation2D must implement these methods. These
@@ -76,10 +78,15 @@ public:
   /// Get the nth node's position on the slice. Will return
   /// 1 on success, or 0 if there are not at least
   /// (n+1) nodes (0 based counting).
-  int GetNthNodeDisplayPosition(int n, double pos[2]) override;
+  int GetNthControlPointDisplayPosition(int n, double pos[2]) override;
+
+  /// Set the Nth node visibility in this view (markup visibility is enabled
+  /// and markup is on current slice).
+  /// Useful for non-regression tests that need to inspect internal state of the widget.
+  virtual bool GetNthControlPointViewVisibility(int n);
 
   /// Set the Nth node slice visibility (i.e. if it is on the slice).
-  virtual void SetNthPointSliceVisibility(int n, bool visibility);
+  virtual void SetNthControlPointSliceVisibility(int n, bool visibility);
 
   /// Set the center slice visibility (i.e. if it is on the slice).
   virtual void SetCenterSliceVisibility(bool visibility);
@@ -106,7 +113,7 @@ protected:
   bool GetAllControlPointsVisible() override;
 
   /// Check, if the point is displayable in the current slice geometry
-  virtual bool IsPointDisplayableOnSlice(vtkMRMLMarkupsNode* node, int pointIndex = 0);
+  virtual bool IsControlPointDisplayableOnSlice(vtkMRMLMarkupsNode* node, int pointIndex = 0);
 
   // Update colormap based on provided base color (modulated with settings stored in the display node)
   void UpdateDistanceColorMap(vtkDiscretizableColorTransferFunction* colormap, double color[3]);

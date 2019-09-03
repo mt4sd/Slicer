@@ -26,6 +26,7 @@
 #include "qSlicerSubjectHierarchyDefaultPlugin.h"
 
 // Slicer includes
+#include "qMRMLSliceWidget.h"
 #include "qSlicerApplication.h"
 #include "qSlicerLayoutManager.h" 
 #include "vtkSlicerApplicationLogic.h"
@@ -44,9 +45,10 @@
 #include <vtkImageData.h>
 
 // Qt includes
-#include <QDebug>
-#include <QStandardItem>
 #include <QAction>
+#include <QDebug>
+#include <QSettings>
+#include <QStandardItem>
 #include <QTimer>
 
 //-----------------------------------------------------------------------------
@@ -61,12 +63,18 @@ public:
   ~qSlicerSubjectHierarchyVolumesPluginPrivate() override;
   void init();
 
+  bool resetFieldOfViewOnShow();
+
+  qMRMLSliceWidget* sliceWidgetForSliceCompositeNode(vtkMRMLSliceCompositeNode* compositeNode);
+
 public:
   QIcon VolumeIcon;
   QIcon VolumeVisibilityOffIcon;
   QIcon VolumeVisibilityOnIcon;
 
   QAction* ShowVolumesInBranchAction;
+  QAction* ShowVolumeInForegroundAction;
+  QAction* ResetFieldOfViewOnShowAction;
 };
 
 //-----------------------------------------------------------------------------
@@ -81,6 +89,8 @@ qSlicerSubjectHierarchyVolumesPluginPrivate::qSlicerSubjectHierarchyVolumesPlugi
   this->VolumeVisibilityOnIcon = QIcon(":Icons/VolumeVisibilityOn.png");
 
   this->ShowVolumesInBranchAction = nullptr;
+  this->ShowVolumeInForegroundAction = nullptr;
+  this->ResetFieldOfViewOnShowAction = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -98,11 +108,48 @@ void qSlicerSubjectHierarchyVolumesPluginPrivate::init()
 
   this->ShowVolumesInBranchAction = new QAction("Show volumes in branch",q);
   QObject::connect(this->ShowVolumesInBranchAction, SIGNAL(triggered()), q, SLOT(showVolumesInBranch()));
+
+  this->ShowVolumeInForegroundAction = new QAction("Show in slice views as foreground", q);
+  QObject::connect(this->ShowVolumeInForegroundAction, SIGNAL(triggered()), q, SLOT(showVolumeInForeground()));
+
+  this->ResetFieldOfViewOnShowAction = new QAction("Reset field of view on show",q);
+  QObject::connect(this->ResetFieldOfViewOnShowAction, SIGNAL(toggled(bool)), q, SLOT(toggleResetFieldOfViewOnShowAction(bool)));
+  this->ResetFieldOfViewOnShowAction->setCheckable(true);
+  this->ResetFieldOfViewOnShowAction->setChecked(false);
 }
 
 //-----------------------------------------------------------------------------
 qSlicerSubjectHierarchyVolumesPluginPrivate::~qSlicerSubjectHierarchyVolumesPluginPrivate()
 = default;
+
+//-----------------------------------------------------------------------------
+bool qSlicerSubjectHierarchyVolumesPluginPrivate::resetFieldOfViewOnShow()
+{
+  QSettings settings;
+  return settings.value("SubjectHierarchy/ResetFieldOfViewOnShowVolume", false).toBool();
+}
+
+//------------------------------------------------------------------------------
+qMRMLSliceWidget* qSlicerSubjectHierarchyVolumesPluginPrivate::sliceWidgetForSliceCompositeNode(vtkMRMLSliceCompositeNode* compositeNode)
+{
+  qMRMLLayoutManager* layoutManager = qSlicerApplication::application()->layoutManager();
+  if (!layoutManager)
+    {
+    return nullptr;
+    }
+
+  QStringList sliceViewNames = layoutManager->sliceViewNames();
+  foreach (QString sliceName, sliceViewNames)
+    {
+    qMRMLSliceWidget* sliceWidget = layoutManager->sliceWidget(sliceName);
+    if (sliceWidget->mrmlSliceCompositeNode() == compositeNode)
+      {
+      return sliceWidget;
+      }
+    }
+
+  return nullptr;
+}
 
 //-----------------------------------------------------------------------------
 // qSlicerSubjectHierarchyVolumesPlugin methods
@@ -129,7 +176,7 @@ double qSlicerSubjectHierarchyVolumesPlugin::canAddNodeToSubjectHierarchy(
   Q_UNUSED(parentItemID);
   if (!node)
     {
-    qCritical() << Q_FUNC_INFO << ": Input node is nullptr!";
+    qCritical() << Q_FUNC_INFO << ": Input node is nullptr";
     return 0.0;
     }
   else if (node->IsA("vtkMRMLScalarVolumeNode"))
@@ -177,13 +224,13 @@ QString qSlicerSubjectHierarchyVolumesPlugin::tooltip(vtkIdType itemID)const
   if (itemID == vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID)
     {
     qCritical() << Q_FUNC_INFO << ": Invalid input item";
-    return QString("Invalid!");
+    return QString("Invalid");
     }
   vtkMRMLSubjectHierarchyNode* shNode = qSlicerSubjectHierarchyPluginHandler::instance()->subjectHierarchyNode();
   if (!shNode)
     {
     qCritical() << Q_FUNC_INFO << ": Failed to access subject hierarchy node";
-    return QString("Error!");
+    return QString("Error");
     }
 
   // Get basic tooltip from abstract plugin
@@ -203,7 +250,7 @@ QString qSlicerSubjectHierarchyVolumesPlugin::tooltip(vtkIdType itemID)const
     }
   else
     {
-    tooltipString.append(" !Invalid volume!");
+    tooltipString.append(" !Invalid volume");
     }
 
   return tooltipString;
@@ -322,15 +369,17 @@ int qSlicerSubjectHierarchyVolumesPlugin::getDisplayVisibility(vtkIdType itemID)
 void qSlicerSubjectHierarchyVolumesPlugin::showVolumeInAllViews(
   vtkMRMLScalarVolumeNode* node, int layer/*=vtkMRMLApplicationLogic::BackgroundLayer*/ )
 {
+  Q_D(qSlicerSubjectHierarchyVolumesPlugin);
+
   if (!node)
     {
-    qCritical() << Q_FUNC_INFO << ": nullptr node!";
+    qCritical() << Q_FUNC_INFO << ": nullptr node";
     return;
     }
   vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
   if (!scene)
     {
-    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
+    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene";
     return;
     }
   vtkMRMLSubjectHierarchyNode* shNode = qSlicerSubjectHierarchyPluginHandler::instance()->subjectHierarchyNode();
@@ -363,6 +412,15 @@ void qSlicerSubjectHierarchyVolumesPlugin::showVolumeInAllViews(
       {
       compositeNode->SetLabelVolumeID(node->GetID());
       }
+
+    if (d->resetFieldOfViewOnShow())
+      {
+      qMRMLSliceWidget* sliceWidget = d->sliceWidgetForSliceCompositeNode(compositeNode);
+      if (sliceWidget)
+        {
+        sliceWidget->fitSliceToBackground();
+        }
+      }
     }
 
   // Update scene model for subject hierarchy nodes that were just shown
@@ -378,13 +436,13 @@ void qSlicerSubjectHierarchyVolumesPlugin::hideVolumeFromAllViews(vtkMRMLScalarV
 {
   if (!node || !node->GetID())
     {
-    qCritical() << Q_FUNC_INFO << ": nullptr node!";
+    qCritical() << Q_FUNC_INFO << ": nullptr node";
     return;
     }
   vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
   if (!scene)
     {
-    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
+    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene";
     return;
     }
 
@@ -434,7 +492,7 @@ void qSlicerSubjectHierarchyVolumesPlugin::collectShownVolumes( QSet<vtkIdType>&
   vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
   if (!scene)
     {
-    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
+    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene";
     return;
     }
   if (scene->IsBatchProcessing())
@@ -472,17 +530,17 @@ void qSlicerSubjectHierarchyVolumesPlugin::collectShownVolumes( QSet<vtkIdType>&
 }
 
 //---------------------------------------------------------------------------
-QList<QAction*> qSlicerSubjectHierarchyVolumesPlugin::itemContextMenuActions()const
+QList<QAction*> qSlicerSubjectHierarchyVolumesPlugin::visibilityContextMenuActions()const
 {
   Q_D(const qSlicerSubjectHierarchyVolumesPlugin);
 
   QList<QAction*> actions;
-  actions << d->ShowVolumesInBranchAction;
+  actions << d->ShowVolumesInBranchAction << d->ShowVolumeInForegroundAction << d->ResetFieldOfViewOnShowAction;
   return actions;
 }
 
 //---------------------------------------------------------------------------
-void qSlicerSubjectHierarchyVolumesPlugin::showContextMenuActionsForItem(vtkIdType itemID)
+void qSlicerSubjectHierarchyVolumesPlugin::showVisibilityContextMenuActionsForItem(vtkIdType itemID)
 {
   Q_D(qSlicerSubjectHierarchyVolumesPlugin);
 
@@ -501,7 +559,10 @@ void qSlicerSubjectHierarchyVolumesPlugin::showContextMenuActionsForItem(vtkIdTy
   // Volume
   if (this->canOwnSubjectHierarchyItem(itemID))
     {
-    // No scalar volume context menu
+    d->ShowVolumeInForegroundAction->setVisible(true);
+
+    d->ResetFieldOfViewOnShowAction->setChecked(d->resetFieldOfViewOnShow());
+    d->ResetFieldOfViewOnShowAction->setVisible(true);
     }
 
   // Folders (Patient, Study, Folder)
@@ -531,13 +592,13 @@ void qSlicerSubjectHierarchyVolumesPlugin::showVolumesInBranch()
   vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
   if (!scene)
     {
-    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
+    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene";
     return;
     }
   vtkIdType currentItemID = qSlicerSubjectHierarchyPluginHandler::instance()->currentItem();
   if (currentItemID == vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID)
     {
-    qCritical() << Q_FUNC_INFO << ": Invalid current item!";
+    qCritical() << Q_FUNC_INFO << ": Invalid current item";
     return;
     }
 
@@ -599,6 +660,51 @@ void qSlicerSubjectHierarchyVolumesPlugin::showVolumesInBranch()
 }
 
 //---------------------------------------------------------------------------
+void qSlicerSubjectHierarchyVolumesPlugin::showVolumeInForeground()
+{
+  vtkMRMLSubjectHierarchyNode* shNode = qSlicerSubjectHierarchyPluginHandler::instance()->subjectHierarchyNode();
+  if (!shNode)
+  {
+    qCritical() << Q_FUNC_INFO << ": Failed to access subject hierarchy node";
+    return;
+  }
+  vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
+  if (!scene)
+  {
+    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene";
+    return;
+  }
+  vtkIdType currentItemID = qSlicerSubjectHierarchyPluginHandler::instance()->currentItem();
+  if (currentItemID == vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID)
+  {
+    qCritical() << Q_FUNC_INFO << ": Invalid current item";
+    return;
+  }
+
+  vtkMRMLScalarVolumeNode* volumeNode = vtkMRMLScalarVolumeNode::SafeDownCast(shNode->GetItemDataNode(currentItemID));
+  if (!volumeNode)
+  {
+    qCritical() << Q_FUNC_INFO << ": Failed to get current item as a volume node";
+    return;
+  }
+
+  // Show volume in foreground
+  this->showVolumeInAllViews(volumeNode, vtkMRMLApplicationLogic::ForegroundLayer);
+
+  // Make sure the secondary volume is shown in a semi-transparent way
+  vtkMRMLSliceCompositeNode* compositeNode = nullptr;
+  int numberOfCompositeNodes = scene->GetNumberOfNodesByClass("vtkMRMLSliceCompositeNode");
+  for (int i=0; i<numberOfCompositeNodes; i++)
+    {
+    compositeNode = vtkMRMLSliceCompositeNode::SafeDownCast ( scene->GetNthNodeByClass( i, "vtkMRMLSliceCompositeNode" ) );
+    if (compositeNode && compositeNode->GetForegroundOpacity() == 0.0)
+      {
+      compositeNode->SetForegroundOpacity(0.5);
+      }
+    }
+}
+
+//---------------------------------------------------------------------------
 void qSlicerSubjectHierarchyVolumesPlugin::onLayoutChanged(int layout)
 {
   Q_UNUSED(layout);
@@ -611,7 +717,7 @@ void qSlicerSubjectHierarchyVolumesPlugin::onLayoutChanged()
   vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
   if (!scene)
     {
-    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
+    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene";
     return;
     }
 
@@ -632,7 +738,7 @@ void qSlicerSubjectHierarchyVolumesPlugin::onSliceCompositeNodeModified()
   vtkMRMLScene* scene = qSlicerSubjectHierarchyPluginHandler::instance()->mrmlScene();
   if (!scene)
     {
-    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene!";
+    qCritical() << Q_FUNC_INFO << ": Invalid MRML scene";
     return;
     }
   vtkMRMLSubjectHierarchyNode* shNode = qSlicerSubjectHierarchyPluginHandler::instance()->subjectHierarchyNode();
@@ -656,4 +762,11 @@ void qSlicerSubjectHierarchyVolumesPlugin::onSliceCompositeNodeModified()
       shNode->ItemModified(volumeItemID);
       }
     }
+}
+
+//---------------------------------------------------------------------------
+void qSlicerSubjectHierarchyVolumesPlugin::toggleResetFieldOfViewOnShowAction(bool on)
+{
+  QSettings settings;
+  settings.setValue("SubjectHierarchy/ResetFieldOfViewOnShowVolume", on);
 }

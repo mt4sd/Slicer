@@ -33,29 +33,23 @@
 #include <ctkPimpl.h>
 #include <ctkVTKObject.h>
 
+class qMRMLSegmentsModel;
+class qMRMLSegmentsTableViewPrivate;
+class qMRMLSortFilterSegmentsProxyModel;
+class QContextMenuEvent;
+class QItemSelection;
+class QStandardItem;
+class QStringList;
+class QTableWidgetItem;
+class QTableView;
 class vtkMRMLNode;
 class vtkSegment;
-class qMRMLSegmentsTableViewPrivate;
-class QStringList;
-class QTableWidget;
-class QTableWidgetItem;
-class QItemSelection;
-class QContextMenuEvent;
 
 /// \ingroup Slicer_QtModules_Segmentations_Widgets
 class Q_SLICER_MODULE_SEGMENTATIONS_WIDGETS_EXPORT qMRMLSegmentsTableView : public qMRMLWidget
 {
   Q_OBJECT
   QVTK_OBJECT
-
-  enum SegmentTableItemDataRole
-    {
-    /// Unique ID of the item (segment ID)
-    IDRole = Qt::UserRole + 1,
-    /// Integer that contains the visibility property of a segment.
-    /// It is closely related to the item icon.
-    VisibilityRole
-    };
 
 public:
   Q_PROPERTY(int selectionMode READ selectionMode WRITE setSelectionMode)
@@ -64,6 +58,8 @@ public:
   Q_PROPERTY(bool colorColumnVisible READ colorColumnVisible WRITE setColorColumnVisible)
   Q_PROPERTY(bool opacityColumnVisible READ opacityColumnVisible WRITE setOpacityColumnVisible)
   Q_PROPERTY(bool readOnly READ readOnly WRITE setReadOnly)
+  Q_PROPERTY(bool filterBarVisible READ filterBarVisible WRITE setFilterBarVisible)
+  Q_PROPERTY(QString textFilter READ textFilter WRITE setTextFilter)
 
   typedef qMRMLWidget Superclass;
   /// Constructor
@@ -75,12 +71,12 @@ public:
   Q_INVOKABLE vtkMRMLNode* segmentationNode();
 
   /// Get access to the table widget to allow low-level customization
-  Q_INVOKABLE QTableWidget* tableWidget();
+  Q_INVOKABLE QTableView* tableWidget();
 
   /// Return number of segments (rows) in the table
   int segmentCount() const;
 
-  /// Get segment ID of selected segments
+  /// Get the segment IDs of selected segments
   Q_INVOKABLE QStringList selectedSegmentIDs();
   /// Select segments with specified IDs
   Q_INVOKABLE void setSelectedSegmentIDs(QStringList segmentIDs);
@@ -95,7 +91,9 @@ public:
   bool visibilityColumnVisible();
   bool colorColumnVisible();
   bool opacityColumnVisible();
+  bool statusColumnVisible();
   bool readOnly();
+  bool filterBarVisible();
 
   /// Segments that have their ID listed in hideSegments are
   /// not shown in the table.
@@ -105,10 +103,25 @@ public:
   /// Return list of visible segment IDs
   Q_INVOKABLE QStringList displayedSegmentIDs()const;
 
+  Q_INVOKABLE qMRMLSortFilterSegmentsProxyModel* sortFilterProxyModel()const;
+  Q_INVOKABLE qMRMLSegmentsModel* model()const;
+
+  /// The text used to filter the segments in the table
+  /// \sa setTextFilter
+  QString textFilter();
+  // If the specified status should be shown in the table
+  /// \sa setStatusShown
+  Q_INVOKABLE bool statusShown(int status);
+
+  /// Get the row for the specified segment ID
+  int rowForSegmentID(QString segmentID);
+  /// Get the segment ID for the specified row
+  QString segmentIDForRow(int row);
+
 public slots:
   /// Set segmentation MRML node
   void setSegmentationNode(vtkMRMLNode* node);
-
+  /// Set MRML scene
   void setMRMLScene(vtkMRMLScene* newScene) override;
 
   /// Set selection mode in the table. Input value is int for Python compatibility. Actual values are
@@ -120,7 +133,9 @@ public slots:
   void setVisibilityColumnVisible(bool visible);
   void setColorColumnVisible(bool visible);
   void setOpacityColumnVisible(bool visible);
+  void setStatusColumnVisible(bool visible);
   void setReadOnly(bool aReadOnly);
+  void setFilterBarVisible(bool visible);
 
   /// Show only selected segments
   void showOnlySelectedSegments();
@@ -129,10 +144,23 @@ public slots:
   /// Segment's center is determined as the center of bounding box.
   void jumpSlices();
 
+  /// Set the status of the selected segments
+  void setSelectedSegmentsStatus(int status=-1);
+
+  /// Erase the contents of the selected segments and set the status to "Not started"
+  void clearSelectedSegments();
+
   /// Move selected segments up in the list
   void moveSelectedSegmentsUp();
   /// Move selected segments down in the list
   void moveSelectedSegmentsDown();
+
+  /// Set the text used to filter the segments in the table
+  /// \sa textFilter
+  void setTextFilter(QString textFilter);
+  /// Set if the specified status should be shown in the table
+  /// \sa statusShown
+  void setStatusShown(int status, bool shown);
 
 signals:
   /// Emitted if selection changes
@@ -143,26 +171,33 @@ signals:
   void segmentAboutToBeModified(const QString &segmentID);
 
 protected slots:
-  /// Handles changing of values in a cell (segment name, visibility, color, opacity)
-  void onSegmentTableItemChanged(QTableWidgetItem* changedItem);
-
   /// Forwards selection changed events. In case of batch update of items, selected and deselected are empty.
   void onSegmentSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
-  /// Handles clicks on a table cell (visibility)
-  void onVisibilityButtonClicked();
+  /// Handles actions on table cell (visibility)
   void onVisibility3DActionToggled(bool visible);
   void onVisibility2DFillActionToggled(bool visible);
   void onVisibility2DOutlineActionToggled(bool visible);
 
-  /// Populate segment table according to the segmentation node
-  void populateSegmentTable();
+  /// Handles when the filters on underlying sort model are modified
+  void onSegmentsFilterModified();
+  /// Handles clicks on the show status buttons
+  void onShowStatusButtonClicked();
 
-  /// Update from segmentation node state (invoked when segment count stays the same)
-  void updateWidgetFromMRML();
+  /// Handles clicks on a table cell (visibility + state)
+  void onSegmentsTableClicked(const QModelIndex& modelIndex);
 
   /// Handle MRML scene event
   void endProcessing();
+
+  void onSegmentAddedOrRemoved();
+
+  /// Update the widget form the MRML node
+  /// Called when the segmentation node is modified
+  void updateWidgetFromMRML();
+
+  /// Update the filter parameters in the vtkMRMLSegmentationNode
+  void updateMRMLFromFilterParameters();
 
 protected:
   /// Convenience function to set segment visibility options from event handlers
@@ -172,6 +207,7 @@ protected:
   /// \param visible2DFill Visibility of the segment referenced from senderObject for 2D fill. If 0, then hide, if 1 then show, otherwise don't change
   /// \param visible2DOutline Visibility of the segment referenced from senderObject for 2D outline. If 0, then hide, if 1 then show, otherwise don't change
   void setSegmentVisibility(QObject* senderObject, int visible, int visible3D, int visible2DFill, int visible2DOutline);
+  void setSegmentVisibility(QString segmentId, int visible, int visible3D, int visible2DFill, int visible2DOutline);
 
   /// To prevent accidentally moving out of the widget when pressing up/down arrows
   bool eventFilter(QObject* target, QEvent* event) override;

@@ -27,6 +27,7 @@
 #include <vtkCutter.h>
 #include <vtkDoubleArray.h>
 #include <vtkFrenetSerretFrame.h>
+#include <vtkLine.h>
 #include <vtkMatrix4x4.h>
 #include <vtkNew.h>
 #include <vtkObjectFactory.h>
@@ -60,24 +61,51 @@ vtkMRMLMarkupsCurveNode::~vtkMRMLMarkupsCurveNode()
 void vtkMRMLMarkupsCurveNode::WriteXML(ostream& of, int nIndent)
 {
   Superclass::WriteXML(of,nIndent);
+
+  vtkMRMLWriteXMLBeginMacro(of);
+  vtkMRMLWriteXMLEnumMacro(curveType, CurveType);
+  vtkMRMLWriteXMLIntMacro(numberOfPointsPerInterpolatingSegment, NumberOfPointsPerInterpolatingSegment);
+  vtkMRMLWriteXMLEndMacro();
 }
 
 //----------------------------------------------------------------------------
 void vtkMRMLMarkupsCurveNode::ReadXMLAttributes(const char** atts)
 {
-  Superclass::ReadXMLAttributes(atts);
+  int disabledModify = this->StartModify();
+  this->Superclass::ReadXMLAttributes(atts);
+
+  vtkMRMLReadXMLBeginMacro(atts);
+  vtkMRMLReadXMLEnumMacro(curveType, CurveType);
+  vtkMRMLReadXMLIntMacro(numberOfPointsPerInterpolatingSegment, NumberOfPointsPerInterpolatingSegment);
+  vtkMRMLReadXMLEndMacro();
+
+  this->EndModify(disabledModify);
 }
 
 //----------------------------------------------------------------------------
 void vtkMRMLMarkupsCurveNode::Copy(vtkMRMLNode *anode)
 {
+  int disabledModify = this->StartModify();
+
   Superclass::Copy(anode);
+
+  vtkMRMLCopyBeginMacro(anode);
+  vtkMRMLCopyEnumMacro(CurveType);
+  vtkMRMLCopyIntMacro(NumberOfPointsPerInterpolatingSegment);
+  vtkMRMLCopyEndMacro();
+
+  this->EndModify(disabledModify);
 }
 
 //----------------------------------------------------------------------------
 void vtkMRMLMarkupsCurveNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
+
+  vtkMRMLPrintBeginMacro(os, indent);
+  vtkMRMLPrintEnumMacro(CurveType);
+  vtkMRMLPrintIntMacro(NumberOfPointsPerInterpolatingSegment);
+  vtkMRMLPrintEndMacro();
 }
 
 //---------------------------------------------------------------------------
@@ -288,7 +316,7 @@ bool vtkMRMLMarkupsCurveNode::GetSampledCurvePointsBetweenStartEndPointsWorld(vt
 }
 
 //---------------------------------------------------------------------------
-vtkIdType vtkMRMLMarkupsCurveNode::GetClosestCurvePointIndexToPositionWorld(double posWorld[3])
+vtkIdType vtkMRMLMarkupsCurveNode::GetClosestCurvePointIndexToPositionWorld(const double posWorld[3])
 {
   vtkPoints* points = this->GetCurvePointsWorld();
   if (!points)
@@ -362,7 +390,7 @@ bool vtkMRMLMarkupsCurveNode::GetCurveDirectionAtPointIndexWorld(vtkIdType curve
 }
 
 //---------------------------------------------------------------------------
-vtkIdType vtkMRMLMarkupsCurveNode::GetFarthestCurvePointIndexToPositionWorld(double posWorld[3])
+vtkIdType vtkMRMLMarkupsCurveNode::GetFarthestCurvePointIndexToPositionWorld(const double posWorld[3])
 {
   vtkPoints* points = this->GetCurvePointsWorld();
   if (!points || points->GetNumberOfPoints()<1)
@@ -543,6 +571,127 @@ bool vtkMRMLMarkupsCurveNode::GetCurvePointToWorldTransformAtPointIndex(vtkIdTyp
     curvePointToWorld->SetElement(row, 1, binormal[row]);
     curvePointToWorld->SetElement(row, 2, tangent[row]);
     curvePointToWorld->SetElement(row, 3, position[row]);
+    }
+  return true;
+}
+
+//---------------------------------------------------------------------------
+int vtkMRMLMarkupsCurveNode::GetCurveType()
+{
+  return this->CurveGenerator->GetCurveType();
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLMarkupsCurveNode::SetCurveType(int type)
+{
+  this->CurveGenerator->SetCurveType(type);
+}
+
+//-----------------------------------------------------------
+const char* vtkMRMLMarkupsCurveNode::GetCurveTypeAsString(int id)
+{
+  return this->CurveGenerator->GetCurveTypeAsString(id);
+}
+
+//-----------------------------------------------------------
+int vtkMRMLMarkupsCurveNode::GetCurveTypeFromString(const char* name)
+{
+  return this->CurveGenerator->GetCurveTypeFromString(name);
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLMarkupsCurveNode::SetCurveTypeToLinear()
+{
+  this->CurveGenerator->SetCurveTypeToLinearSpline();
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLMarkupsCurveNode::SetCurveTypeToCardinalSpline()
+{
+  this->CurveGenerator->SetCurveTypeToCardinalSpline();
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLMarkupsCurveNode::SetCurveTypeToKochanekSpline()
+{
+  this->CurveGenerator->SetCurveTypeToKochanekSpline();
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLMarkupsCurveNode::SetCurveTypeToPolynomial()
+{
+  this->CurveGenerator->SetCurveTypeToPolynomial();
+}
+
+//---------------------------------------------------------------------------
+int vtkMRMLMarkupsCurveNode::GetNumberOfPointsPerInterpolatingSegment()
+{
+  return this->CurveGenerator->GetNumberOfPointsPerInterpolatingSegment();
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLMarkupsCurveNode::SetNumberOfPointsPerInterpolatingSegment(int pointsPerSegment)
+{
+  this->CurveGenerator->SetNumberOfPointsPerInterpolatingSegment(pointsPerSegment);
+}
+
+//---------------------------------------------------------------------------
+vtkIdType vtkMRMLMarkupsCurveNode::GetClosestPointPositionAlongCurveWorld(const double posWorld[3], double closestPosWorld[3])
+{
+  vtkPoints* points = this->GetCurvePointsWorld();
+  if (!points || points->GetNumberOfPoints() < 1)
+    {
+    return -1;
+    }
+  if (points->GetNumberOfPoints() == 1)
+    {
+    points->GetPoint(0, closestPosWorld);
+    return -1;
+    }
+
+  // Find closest curve point
+  vtkIdType closestCurvePointIndex = this->GetClosestCurvePointIndexToPositionWorld(posWorld);
+  if (closestCurvePointIndex < 0)
+    {
+    return -1;
+    }
+  double closestCurvePoint[3] = { 0.0 };
+  points->GetPoint(closestCurvePointIndex, closestCurvePoint);
+  double closestDistance2 = vtkMath::Distance2BetweenPoints(posWorld, closestPosWorld);
+  closestPosWorld[0] = closestCurvePoint[0];
+  closestPosWorld[1] = closestCurvePoint[1];
+  closestPosWorld[2] = closestCurvePoint[2];
+  vtkIdType lineIndex = closestCurvePointIndex;
+
+  // See if we can find any points closer along the curve
+  double relativePositionAlongLine = -1.0; // between 0.0-1.0 if between the endpoints of the line segment
+  double otherPoint[3] = { 0.0 };
+  double closestPointOnLine[3] = { 0.0 };
+  if (closestCurvePointIndex - 1 >= 0)
+    {
+    points->GetPoint(closestCurvePointIndex - 1, otherPoint);
+    double distance2 = vtkLine::DistanceToLine(posWorld, closestCurvePoint, otherPoint, relativePositionAlongLine, closestPointOnLine);
+    if (distance2 < closestDistance2 && relativePositionAlongLine >= 0 && relativePositionAlongLine <= 1)
+      {
+      closestDistance2 = distance2;
+      closestPosWorld[0] = closestPointOnLine[0];
+      closestPosWorld[1] = closestPointOnLine[1];
+      closestPosWorld[2] = closestPointOnLine[2];
+      lineIndex = closestCurvePointIndex - 1;
+      }
+    }
+  if (closestCurvePointIndex + 1 < points->GetNumberOfPoints())
+    {
+    points->GetPoint(closestCurvePointIndex + 1, otherPoint);
+    double distance2 = vtkLine::DistanceToLine(posWorld, closestCurvePoint, otherPoint, relativePositionAlongLine, closestPointOnLine);
+    if (distance2 < closestDistance2 && relativePositionAlongLine >= 0 && relativePositionAlongLine <= 1)
+      {
+      closestDistance2 = distance2;
+      closestPosWorld[0] = closestPointOnLine[0];
+      closestPosWorld[1] = closestPointOnLine[1];
+      closestPosWorld[2] = closestPointOnLine[2];
+      lineIndex = closestCurvePointIndex;
+      }
     }
   return true;
 }

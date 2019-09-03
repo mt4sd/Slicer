@@ -41,6 +41,7 @@
 #include "vtkTubeFilter.h"
 
 // MRML includes
+#include "vtkMRMLInteractionEventData.h"
 #include "vtkMRMLMarkupsDisplayNode.h"
 #include "vtkMRMLProceduralColorNode.h"
 
@@ -147,7 +148,6 @@ void vtkSlicerAngleRepresentation2D::BuildArc()
   double vector2[3] = { p2[0] - c[0], p2[1] - c[1], p2[2] - c[2] };
   double l1 = vtkMath::Normalize(vector1);
   double l2 = vtkMath::Normalize(vector2);
-  double angle = acos(vtkMath::Dot(vector1, vector2));
 
   // Place the label and place the arc
   double length = l1 < l2 ? l1 : l2;
@@ -165,9 +165,9 @@ void vtkSlicerAngleRepresentation2D::BuildArc()
   this->Arc->SetCenter(c);
   this->Arc->Update();
 
-  this->GetNthNodeDisplayPosition(0, p1);
-  this->GetNthNodeDisplayPosition(1, c);
-  this->GetNthNodeDisplayPosition(2, p2);
+  this->GetNthControlPointDisplayPosition(0, p1);
+  this->GetNthControlPointDisplayPosition(1, c);
+  this->GetNthControlPointDisplayPosition(2, p2);
 
   for (int i = 0; i < 3; ++i)
     {
@@ -216,8 +216,8 @@ void vtkSlicerAngleRepresentation2D::UpdateFromMRML(vtkMRMLNode* caller, unsigne
 
   // Update lines display properties
 
-  this->TubeFilter->SetRadius(this->ControlPointSize * 0.125);
-  this->ArcTubeFilter->SetRadius(this->ControlPointSize * 0.125);
+  this->TubeFilter->SetRadius(this->ControlPointSize * this->MarkupsDisplayNode->GetLineThickness() * 0.5);
+  this->ArcTubeFilter->SetRadius(this->ControlPointSize * this->MarkupsDisplayNode->GetLineThickness() * 0.5);
 
   this->LineActor->SetVisibility(markupsNode->GetNumberOfControlPoints() >= 2);
   this->ArcActor->SetVisibility(markupsNode->GetNumberOfControlPoints() == 3);
@@ -260,22 +260,24 @@ void vtkSlicerAngleRepresentation2D::UpdateFromMRML(vtkMRMLNode* caller, unsigne
 
 //----------------------------------------------------------------------
 void vtkSlicerAngleRepresentation2D::CanInteract(
-  const int displayPosition[2], const double worldPosition[3],
+  vtkMRMLInteractionEventData* interactionEventData,
   int &foundComponentType, int &foundComponentIndex, double &closestDistance2)
 {
   foundComponentType = vtkMRMLMarkupsDisplayNode::ComponentNone;
   vtkMRMLMarkupsNode* markupsNode = this->GetMarkupsNode();
-  if (!markupsNode || markupsNode->GetLocked() || markupsNode->GetNumberOfControlPoints() < 1)
+  if ( !markupsNode || markupsNode->GetLocked() || markupsNode->GetNumberOfControlPoints() < 1
+    || !interactionEventData )
     {
     return;
     }
-  Superclass::CanInteract(displayPosition, worldPosition, foundComponentType, foundComponentIndex, closestDistance2);
+  Superclass::CanInteract(interactionEventData, foundComponentType, foundComponentIndex, closestDistance2);
   if (foundComponentType != vtkMRMLMarkupsDisplayNode::ComponentNone)
     {
     // if mouse is near a control point then select that (ignore the line)
     return;
     }
 
+  const int* displayPosition = interactionEventData->GetDisplayPosition();
   double displayPosition3[3] = { static_cast<double>(displayPosition[0]), static_cast<double>(displayPosition[1]), 0.0 };
 
   double maxPickingDistanceFromControlPoint2 = this->GetMaximumControlPointPickingDistance2();

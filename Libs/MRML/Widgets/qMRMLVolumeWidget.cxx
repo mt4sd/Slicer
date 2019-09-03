@@ -111,7 +111,7 @@ void qMRMLVolumeWidgetPrivate::init()
   QObject::connect(this->RangeWidget, SIGNAL(valuesChanged(double,double)),
                    this, SLOT(setRange(double,double)));
   this->RangeWidget->setToolTip(
-	  qMRMLVolumeWidget::tr("Set the range boundaries to control large numbers or allow fine tuning"));
+        qMRMLVolumeWidget::tr("Set the range boundaries to control large numbers or allow fine tuning"));
 }
 
 

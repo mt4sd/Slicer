@@ -117,12 +117,12 @@ void qMRMLSubjectHierarchyModelPrivate::init()
   q->setHorizontalHeaderLabels(
     QStringList() << "Node" << "Description" << "" /*visibility*/ << "" /*color*/ << "" /*transform*/ << "IDs" );
 
-  q->horizontalHeaderItem(q->nameColumn())->setToolTip(QObject::tr("Node name and type"));
-  q->horizontalHeaderItem(q->descriptionColumn())->setToolTip(QObject::tr("Node description"));
-  q->horizontalHeaderItem(q->visibilityColumn())->setToolTip(QObject::tr("Show/hide branch or node"));
-  q->horizontalHeaderItem(q->colorColumn())->setToolTip(QObject::tr("Node color"));
-  q->horizontalHeaderItem(q->transformColumn())->setToolTip(QObject::tr("Applied transform"));
-  q->horizontalHeaderItem(q->idColumn())->setToolTip(QObject::tr("Node ID"));
+  q->horizontalHeaderItem(q->nameColumn())->setToolTip(qMRMLSubjectHierarchyModel::tr("Node name and type"));
+  q->horizontalHeaderItem(q->descriptionColumn())->setToolTip(qMRMLSubjectHierarchyModel::tr("Node description"));
+  q->horizontalHeaderItem(q->visibilityColumn())->setToolTip(qMRMLSubjectHierarchyModel::tr("Show/hide branch or node"));
+  q->horizontalHeaderItem(q->colorColumn())->setToolTip(qMRMLSubjectHierarchyModel::tr("Node color"));
+  q->horizontalHeaderItem(q->transformColumn())->setToolTip(qMRMLSubjectHierarchyModel::tr("Applied transform"));
+  q->horizontalHeaderItem(q->idColumn())->setToolTip(qMRMLSubjectHierarchyModel::tr("Node ID"));
 
   q->horizontalHeaderItem(q->visibilityColumn())->setIcon(QIcon(":/Icons/Small/SlicerVisibleInvisible.png"));
   q->horizontalHeaderItem(q->colorColumn())->setIcon(QIcon(":/Icons/Colors.png"));
@@ -1248,8 +1248,8 @@ void qMRMLSubjectHierarchyModel::updateSubjectHierarchyItemFromItemData(vtkIdTyp
       }
 
     // Ask the user if any child node in the branch is transformed with a transform different from the chosen one
-    bool hardenExistingTransforms = true;
-    if (d->SubjectHierarchyNode->IsAnyNodeInBranchTransformed(shItemID))
+    bool hardenExistingTransforms = false;
+    if (d->SubjectHierarchyNode->IsAnyNodeInBranchTransformed(shItemID, false))
       {
       QMessageBox::StandardButton answer =
         QMessageBox::question(nullptr, tr("Some nodes in the branch are already transformed"),
@@ -1257,13 +1257,12 @@ void qMRMLSubjectHierarchyModel::updateSubjectHierarchyItemFromItemData(vtkIdTyp
         "  Note: If you choose no, then the applied transform will simply be replaced."),
         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
         QMessageBox::Yes);
-      if (answer == QMessageBox::No)
+      if (answer == QMessageBox::Yes)
         {
-        hardenExistingTransforms = false;
+        hardenExistingTransforms = true;
         }
       else if (answer == QMessageBox::Cancel)
         {
-        //qDebug() << Q_FUNC_INFO << ": Transform branch cancelled";
         return;
         }
       }

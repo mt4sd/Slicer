@@ -65,7 +65,8 @@ class SegmentationsModuleTest1(unittest.TestCase):
   def TestSection_RetrieveInputData(self):
     try:
       slicer.util.downloadAndExtractArchive(
-        'http://slicer.kitware.com/midas3/download/folder/3763/TinyPatient_Seg.zip', self.dataZipFilePath, self.segmentationsModuleTestDir)
+        'http://slicer.kitware.com/midas3/download/folder/3763/TinyPatient_Seg.zip', self.dataZipFilePath, self.segmentationsModuleTestDir,
+        checksum='SHA256:b902f635ef2059cd3b4ba854c000b388e4a9e817a651f28be05c22511a317ec7')
 
       numOfFilesInDataDirTest = len([name for name in os.listdir(self.dataDir) if os.path.isfile(self.dataDir + '/' + name)])
       self.assertEqual( numOfFilesInDataDirTest, self.expectedNumOfFilesInDataDir )
@@ -81,10 +82,8 @@ class SegmentationsModuleTest1(unittest.TestCase):
   #------------------------------------------------------------------------------
   def TestSection_LoadInputData(self):
     # Load into Slicer
-    ctLoadSuccess = slicer.util.loadVolume(self.dataDir + '/TinyPatient_CT.nrrd')
-    self.assertTrue( ctLoadSuccess )
-    segLoadSuccess = slicer.util.loadNodeFromFile(self.dataDir + '/TinyPatient_Structures.seg.vtm', "SegmentationFile", {})
-    self.assertTrue( segLoadSuccess )
+    slicer.util.loadVolume(self.dataDir + '/TinyPatient_CT.nrrd')
+    slicer.util.loadNodeFromFile(self.dataDir + '/TinyPatient_Structures.seg.vtm', "SegmentationFile", {})
 
     # Change master representation to closed surface (so that conversion is possible when adding segment)
     self.inputSegmentationNode = slicer.util.getNode('vtkMRMLSegmentationNode1')

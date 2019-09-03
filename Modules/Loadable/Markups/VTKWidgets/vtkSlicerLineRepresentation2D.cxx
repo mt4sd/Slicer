@@ -38,6 +38,7 @@
 #include "vtkTubeFilter.h"
 
 // MRML includes
+#include "vtkMRMLInteractionEventData.h"
 #include "vtkMRMLMarkupsDisplayNode.h"
 #include "vtkMRMLProceduralColorNode.h"
 
@@ -98,7 +99,7 @@ void vtkSlicerLineRepresentation2D::UpdateFromMRML(vtkMRMLNode* caller, unsigned
 
   // Line display
 
-  this->TubeFilter->SetRadius(this->ControlPointSize * 0.125);
+  this->TubeFilter->SetRadius(this->ControlPointSize * this->MarkupsDisplayNode->GetLineThickness() * 0.5);
 
   this->LineActor->SetVisibility(markupsNode->GetNumberOfControlPoints() == 2);
 
@@ -126,23 +127,24 @@ void vtkSlicerLineRepresentation2D::UpdateFromMRML(vtkMRMLNode* caller, unsigned
 
 //----------------------------------------------------------------------
 void vtkSlicerLineRepresentation2D::CanInteract(
-  const int displayPosition[2], const double worldPosition[3],
+  vtkMRMLInteractionEventData* interactionEventData,
   int &foundComponentType, int &foundComponentIndex, double &closestDistance2)
 {
   foundComponentType = vtkMRMLMarkupsDisplayNode::ComponentNone;
   vtkMRMLMarkupsNode* markupsNode = this->GetMarkupsNode();
-  if (!markupsNode || markupsNode->GetLocked() || markupsNode->GetNumberOfControlPoints() < 1)
+  if ( !markupsNode || markupsNode->GetLocked() || markupsNode->GetNumberOfControlPoints() < 1
+    || !interactionEventData )
     {
     return;
     }
-  Superclass::CanInteract(displayPosition, worldPosition, foundComponentType, foundComponentIndex, closestDistance2);
+  Superclass::CanInteract(interactionEventData, foundComponentType, foundComponentIndex, closestDistance2);
   if (foundComponentType != vtkMRMLMarkupsDisplayNode::ComponentNone)
     {
     // if mouse is near a control point then select that (ignore the line)
     return;
     }
 
-  this->CanInteractWithLine(displayPosition, worldPosition, foundComponentType, foundComponentIndex, closestDistance2);
+  this->CanInteractWithLine(interactionEventData, foundComponentType, foundComponentIndex, closestDistance2);
 }
 
 //----------------------------------------------------------------------

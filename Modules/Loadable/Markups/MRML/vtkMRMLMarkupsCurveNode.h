@@ -88,20 +88,27 @@ public:
     double samplingDistance, vtkIdType startCurvePointIndex, vtkIdType endCurvePointIndex);
 
   /// Get the index of the closest curve point to the world coordinates
-  vtkIdType GetClosestCurvePointIndexToPositionWorld(double posWorld[3]);
+  vtkIdType GetClosestCurvePointIndexToPositionWorld(const double posWorld[3]);
+
+  /// Get position of the closest point along the curve in world coordinates.
+  /// The found position may be between two curve points.
+  /// Returns index of the found line segment. -1 if failed.
+  /// \param posWorld: input position
+  /// \param closestPosWorld: output found closest position
+  vtkIdType GetClosestPointPositionAlongCurveWorld(const double posWorld[3], double closestPosWorld[3]);
 
   /// Get index of the farthest curve point from the specified reference point.
   /// Distance is Euclidean distance, not distance along the curve.
   /// \param posWorld Reference point position in world coordinate system
   /// \return index of the farthest curve point from refPoint, -1 in case of error
-  vtkIdType GetFarthestCurvePointIndexToPositionWorld(double posWorld[3]);
+  vtkIdType GetFarthestCurvePointIndexToPositionWorld(const double posWorld[3]);
 
   vtkIdType GetCurvePointIndexFromControlPointIndex(int controlPointIndex);
 
   /// Get position of a curve point along the curve relative to the specified start point index.
   /// \param startCurvePointId index of the curve point to start the distance measurement from
   /// \param distanceFromStartPoint distance from the start point
-  /// \return founod point index, -1 in case of an error
+  /// \return found point index, -1 in case of an error
   vtkIdType GetCurvePointIndexAlongCurveWorld(vtkIdType startCurvePointId, double distanceFromStartPoint);
 
   /// Get direction vector at specified curve point index, in World coordinate system.
@@ -118,6 +125,22 @@ public:
   bool GetCurvePointToWorldTransformAtPointIndex(vtkIdType curvePointIndex, vtkMatrix4x4* curvePointToWorld);
 
   bool GetPointsOnPlaneWorld(vtkPlane* plane, vtkPoints* intersectionPoints);
+
+  int GetCurveType();
+  void SetCurveType(int type);
+  void SetCurveTypeToLinear();
+  void SetCurveTypeToCardinalSpline();
+  void SetCurveTypeToKochanekSpline();
+  void SetCurveTypeToPolynomial();
+  const char* GetCurveTypeAsString(int id);
+  int GetCurveTypeFromString(const char* name);
+
+  //@{
+  /// Get/set how many curve points are inserted between control points.
+  /// Higher values are recommended if distance between control points is large.
+  int GetNumberOfPointsPerInterpolatingSegment();
+  void SetNumberOfPointsPerInterpolatingSegment(int pointsPerSegment);
+  //@}
 
 protected:
   vtkMRMLMarkupsCurveNode();

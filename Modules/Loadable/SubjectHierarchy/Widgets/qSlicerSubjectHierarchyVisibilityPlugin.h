@@ -30,12 +30,6 @@
 
 class qSlicerSubjectHierarchyVisibilityPluginPrivate;
 
-// Due to some reason the Python wrapping of this class fails, therefore
-// put everything between BTX/ETX to exclude from wrapping.
-// TODO investigate why the wrapping fails:
-//   https://www.assembla.com/spaces/slicerrt/tickets/210-python-wrapping-error-when-starting-up-slicer-with-slicerrt
-//BTX
-
 /// \ingroup Slicer_QtModules_SubjectHierarchy_Widgets
 class Q_SLICER_MODULE_SUBJECTHIERARCHY_WIDGETS_EXPORT qSlicerSubjectHierarchyVisibilityPlugin : public qSlicerSubjectHierarchyAbstractPlugin
 {
@@ -45,16 +39,16 @@ public:
 public:
   typedef qSlicerSubjectHierarchyAbstractPlugin Superclass;
   qSlicerSubjectHierarchyVisibilityPlugin(QObject* parent = NULL);
-  virtual ~qSlicerSubjectHierarchyVisibilityPlugin();
+  ~qSlicerSubjectHierarchyVisibilityPlugin() override;
 
 public:
   /// Get visibility context menu item actions to add to tree view.
   /// These item visibility context menu actions can be shown in the implementations of \sa showVisibilityContextMenuActionsForItem
-  virtual QList<QAction*> visibilityContextMenuActions()const;
+  QList<QAction*> visibilityContextMenuActions()const override;
 
   /// Show visibility context menu actions valid for a given subject hierarchy item.
   /// \param itemID Subject Hierarchy item to show the visibility context menu items for
-  virtual void showVisibilityContextMenuActionsForItem(vtkIdType itemID);
+  void showVisibilityContextMenuActionsForItem(vtkIdType itemID) override;
 
 protected slots:
   /// Toggle 2D visibility on currently selected subject hierarchy item
@@ -69,7 +63,5 @@ private:
   Q_DECLARE_PRIVATE(qSlicerSubjectHierarchyVisibilityPlugin);
   Q_DISABLE_COPY(qSlicerSubjectHierarchyVisibilityPlugin);
 };
-
-//ETX
 
 #endif

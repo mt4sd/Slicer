@@ -22,7 +22,7 @@
 
 // Segmentations includes
 #include "qMRMLSegmentEditorWidget.h"
-
+#include "qMRMLSortFilterSegmentsProxyModel.h"
 #include "ui_qMRMLSegmentEditorWidget.h"
 
 #include "vtkMRMLSegmentationNode.h"
@@ -103,6 +103,7 @@
 #include <QPointer>
 #include <QScrollArea>
 #include <QShortcut>
+#include <QTableView>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QWidgetAction>
@@ -379,21 +380,21 @@ void qMRMLSegmentEditorWidgetPrivate::init()
   this->SpecifyGeometryButton->setMaximumHeight(this->MasterVolumeNodeComboBox->sizeHint().height());
   this->SpecifyGeometryButton->setMaximumWidth(this->MasterVolumeNodeComboBox->sizeHint().height());
 
-  this->MaskModeComboBox->addItem(QObject::tr("Everywhere"), vtkMRMLSegmentEditorNode::PaintAllowedEverywhere);
-  this->MaskModeComboBox->addItem(QObject::tr("Inside all segments"), vtkMRMLSegmentEditorNode::PaintAllowedInsideAllSegments);
-  this->MaskModeComboBox->addItem(QObject::tr("Inside all visible segments"), vtkMRMLSegmentEditorNode::PaintAllowedInsideVisibleSegments);
-  this->MaskModeComboBox->addItem(QObject::tr("Outside all segments"), vtkMRMLSegmentEditorNode::PaintAllowedOutsideAllSegments);
-  this->MaskModeComboBox->addItem(QObject::tr("Outside all visible segments"), vtkMRMLSegmentEditorNode::PaintAllowedOutsideVisibleSegments);
+  this->MaskModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Everywhere"), vtkMRMLSegmentEditorNode::PaintAllowedEverywhere);
+  this->MaskModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Inside all segments"), vtkMRMLSegmentEditorNode::PaintAllowedInsideAllSegments);
+  this->MaskModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Inside all visible segments"), vtkMRMLSegmentEditorNode::PaintAllowedInsideVisibleSegments);
+  this->MaskModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Outside all segments"), vtkMRMLSegmentEditorNode::PaintAllowedOutsideAllSegments);
+  this->MaskModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Outside all visible segments"), vtkMRMLSegmentEditorNode::PaintAllowedOutsideVisibleSegments);
   this->MaskModeComboBox->insertSeparator(this->MaskModeComboBox->count());
   this->MaskModeComboBoxFixedItemsCount = this->MaskModeComboBox->count();
 
-  this->OverwriteModeComboBox->addItem(QObject::tr("All segments"), vtkMRMLSegmentEditorNode::OverwriteAllSegments);
-  this->OverwriteModeComboBox->addItem(QObject::tr("Visible segments"), vtkMRMLSegmentEditorNode::OverwriteVisibleSegments);
-  this->OverwriteModeComboBox->addItem(QObject::tr("None"), vtkMRMLSegmentEditorNode::OverwriteNone);
+  this->OverwriteModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Overwrite all"), vtkMRMLSegmentEditorNode::OverwriteAllSegments);
+  this->OverwriteModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Overwrite visible"), vtkMRMLSegmentEditorNode::OverwriteVisibleSegments);
+  this->OverwriteModeComboBox->addItem(qMRMLSegmentEditorWidget::tr("Allow overlap"), vtkMRMLSegmentEditorNode::OverwriteNone);
 
   this->SwitchToSegmentationsButton->setIcon(q->style()->standardIcon(QStyle::SP_ArrowRight));
 
-  QMenu* segmentationsButtonMenu = new QMenu(q->tr("Segmentations"), this->SwitchToSegmentationsButton);
+  QMenu* segmentationsButtonMenu = new QMenu(qMRMLSegmentEditorWidget::tr("Segmentations"), this->SwitchToSegmentationsButton);
 
   QAction* importExportAction = new QAction("Import/export nodes...", segmentationsButtonMenu);
   segmentationsButtonMenu->addAction(importExportAction);
@@ -404,20 +405,20 @@ void qMRMLSegmentEditorWidgetPrivate::init()
 
   this->SwitchToSegmentationsButton->setMenu(segmentationsButtonMenu);
 
-  QMenu* show3DButtonMenu = new QMenu(q->tr("Show 3D"), this->Show3DButton);
+  QMenu* show3DButtonMenu = new QMenu(qMRMLSegmentEditorWidget::tr("Show 3D"), this->Show3DButton);
 
-  this->SurfaceSmoothingEnabledAction = new QAction(q->tr("Surface smoothing"), show3DButtonMenu);
-  this->SurfaceSmoothingEnabledAction->setToolTip(q->tr("Apply smoothing when converting binary lablemap to closed surface representation."));
+  this->SurfaceSmoothingEnabledAction = new QAction(qMRMLSegmentEditorWidget::tr("Surface smoothing"), show3DButtonMenu);
+  this->SurfaceSmoothingEnabledAction->setToolTip(qMRMLSegmentEditorWidget::tr("Apply smoothing when converting binary lablemap to closed surface representation."));
   this->SurfaceSmoothingEnabledAction->setCheckable(true);
   show3DButtonMenu->addAction(this->SurfaceSmoothingEnabledAction);
   QObject::connect(this->SurfaceSmoothingEnabledAction, SIGNAL(toggled(bool)), q, SLOT(onEnableSurfaceSmoothingToggled(bool)));
 
-  QMenu* surfaceSmoothingFactorMenu = new QMenu(q->tr("Smoothing factor"), show3DButtonMenu);
+  QMenu* surfaceSmoothingFactorMenu = new QMenu(qMRMLSegmentEditorWidget::tr("Smoothing factor"), show3DButtonMenu);
   surfaceSmoothingFactorMenu->setObjectName("slicerSpacingManualMode");
   surfaceSmoothingFactorMenu->setIcon(QIcon(":/Icon/SlicerManualSliceSpacing.png"));
 
   this->SurfaceSmoothingSlider = new ctkSliderWidget(surfaceSmoothingFactorMenu);
-  this->SurfaceSmoothingSlider->setToolTip(q->tr("Higher value means stronger smoothing during closed surface representation conversion."));
+  this->SurfaceSmoothingSlider->setToolTip(qMRMLSegmentEditorWidget::tr("Higher value means stronger smoothing during closed surface representation conversion."));
   this->SurfaceSmoothingSlider->setDecimals(2);
   this->SurfaceSmoothingSlider->setRange(0.0, 1.0);
   this->SurfaceSmoothingSlider->setSingleStep(0.1);
@@ -644,7 +645,8 @@ bool qMRMLSegmentEditorWidgetPrivate::updateAlignedMasterVolume()
   vtkMRMLSegmentationNode* segmentationNode = this->ParameterSetNode->GetSegmentationNode();
   vtkMRMLScalarVolumeNode* masterVolumeNode = this->ParameterSetNode->GetMasterVolumeNode();
   std::string referenceImageGeometry = this->referenceImageGeometry();
-  if (!segmentationNode || !masterVolumeNode || referenceImageGeometry.empty())
+  if (!segmentationNode || !masterVolumeNode || !masterVolumeNode->GetImageData()
+    || !masterVolumeNode->GetImageData()->GetPointData() || referenceImageGeometry.empty())
     {
     return false;
     }
@@ -1281,7 +1283,10 @@ void qMRMLSegmentEditorWidget::updateMaskingSection()
     {
     // threshold was uninitialized, set some default
     double range[2] = { 0.0 };
-    d->MasterVolumeNode->GetImageData()->GetScalarRange(range);
+    if (d->MasterVolumeNode && d->MasterVolumeNode->GetImageData() && d->MasterVolumeNode->GetImageData()->GetPointData())
+      {
+      d->MasterVolumeNode->GetImageData()->GetScalarRange(range);
+      }
     d->ParameterSetNode->SetMasterVolumeIntensityMaskRange(range[0] + 0.25*(range[1] - range[0]), range[0] + 0.75*(range[1] - range[0]));
     }
 
@@ -1512,7 +1517,8 @@ void qMRMLSegmentEditorWidget::onMasterVolumeImageDataModified()
   Q_D(qMRMLSegmentEditorWidget);
 
   // Update intensity range slider widget
-  if (d->MasterVolumeNode != nullptr && d->MasterVolumeNode->GetImageData() != nullptr)
+  if (d->MasterVolumeNode != nullptr && d->MasterVolumeNode->GetImageData() != nullptr
+    && d->MasterVolumeNode->GetImageData()->GetPointData() != nullptr)
     {
     double range[2] = { 0.0, 0.0 };
     d->MasterVolumeNode->GetImageData()->GetScalarRange(range);
@@ -1587,7 +1593,7 @@ void qMRMLSegmentEditorWidget::updateEffectsSectionFromMRML()
         // nullptr effect
         continue;
         }
-      effectButton->setEnabled(segmentAvailable && (segmentSelected || !effect->perSegment()));
+      effectButton->setEnabled(!effect->requireSegments() || (segmentAvailable && (segmentSelected || !effect->perSegment())));
       }
     }
 
@@ -2025,7 +2031,17 @@ void qMRMLSegmentEditorWidget::onAddSegment()
   d->SegmentationHistory->SaveState();
 
   // Create empty segment in current segmentation
-  std::string addedSegmentID = segmentationNode->GetSegmentation()->AddEmptySegment();
+  std::string addedSegmentID = segmentationNode->GetSegmentation()->AddEmptySegment(d->SegmentsTableView->textFilter().toStdString());
+  int status = 0;
+  for (int i = 0; i < vtkSlicerSegmentationsModuleLogic::LastStatus; ++i)
+    {
+    if (d->SegmentsTableView->sortFilterProxyModel()->showStatus(i))
+      {
+      status = i;
+      break;
+      }
+    }
+  vtkSlicerSegmentationsModuleLogic::SetSegmentStatus(segmentationNode->GetSegmentation()->GetSegment(addedSegmentID), status);
 
   // Select the new segment
   if (!addedSegmentID.empty())
@@ -3082,37 +3098,16 @@ void qMRMLSegmentEditorWidget::onSelectEffectShortcut()
 //-----------------------------------------------------------------------------
 void qMRMLSegmentEditorWidget::onSelectSegmentShortcut()
 {
+  Q_D(qMRMLSegmentEditorWidget);
   QShortcut* shortcut = qobject_cast<QShortcut*>(sender());
   if (shortcut == nullptr)
     {
     return;
     }
-  int segmentIndexOffset = shortcut->property("segmentIndexOffset").toInt();
 
-  vtkMRMLSegmentationNode* segmentationNode = vtkMRMLSegmentationNode::SafeDownCast(this->segmentationNode());
-  if (segmentationNode == nullptr || segmentationNode->GetDisplayNode() == nullptr)
-    {
-    return;
-    }
-  vtkMRMLSegmentationDisplayNode* displayNode = vtkMRMLSegmentationDisplayNode::SafeDownCast(segmentationNode->GetDisplayNode());
-  if (displayNode == nullptr)
-    {
-    return;
-    }
-  std::vector<std::string> segmentIDs;
-  displayNode->GetVisibleSegmentIDs(segmentIDs);
-  QString currentSegmentID = this->currentSegmentID();
-  for (unsigned int segmentIndex = 0; segmentIndex < segmentIDs.size(); segmentIndex++)
-    {
-    std::string segmentID = segmentIDs[segmentIndex];
-    if (currentSegmentID == segmentID.c_str())
-      {
-      // this is the current segment, determine which one is the previous/next and select that
-      int newSegmentIndex = (segmentIndex + segmentIndexOffset) % segmentIDs.size(); // wrap around
-      this->setCurrentSegmentID(segmentIDs[newSegmentIndex].c_str());
-      return;
-      }
-    }
+  // Direction that the segment selection should be moved (-1/+1 is previous/next)
+  int segmentIndexOffset = shortcut->property("segmentIndexOffset").toInt();
+  this->selectSegmentAtOffset (segmentIndexOffset);
 }
 
 //---------------------------------------------------------------------------
@@ -3658,4 +3653,58 @@ void qMRMLSegmentEditorWidget::showSegmentationGeometryDialog()
       this->setMasterVolumeNode(masterVolumeNode);
       }
     }
+}
+
+//---------------------------------------------------------------------------
+void qMRMLSegmentEditorWidget::selectPreviousSegment()
+{
+  this->selectSegmentAtOffset(-1);
+}
+
+//---------------------------------------------------------------------------
+void qMRMLSegmentEditorWidget::selectNextSegment()
+{
+  this->selectSegmentAtOffset(1);
+}
+
+//---------------------------------------------------------------------------
+void qMRMLSegmentEditorWidget::selectSegmentAtOffset (int offset)
+{
+  Q_D(qMRMLSegmentEditorWidget);
+
+  vtkMRMLSegmentationNode* segmentationNode = vtkMRMLSegmentationNode::SafeDownCast(this->segmentationNode());
+  if (segmentationNode == nullptr || segmentationNode->GetDisplayNode() == nullptr)
+    {
+    return;
+    }
+  vtkMRMLSegmentationDisplayNode* displayNode = vtkMRMLSegmentationDisplayNode::SafeDownCast(segmentationNode->GetDisplayNode());
+  if (displayNode == nullptr)
+    {
+    return;
+    }
+  std::vector<std::string> visibleSegmentIDs;
+  displayNode->GetVisibleSegmentIDs(visibleSegmentIDs);
+  QString currentSegmentID = this->currentSegmentID();
+
+  QModelIndexList selectedRows = d->SegmentsTableView->tableWidget()->selectionModel()->selectedRows();
+  if (selectedRows.empty())
+    {
+    return;
+    }
+
+  int selectedRow = selectedRows[0].row();
+  int rowCount = d->SegmentsTableView->tableWidget()->model()->rowCount();
+  QString selectedSegmentID = currentSegmentID;
+  for (int i = 0; i < rowCount; ++i)
+    {
+    // 'offset' represents the direction that the segment selection should be moved (-1/+1 is previous/next)
+    selectedRow = std::max(0, (selectedRow + offset) % rowCount);
+    std::string segmentID = d->SegmentsTableView->segmentIDForRow(selectedRow).toStdString();
+    if (std::find(visibleSegmentIDs.begin(), visibleSegmentIDs.end(), segmentID) != visibleSegmentIDs.end())
+      {
+      selectedSegmentID = QString::fromStdString(segmentID);
+      break;
+      }
+    }
+  this->setCurrentSegmentID(selectedSegmentID.toStdString().c_str());
 }

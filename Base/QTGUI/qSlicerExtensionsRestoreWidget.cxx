@@ -351,7 +351,7 @@ void qSlicerExtensionsRestoreWidgetPrivate
     else
       {
       description = qSlicerExtensionsRestoreWidget::tr(
-		  "not compatible with current Slicer version (was last used in Slicer version %1)").arg(usedLastInRevision);
+            "not compatible with current Slicer version (was last used in Slicer version %1)").arg(usedLastInRevision);
       }
 
     extensionItem->setData(qSlicerRestoreExtensions::IdRole, currentInfo.value("ExtensionId").toString());
@@ -422,7 +422,7 @@ void qSlicerExtensionsRestoreWidgetPrivate
       this->progressDialog->close();
       this->headlessMode = false;
       static_cast<qSlicerApplication*>qApp->confirmRestart(
-		  qSlicerExtensionsRestoreWidget::tr("All extensions restored. Please restart Slicer."));
+            qSlicerExtensionsRestoreWidget::tr("All extensions restored. Please restart Slicer."));
       }
     else
       {
@@ -438,8 +438,7 @@ void qSlicerExtensionsRestoreWidgetPrivate
   if (this->headlessMode)
     {
     this->progressDialog->setValue(value);
-    this->progressDialog->setLabelText(
-	  qSlicerExtensionsRestoreWidget::tr("Installing %1 (%2/%3)")
+    this->progressDialog->setLabelText(qSlicerExtensionsRestoreWidget::tr("Installing %1 (%2/%3)")
       .arg(extensionName)
       .arg(received)
       .arg(total));

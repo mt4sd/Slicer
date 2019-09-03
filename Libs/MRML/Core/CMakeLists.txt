@@ -43,6 +43,7 @@ set(${PROJECT_NAME}_ITK_COMPONENTS
   ITKIOImageBase
   ITKIOSpatialObjects
   ITKIOTransformBase
+  ITKMesh
   ITKTransform
   )
 find_package(ITK 4.6 COMPONENTS ${${PROJECT_NAME}_ITK_COMPONENTS} REQUIRED)
@@ -103,7 +104,6 @@ endif()
 set(MRMLCore_SRCS
   vtkCodedEntry.cxx
   vtkEventBroker.cxx
-  vtkImageBimodalAnalysis.cxx
   vtkDataFileFormatHelper.cxx
   vtkMRMLMeasurement.cxx
   vtkMRMLLogic.cxx
@@ -179,6 +179,8 @@ set(MRMLCore_SRCS
   vtkMRMLTableStorageNode.cxx
   vtkMRMLTableSQLiteStorageNode.cxx
   vtkMRMLTableViewNode.cxx
+  vtkMRMLTextNode.cxx
+  vtkMRMLTextStorageNode.cxx
   vtkMRMLTransformNode.cxx
   vtkMRMLTransformStorageNode.cxx
   vtkMRMLTransformDisplayNode.cxx

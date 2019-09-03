@@ -27,8 +27,8 @@
 #include <QWidget>
 
 // Slicer includes
-#include <qMRMLWidgetsConfigure.h> // For MRML_WIDGETS_HAVE_WEBGINE_SUPPORT
-#ifdef MRML_WIDGETS_HAVE_WEBGINE_SUPPORT
+#include <qMRMLWidgetsConfigure.h> // For MRML_WIDGETS_HAVE_WEBENGINE_SUPPORT
+#ifdef MRML_WIDGETS_HAVE_WEBENGINE_SUPPORT
 #include "qMRMLChartWidget.h"
 #endif
 #include "qMRMLLayoutManager.h"
@@ -50,17 +50,14 @@
 
 // VTK includes
 #include <vtkNew.h>
-#ifdef Slicer_VTK_USE_QVTKOPENGLWIDGET
-#include <QSurfaceFormat>
-#include <QVTKOpenGLWidget.h>
-#endif
+#include "qMRMLWidget.h"
 
 namespace
 {
 //------------------------------------------------------------------------------
 bool testLayoutManagerViewWidgetForChart(int line, qMRMLLayoutManager* layoutManager, int viewId)
 {
-#ifdef MRML_WIDGETS_HAVE_WEBGINE_SUPPORT
+#ifdef MRML_WIDGETS_HAVE_WEBENGINE_SUPPORT
   qMRMLChartWidget* widget = layoutManager->chartWidget(viewId);
   vtkMRMLChartViewNode* node = widget ? widget->mrmlChartViewNode() : nullptr;
   if (!widget || !node)
@@ -136,14 +133,9 @@ bool testLayoutManagerViewWidgetForThreeD(int line, qMRMLLayoutManager* layoutMa
 //------------------------------------------------------------------------------
 int qMRMLLayoutManagerTest1(int argc, char * argv[] )
 {
-#ifdef Slicer_VTK_USE_QVTKOPENGLWIDGET
-  // Set default surface format for QVTKOpenGLWidget
-  QSurfaceFormat format = QVTKOpenGLWidget::defaultFormat();
-  format.setSamples(0);
-  QSurfaceFormat::setDefaultFormat(format);
-#endif
-
+  qMRMLWidget::preInitializeApplication();
   QApplication app(argc, argv);
+  qMRMLWidget::postInitializeApplication();
   qMRMLLayoutManager * layoutManager = new qMRMLLayoutManager();
 
   vtkNew<vtkMRMLApplicationLogic> applicationLogic;

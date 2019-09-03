@@ -32,10 +32,10 @@ class vtkCellPicker;
 /// Class for storing all relevant details of mouse and keyboard events.
 /// It stores additional information that is expensive to compute (such as 3D position)
 /// or not always easy to get (such as modifiers).
-class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLInteractionEventData : public vtkEventData
+class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLInteractionEventData : public vtkEventDataDevice3D
 {
 public:
-  vtkTypeMacro(vtkMRMLInteractionEventData, vtkEventData);
+  vtkTypeMacro(vtkMRMLInteractionEventData, vtkEventDataDevice3D);
   static vtkMRMLInteractionEventData *New();
 
   /// Extends vtkCommand events
@@ -51,24 +51,23 @@ public:
   void SetModifiers(int v);
   int GetModifiers();
 
-  void GetWorldPosition(double v[3]) const;
-  const double *GetWorldPosition() const;
-
-  // It may be expensive to compute world position accurately (e.g., in a 3D view).
-  // If accurate parameter is set to false then it indicates
-  // that the position may be inaccurate.
+  //@{
+  /// It may be expensive to compute world position accurately (e.g., in a 3D view).
+  /// If accurate parameter is set to false then it indicates
+  /// that the position may be inaccurate.
   void SetWorldPosition(const double p[3], bool accurate = true);
   bool IsWorldPositionValid();
   bool IsWorldPositionAccurate();
   void SetWorldPositionInvalid();
 
   bool ComputeAccurateWorldPosition(bool force = false);
+  //@}
 
   void GetDisplayPosition(int v[2]) const;
   const int *GetDisplayPosition() const;
   void SetDisplayPosition(const int p[2]);
   bool IsDisplayPositionValid();
-  void SetDisplayPositionValid();
+  void SetDisplayPositionInvalid();
 
   void SetKeyCode(char v);
   char GetKeyCode();
@@ -90,6 +89,16 @@ public:
   double GetRotation() const;
   void SetLastRotation(double v);
   double GetLastRotation() const;
+  void SetScale(double scale);
+  double GetScale() const;
+  void SetLastScale(double scale);
+  double GetLastScale() const;
+  void SetTranslation(const double translation[2]);
+  const double *GetTranslation() const;
+  void SetLastTranslation(const double translation[2]);
+  const double* GetLastTranslation() const;
+  void SetWorldToPhysicalScale(double v);
+  double GetWorldToPhysicalScale() const;
 
   /// Set Modifiers and Key... attributes from interactor
   void SetAttributesFromInteractor(vtkRenderWindowInteractor* interactor);
@@ -100,10 +109,12 @@ public:
   void SetAccuratePicker(vtkCellPicker* picker);
   vtkCellPicker* GetAccuratePicker() const;
 
+  void SetInteractionContextName(const std::string& v);
+  const std::string& GetInteractionContextName();
+
 protected:
   int Modifiers;
   int DisplayPosition[2];
-  double WorldPosition[3];
   bool DisplayPositionValid;
   bool WorldPositionValid;
   bool WorldPositionAccurate;
@@ -114,14 +125,30 @@ protected:
   int ComponentType;
   int ComponentIndex;
 
-  // For KeyPressEvent
+  //@{
+  /// For KeyPressEvent
   char KeyCode;
   int KeyRepeatCount;
   std::string KeySym;
+  //@}
 
-  // MacOSX touchpad events
+  // Gesture events
+  //@{
+  /// MacOSX touchpad events
   double Rotation;
   double LastRotation;
+  double Scale;
+  double LastScale;
+  double Translation[2];
+  double LastTranslation[2];
+  //@}
+
+  /// For VR events
+  /// World to physical scale: Value greater than 1 means that objects appear larger in VR than their real world size.
+  double WorldToPhysicalScale;
+
+  /// Name of interaction context. In case of the mouse, it is empty string
+  std::string InteractionContextName;
 
   bool Equivalent(const vtkEventData *e) const override;
 

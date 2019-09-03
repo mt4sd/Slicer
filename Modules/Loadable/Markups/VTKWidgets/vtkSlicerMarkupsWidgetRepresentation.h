@@ -54,6 +54,8 @@ class vtkSphereSource;
 class vtkTextActor;
 class vtkTextProperty;
 
+class vtkMRMLInteractionEventData;
+
 class VTK_SLICER_MARKUPS_MODULE_VTKWIDGETS_EXPORT vtkSlicerMarkupsWidgetRepresentation : public vtkMRMLAbstractWidgetRepresentation
 {
 public:
@@ -67,10 +69,10 @@ public:
   /// Get the nth node's display position. Will return
   /// 1 on success, or 0 if there are not at least
   /// (n+1) nodes (0 based counting).
-  virtual int GetNthNodeDisplayPosition(int n, double pos[2]);
+  virtual int GetNthControlPointDisplayPosition(int n, double pos[2]);
 
   /// Get the nth node.
-  virtual vtkMRMLMarkupsNode::ControlPoint *GetNthNode(int n);
+  virtual vtkMRMLMarkupsNode::ControlPoint *GetNthControlPoint(int n);
 
   /// Set/Get the vtkMRMLMarkipsNode connected with this representation
   virtual void SetMarkupsDisplayNode(vtkMRMLMarkupsDisplayNode *markupsDisplayNode);
@@ -88,7 +90,7 @@ public:
   /// Return found component type (as vtkMRMLMarkupsDisplayNode::ComponentType).
   /// closestDistance2 is the squared distance in display coordinates from the closest position where interaction is possible.
   /// componentIndex returns index of the found component (e.g., if control point is found then control point index is returned).
-  virtual void CanInteract(const int displayPosition[2], const double worldPosition[3],
+  virtual void CanInteract(vtkMRMLInteractionEventData* interactionEventData,
     int &foundComponentType, int &foundComponentIndex, double &closestDistance2);
 
   virtual int FindClosestPointOnWidget(const int displayPos[2], double worldPos[3], int *idx);
@@ -174,7 +176,7 @@ protected:
 
   double* GetWidgetColor(int controlPointType);
 
-  ControlPointsPipeline* ControlPoints[5]; // Unselected, Selected, Active, Project, ProjectBehind
+  ControlPointsPipeline* ControlPoints[NumberOfControlPointTypes]; // Unselected, Selected, Active, Project, ProjectBehind
 
 private:
   vtkSlicerMarkupsWidgetRepresentation(const vtkSlicerMarkupsWidgetRepresentation&) = delete;

@@ -26,6 +26,7 @@
 #include "vtkTubeFilter.h"
 
 // MRML includes
+#include "vtkMRMLInteractionEventData.h"
 #include "vtkMRMLMarkupsDisplayNode.h"
 
 vtkStandardNewMacro(vtkSlicerLineRepresentation3D);
@@ -86,6 +87,7 @@ int vtkSlicerLineRepresentation3D::RenderOpaqueGeometry(
   count = this->Superclass::RenderOpaqueGeometry(viewport);
   if (this->LineActor->GetVisibility())
     {
+    this->TubeFilter->SetRadius(this->ControlPointSize * this->MarkupsDisplayNode->GetLineThickness() * 0.5);
     count += this->LineActor->RenderOpaqueGeometry(viewport);
     }
   return count;
@@ -162,7 +164,7 @@ void vtkSlicerLineRepresentation3D::UpdateFromMRML(vtkMRMLNode* caller, unsigned
 
   this->UpdateRelativeCoincidentTopologyOffsets(this->LineMapper);
 
-  this->TubeFilter->SetRadius(this->ControlPointSize * 0.125);
+  this->TubeFilter->SetRadius(this->ControlPointSize * this->MarkupsDisplayNode->GetLineThickness() * 0.5);
 
   this->LineActor->SetVisibility(this->GetAllControlPointsVisible());
   int controlPointType = Active;
@@ -175,23 +177,24 @@ void vtkSlicerLineRepresentation3D::UpdateFromMRML(vtkMRMLNode* caller, unsigned
 
 //----------------------------------------------------------------------
 void vtkSlicerLineRepresentation3D::CanInteract(
-  const int displayPosition[2], const double worldPosition[3],
+  vtkMRMLInteractionEventData* interactionEventData,
   int &foundComponentType, int &foundComponentIndex, double &closestDistance2)
 {
   foundComponentType = vtkMRMLMarkupsDisplayNode::ComponentNone;
   vtkMRMLMarkupsNode* markupsNode = this->GetMarkupsNode();
-  if (!markupsNode || markupsNode->GetLocked() || markupsNode->GetNumberOfControlPoints() < 1)
+  if ( !markupsNode || markupsNode->GetLocked() || markupsNode->GetNumberOfControlPoints() < 1
+    || !interactionEventData )
     {
     return;
     }
-  Superclass::CanInteract(displayPosition, worldPosition, foundComponentType, foundComponentIndex, closestDistance2);
+  Superclass::CanInteract(interactionEventData, foundComponentType, foundComponentIndex, closestDistance2);
   if (foundComponentType != vtkMRMLMarkupsDisplayNode::ComponentNone)
     {
     // if mouse is near a control point then select that (ignore the line)
     return;
     }
 
-  this->CanInteractWithLine(displayPosition, worldPosition, foundComponentType, foundComponentIndex, closestDistance2);
+  this->CanInteractWithLine(interactionEventData, foundComponentType, foundComponentIndex, closestDistance2);
 }
 
 //-----------------------------------------------------------------------------

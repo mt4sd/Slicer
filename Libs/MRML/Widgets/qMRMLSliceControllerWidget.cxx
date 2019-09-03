@@ -390,6 +390,7 @@ void qMRMLSliceControllerWidgetPrivate::init()
   //  </widget>
   // </item>
   this->FitToWindowToolButton = new QToolButton(q);
+  this->FitToWindowToolButton->setObjectName("FitToWindowToolButton");
   //this->FitToWindowToolButton->setToolTip(tr("Adjust the Slice Viewer's field of view to match the extent of lowest non-None volume layer (bg, then fg, then label)."));
   //QIcon fitToWindowIcon(":/Icons/SlicesFitToWindow.png");
   //this->FitToWindowToolButton->setIcon(fitToWindowIcon);
@@ -399,6 +400,7 @@ void qMRMLSliceControllerWidgetPrivate::init()
   this->BarLayout->insertWidget(2, this->FitToWindowToolButton);
 
   this->SliceOffsetSlider = new qMRMLSliderWidget(q);
+  this->SliceOffsetSlider->setObjectName("SliceOffsetSlider");
   this->SliceOffsetSlider->setTracking(false);
   this->SliceOffsetSlider->setToolTip(qMRMLSliceControllerWidget::tr("Slice distance from RAS origin"));
   this->SliceOffsetSlider->setQuantity("length");
@@ -982,6 +984,13 @@ void qMRMLSliceControllerWidgetPrivate::updateWidgetFromMRMLSliceNode()
     {
     action->setChecked(true);
     }
+
+  // Ruler Color (check the selected option)
+  action = qobject_cast<QAction*>(this->RulerColorMapper->mapping(this->MRMLSliceNode->GetRulerColor()));
+  if (action)
+    {
+    action->setChecked(true);
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -1496,6 +1505,10 @@ void qMRMLSliceControllerWidgetPrivate::setupRulerMenu()
   this->RulerTypesMapper->setMapping(this->actionRulerTypeNone, vtkMRMLAbstractViewNode::RulerTypeNone);
   this->RulerTypesMapper->setMapping(this->actionRulerTypeThin, vtkMRMLAbstractViewNode::RulerTypeThin);
   this->RulerTypesMapper->setMapping(this->actionRulerTypeThick, vtkMRMLAbstractViewNode::RulerTypeThick);
+  this->RulerColorMapper = new ctkSignalMapper(this->PopupWidget);
+  this->RulerColorMapper->setMapping(this->actionRulerColorBlack, vtkMRMLAbstractViewNode::RulerColorBlack);
+  this->RulerColorMapper->setMapping(this->actionRulerColorWhite, vtkMRMLAbstractViewNode::RulerColorWhite);
+  this->RulerColorMapper->setMapping(this->actionRulerColorYellow, vtkMRMLAbstractViewNode::RulerColorYellow);
   QActionGroup* rulerTypesActions = new QActionGroup(this->PopupWidget);
   rulerTypesActions->setExclusive(true);
   rulerTypesActions->addAction(this->actionRulerTypeNone);
@@ -1503,11 +1516,19 @@ void qMRMLSliceControllerWidgetPrivate::setupRulerMenu()
   rulerTypesActions->addAction(this->actionRulerTypeThick);
   QObject::connect(this->RulerTypesMapper, SIGNAL(mapped(int)),q, SLOT(setRulerType(int)));
   QObject::connect(rulerTypesActions, SIGNAL(triggered(QAction*)),this->RulerTypesMapper, SLOT(map(QAction*)));
+  QActionGroup* rulerColorActions = new QActionGroup(this->PopupWidget);
+  rulerColorActions->addAction(this->actionRulerColorWhite);
+  rulerColorActions->addAction(this->actionRulerColorBlack);
+  rulerColorActions->addAction(this->actionRulerColorYellow);
+  QObject::connect(this->RulerColorMapper, SIGNAL(mapped(int)),q, SLOT(setRulerColor(int)));
+  QObject::connect(rulerColorActions, SIGNAL(triggered(QAction*)),this->RulerColorMapper, SLOT(map(QAction*)));
   // Menu
   QMenu* rulerMenu = new QMenu(tr("Ruler"), this->PopupWidget);
   rulerMenu->setObjectName("rulerMenu");
   this->RulerButton->setMenu(rulerMenu);
   rulerMenu->addActions(rulerTypesActions->actions());
+  rulerMenu->addSeparator();
+  rulerMenu->addActions(rulerColorActions->actions());
 }
 
 // --------------------------------------------------------------------------
@@ -2780,6 +2801,26 @@ void qMRMLSliceControllerWidget::setRulerType(int newRulerType)
     if (node == d->MRMLSliceNode || this->isLinked())
       {
       node->SetRulerType(newRulerType);
+      }
+    }
+}
+
+// --------------------------------------------------------------------------
+void qMRMLSliceControllerWidget::setRulerColor(int newRulerColor)
+{
+  Q_D(qMRMLSliceControllerWidget);
+  vtkSmartPointer<vtkCollection> nodes = d->saveNodesForUndo("vtkMRMLSliceNode");
+  if (!nodes.GetPointer())
+    {
+    return;
+    }
+  vtkMRMLSliceNode* node = nullptr;
+  vtkCollectionSimpleIterator it;
+  for (nodes->InitTraversal(it);(node = static_cast<vtkMRMLSliceNode*>(nodes->GetNextItemAsObject(it)));)
+    {
+    if (node == d->MRMLSliceNode || this->isLinked())
+      {
+      node->SetRulerColor(newRulerColor);
       }
     }
 }

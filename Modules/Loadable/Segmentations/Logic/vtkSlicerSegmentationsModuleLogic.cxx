@@ -1282,7 +1282,7 @@ bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(vtkMRML
   //   run the thresholding in single threaded mode to avoid data corruption observed on mac release builds
   //threshold->SetNumberOfThreads(1);
 
-  int segmentationNodeWasModified = segmentationNode->StartModify();
+  MRMLNodeModifyBlocker blocker(segmentationNode);
   for (int labelIndex = 0; labelIndex < labelValues->GetNumberOfValues(); ++labelIndex)
     {
     int label = labelValues->GetValue(labelIndex);
@@ -1352,8 +1352,6 @@ bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(vtkMRML
       }
     } // for each label
 
-  segmentationNode->EndModify(segmentationNodeWasModified);
-
   return true;
 }
 
@@ -1384,7 +1382,7 @@ bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(vtkOrie
   vtkNew<vtkIntArray> labelValues;
   vtkSlicerSegmentationsModuleLogic::GetAllLabelValues(labelValues.GetPointer(), labelmapImage);
 
-  int segmentationNodeWasModified = segmentationNode->StartModify();
+  MRMLNodeModifyBlocker blocker(segmentationNode);
 
   vtkSmartPointer<vtkImageThreshold> threshold = vtkSmartPointer<vtkImageThreshold>::New();
   threshold->SetInputData(labelmapImage);
@@ -1436,8 +1434,6 @@ bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(vtkOrie
       return false;
       }
     } // for each label
-
-  segmentationNode->EndModify(segmentationNodeWasModified);
 
   return true;
 }
@@ -1526,7 +1522,7 @@ bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(
   threshold->ReplaceOutOn();
   threshold->SetOutputScalarType(labelmapImage->GetScalarType());
 
-  int segmentationNodeWasModified = segmentationNode->StartModify();
+  MRMLNodeModifyBlocker blocker(segmentationNode);
   for (int segmentIndex = 0; segmentIndex < updatedSegmentIDs->GetNumberOfValues(); ++segmentIndex)
   {
     std::string segmentId = updatedSegmentIDs->GetValue(segmentIndex);
@@ -1560,8 +1556,6 @@ bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(
 
   } // for each label
 
-  segmentationNode->EndModify(segmentationNodeWasModified);
-
   return true;
 }
 
@@ -1569,6 +1563,8 @@ bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(
 bool vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNodeWithTerminology(vtkMRMLLabelMapVolumeNode* labelmapNode,
   vtkMRMLSegmentationNode* segmentationNode, std::string terminologyContextName, std::string insertBeforeSegmentId/*=""*/)
 {
+  MRMLNodeModifyBlocker blocker(segmentationNode);
+
   // Import labelmap to segmentation
   if (! vtkSlicerSegmentationsModuleLogic::ImportLabelmapToSegmentationNode(
         labelmapNode, segmentationNode, insertBeforeSegmentId ) )
@@ -2008,6 +2004,8 @@ bool vtkSlicerSegmentationsModuleLogic::SetTerminologyToSegmentationFromLabelmap
   firstTerminologyEntry->GetTypeObject()->Copy(firstType);
   std::string firstTerminologyString = this->TerminologiesLogic->SerializeTerminologyEntry(firstTerminologyEntry);
 
+  MRMLNodeModifyBlocker blocker(segmentationNode);
+
   // Assign terminology entry to each segment in the segmentation
   std::vector<std::string> segmentIDs;
   segmentationNode->GetSegmentation()->GetSegmentIDs(segmentIDs);
@@ -2373,4 +2371,124 @@ std::string vtkSlicerSegmentationsModuleLogic::GetSafeFileName(std::string origi
     }
 
   return safeName;
+}
+
+//------------------------------------------------------------------------------
+const char* vtkSlicerSegmentationsModuleLogic::GetSegmentStatusAsHumanReadableString(int segmentStatus)
+{
+  switch (segmentStatus)
+    {
+    case NotStarted:
+      return "Not started";
+    case InProgress:
+      return "In progress";
+    case Completed:
+      return "Completed";
+    case Flagged:
+      return "Flagged";
+    }
+  return "Unknown";
+};
+
+//------------------------------------------------------------------------------
+const char* vtkSlicerSegmentationsModuleLogic::GetSegmentStatusAsMachineReadableString(int segmentStatus)
+{
+  switch (segmentStatus)
+  {
+  case NotStarted:
+    return "notstarted";
+  case InProgress:
+    return "inprogress";
+  case Completed:
+    return "completed";
+  case Flagged:
+    return "flagged";
+  }
+  return "unknown";
+};
+
+//------------------------------------------------------------------------------
+int vtkSlicerSegmentationsModuleLogic::GetSegmentStatusFromMachineReadableString(std::string statusString)
+{
+  for (int i = 0; i < LastStatus; ++i)
+    {
+    std::string currentStatusString = vtkSlicerSegmentationsModuleLogic::GetSegmentStatusAsMachineReadableString(i);
+    if (currentStatusString == statusString)
+      {
+      return i;
+      }
+    }
+  return -1;
+}
+
+//------------------------------------------------------------------------------
+const char* vtkSlicerSegmentationsModuleLogic::GetStatusTagName()
+{
+  return "Segmentation.Status";
+}
+
+//------------------------------------------------------------------------------
+int vtkSlicerSegmentationsModuleLogic::GetSegmentStatus(vtkSegment* segment)
+{
+  if (!segment)
+    {
+    vtkErrorWithObjectMacro(nullptr, "Invalid segment");
+    return -1;
+    }
+  std::string value;
+  if (!segment->GetTag(vtkSlicerSegmentationsModuleLogic::GetStatusTagName(), value))
+    {
+    return NotStarted;
+    }
+  return vtkSlicerSegmentationsModuleLogic::GetSegmentStatusFromMachineReadableString(value);
+}
+
+//------------------------------------------------------------------------------
+void vtkSlicerSegmentationsModuleLogic::SetSegmentStatus(vtkSegment* segment, int status)
+{
+  if (!segment)
+    {
+    vtkErrorWithObjectMacro(nullptr, "Invalid segment");
+    return;
+    }
+  segment->SetTag(vtkSlicerSegmentationsModuleLogic::GetStatusTagName(), vtkSlicerSegmentationsModuleLogic::GetSegmentStatusAsMachineReadableString(status));
+}
+
+//------------------------------------------------------------------------------
+bool vtkSlicerSegmentationsModuleLogic::ClearSegment(vtkMRMLSegmentationNode* segmentationNode, std::string segmentID)
+{
+  if (!segmentationNode)
+    {
+    vtkErrorWithObjectMacro(nullptr, "Invalid segmentation node");
+    return false;
+    }
+  return vtkSlicerSegmentationsModuleLogic::ClearSegment(segmentationNode->GetSegmentation(), segmentID);
+}
+
+//------------------------------------------------------------------------------
+bool vtkSlicerSegmentationsModuleLogic::ClearSegment(vtkSegmentation* segmentation, std::string segmentID)
+{
+  if (!segmentation)
+    {
+    vtkErrorWithObjectMacro(nullptr, "Invalid segmentation");
+    return false;
+    }
+
+  vtkSegment* segment = segmentation->GetSegment(segmentID);
+  if (!segment)
+    {
+    vtkErrorWithObjectMacro(nullptr, "Invalid segment");
+    return false;
+    }
+
+  vtkDataObject* dataObject = segment->GetRepresentation(segmentation->GetMasterRepresentationName());
+  if (dataObject)
+    {
+    dataObject->Initialize();
+    dataObject->Modified();
+    }
+
+  vtkSlicerSegmentationsModuleLogic::SetSegmentStatus(segment, vtkSlicerSegmentationsModuleLogic::NotStarted);
+  segment->Modified();
+  return true;
 }

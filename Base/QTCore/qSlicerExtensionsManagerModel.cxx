@@ -198,6 +198,7 @@ public:
   bool uninstallExtension(const QString& extensionName);
 
   QStringList extensionLibraryPaths(const QString& extensionName)const;
+  QStringList extensionQtPluginPaths(const QString& extensionName)const;
   QStringList extensionPaths(const QString& extensionName)const;
 
 #ifdef Slicer_USE_PYTHONQT
@@ -520,12 +521,18 @@ void qSlicerExtensionsManagerModelPrivate::addExtensionPathToLauncherSettings(co
   qSlicerExtensionsManagerModel::writeArrayValues(settings,
                          appendToPathList(paths, this->extensionPaths(extensionName)),
                          "Paths", "path");
+
 #ifdef Slicer_USE_PYTHONQT
   QStringList pythonPaths = qSlicerExtensionsManagerModel::readArrayValues(settings, "PYTHONPATH", "path");
   qSlicerExtensionsManagerModel::writeArrayValues(settings,
                          appendToPathList(pythonPaths, this->extensionPythonPaths(extensionName)),
                          "PYTHONPATH", "path");
 #endif
+
+  QStringList qtPluginPaths = qSlicerExtensionsManagerModel::readArrayValues(settings, "QT_PLUGIN_PATH", "path");
+  qSlicerExtensionsManagerModel::writeArrayValues(settings,
+                         appendToPathList(qtPluginPaths, this->extensionQtPluginPaths(extensionName)),
+                         "QT_PLUGIN_PATH", "path");
 }
 
 // --------------------------------------------------------------------------
@@ -538,7 +545,7 @@ void qSlicerExtensionsManagerModelPrivate::removeExtensionPathFromLauncherSettin
   QSettings settings(this->ExtensionsSettingsFilePath, QSettings::IniFormat);
   if (settings.status() != QSettings::NoError)
     {
-	this->warning(qSlicerExtensionsManagerModel::tr("Failed to open extensions settings file: %1").arg(this->ExtensionsSettingsFilePath));
+    this->warning(qSlicerExtensionsManagerModel::tr("Failed to open extensions settings file: %1").arg(this->ExtensionsSettingsFilePath));
     return;
     }
 
@@ -551,12 +558,18 @@ void qSlicerExtensionsManagerModelPrivate::removeExtensionPathFromLauncherSettin
   qSlicerExtensionsManagerModel::writeArrayValues(settings,
                          removeFromPathList(paths, this->extensionPaths(extensionName)),
                          "Paths", "path");
+
 #ifdef Slicer_USE_PYTHONQT
   QStringList pythonPaths = qSlicerExtensionsManagerModel::readArrayValues(settings, "PYTHONPATH", "path");
   qSlicerExtensionsManagerModel::writeArrayValues(settings,
                          removeFromPathList(pythonPaths, this->extensionPythonPaths(extensionName)),
                          "PYTHONPATH", "path");
 #endif
+
+  QStringList qtPluginPaths = qSlicerExtensionsManagerModel::readArrayValues(settings, "QT_PLUGIN_PATH", "path");
+  qSlicerExtensionsManagerModel::writeArrayValues(settings,
+                         removeFromPathList(qtPluginPaths, this->extensionQtPluginPaths(extensionName)),
+                         "QT_PLUGIN_PATH", "path");
 }
 
 #ifdef Q_OS_WIN
@@ -701,6 +714,20 @@ QStringList qSlicerExtensionsManagerModelPrivate::extensionLibraryPaths(const QS
 }
 
 // --------------------------------------------------------------------------
+QStringList qSlicerExtensionsManagerModelPrivate::extensionQtPluginPaths(const QString& extensionName)const
+{
+  Q_Q(const qSlicerExtensionsManagerModel);
+  if (this->SlicerVersion.isEmpty())
+  {
+    return QStringList();
+  }
+  QString path = q->extensionInstallPath(extensionName);
+  return appendToPathList(QStringList(), QStringList()
+                   << path + "/" + QString(Slicer_QtPlugins_DIR).replace(Slicer_VERSION, this->SlicerVersion)
+  );
+}
+
+// --------------------------------------------------------------------------
 QStringList qSlicerExtensionsManagerModelPrivate::extensionPaths(const QString& extensionName)const
 {
   Q_Q(const qSlicerExtensionsManagerModel);
@@ -769,8 +796,12 @@ QStringList qSlicerExtensionsManagerModelPrivate::isExtensionCompatible(
   QString extensionSlicerRevision = metadata.value("slicer_revision").toString();
   if (slicerRevision != extensionSlicerRevision)
     {
+<<<<<<< HEAD
     reasons << qSlicerExtensionsManagerModel::tr(
 		"extensionSlicerRevision [%1] is different from slicerRevision [%2]").arg(extensionSlicerRevision).arg(slicerRevision);
+=======
+    reasons << qSlicerExtensionsManagerModel::tr("extensionSlicerRevision [%1] is different from slicerRevision [%2]").arg(extensionSlicerRevision).arg(slicerRevision);
+>>>>>>> master
     }
   QString extensionArch = metadata.value("arch").toString();
   if (slicerArch != extensionArch)

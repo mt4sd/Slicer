@@ -22,7 +22,9 @@
 #include <QAction>
 #include <QDebug>
 #include <QFile>
+#include <QtGlobal>
 #include <QMainWindow>
+#include <QSurfaceFormat>
 
 #if defined(Q_OS_WIN32)
   #include <QtPlatformHeaders\QWindowsWindowFunctions> // for setHasBorderInFullScreen
@@ -846,8 +848,10 @@ void qSlicerApplication::logApplicationInformation() const
       << "Memory "
       << "CPU "
       << "VTK configuration "
+      << "Qt configuration "
       << "Developer mode enabled "
       << "Prefer executable CLI "
+      << "Application path "
       << "Additional module paths ";
 
   int titleWidth = 0;
@@ -879,7 +883,7 @@ void qSlicerApplication::logApplicationInformation() const
 #endif
          );
 
-  // Custo application version
+  // Custom application version
   if (this->isCustomMainApplication())
     {
     qDebug("%s: %s (revision %s)",
@@ -953,6 +957,7 @@ void qSlicerApplication::logApplicationInformation() const
          systemInfo->GetModelName() ? systemInfo->GetModelName() : "unknown",
          numberOfPhysicalCPU, numberOfLogicalCPU);
 
+  // VTK configuration
   qDebug("%s: %s rendering, %s threading",
     qPrintable(titles.at(titleIndex++).leftJustified(titleWidth, '.')),
 #ifdef Slicer_VTK_RENDERING_USE_OpenGL2_BACKEND
@@ -961,6 +966,27 @@ void qSlicerApplication::logApplicationInformation() const
     "OpenGL",
 #endif
     VTK_SMP_BACKEND);
+
+  // Qt configuration
+  QString openGLProfileStr = "unknown";
+  QSurfaceFormat surfaceFormat = QSurfaceFormat::defaultFormat();
+  switch (surfaceFormat.profile())
+    {
+    case QSurfaceFormat::NoProfile: openGLProfileStr = "no"; break;
+    case QSurfaceFormat::CoreProfile: openGLProfileStr = "core"; break;
+    case QSurfaceFormat::CompatibilityProfile: openGLProfileStr = "compatibility"; break;
+    }
+
+  qDebug("%s: version %s, %s, requested OpenGL %d.%d (%s profile)",
+    qPrintable(titles.at(titleIndex++).leftJustified(titleWidth, '.')),
+    QT_VERSION_STR,
+#ifdef Slicer_USE_PYTHONQT_WITH_OPENSSL
+    "with SSL",
+#else
+    "no SSL",
+#endif
+    surfaceFormat.majorVersion(), surfaceFormat.minorVersion(),
+    qPrintable(openGLProfileStr));
 
   QSettings settings;
 
@@ -993,6 +1019,10 @@ void qSlicerApplication::logApplicationInformation() const
       additionalModulePaths << extensionOrModulePath;
       }
     }
+
+  qDebug("%s: %s",
+    qPrintable(titles.at(titleIndex++).leftJustified(titleWidth, '.')),
+    qPrintable(this->applicationDirPath()));
 
   qDebug("%s: %s",
          qPrintable(titles.at(titleIndex++).leftJustified(titleWidth, '.')),

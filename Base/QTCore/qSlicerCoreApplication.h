@@ -175,12 +175,34 @@ public:
     ExitSuccess = EXIT_SUCCESS,
     ExitFailure = EXIT_FAILURE
   };
-  /// After parsing arguments and before exec() is called, returnCode contains the
-  /// return code if any (!= -1).
-  /// -1 if the application has not been asked to exit.
+  /// Return exit code that may be set before the main event loop started or after
+  /// it exited.
+  ///
+  /// After parsing arguments and before starting the event loop using exec(),
+  /// returnCode is set if early exit was requested or if there was a parsing error.
+  ///
+  /// After exiting the event loop, returnCode is set if there was an error
+  /// during cleanup performed in onAboutToQuit().
+  ///
+  /// Returns -1 if the application has not been asked to exit.
   /// EXIT_SUCCESS (0) if the application must return in success.
   /// EXIT_FAILURE (1) if the application failed.
+  ///
+  /// \sa exec()
   int returnCode()const;
+
+  /// Enters the main event loop and waits until exit(), quit() or terminate() is called.
+  ///
+  /// To ensure that python exceptions occurring during the module unloading performed
+  /// in onAboutToQuit() are considered, it is important to start the event loop directly
+  /// calling this function.
+  ///
+  /// Note that the override of return code if an exception is raised during module
+  /// cleanup happens only if testing mode is enabled.
+  ///
+  /// \sa QApplication::exec(), returnCode()
+  /// \sa qSlicerCoreCommandOptions::isTestingEnabled()
+  static int exec();
 
   /// Get MRML Scene
   Q_INVOKABLE vtkMRMLScene* mrmlScene() const;
@@ -490,6 +512,9 @@ protected slots:
 
   /// Set the ReturnCode flag and call QCoreApplication::exit()
   void terminate(int exitCode = qSlicerCoreApplication::ExitSuccess);
+
+  /// Perform application cleanup following a call to QCoreApplication::exit().
+  virtual void onAboutToQuit();
 
   /// Called when the application logic requests a delayed event invocation.
   /// When the singleton application logic fires the RequestInvokeEvent,
