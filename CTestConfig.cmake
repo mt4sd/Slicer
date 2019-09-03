@@ -1,8 +1,8 @@
-set(CTEST_PROJECT_NAME "SlicerTranslated")
+set(CTEST_PROJECT_NAME "Sliceri18nl10n")
 set(CTEST_NIGHTLY_START_TIME "3:00:00 UTC")
 
 if(NOT DEFINED CDASH_PROJECT_NAME)
-  set(CDASH_PROJECT_NAME "SlicerPreview")
+  set(CDASH_PROJECT_NAME "SlicerTranslated")
 endif()
 
 set(CTEST_DROP_METHOD "http")
