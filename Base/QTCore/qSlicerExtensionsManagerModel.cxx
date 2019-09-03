@@ -796,12 +796,7 @@ QStringList qSlicerExtensionsManagerModelPrivate::isExtensionCompatible(
   QString extensionSlicerRevision = metadata.value("slicer_revision").toString();
   if (slicerRevision != extensionSlicerRevision)
     {
-<<<<<<< HEAD
-    reasons << qSlicerExtensionsManagerModel::tr(
-		"extensionSlicerRevision [%1] is different from slicerRevision [%2]").arg(extensionSlicerRevision).arg(slicerRevision);
-=======
     reasons << qSlicerExtensionsManagerModel::tr("extensionSlicerRevision [%1] is different from slicerRevision [%2]").arg(extensionSlicerRevision).arg(slicerRevision);
->>>>>>> master
     }
   QString extensionArch = metadata.value("arch").toString();
   if (slicerArch != extensionArch)
